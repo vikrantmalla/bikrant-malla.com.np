@@ -1,0 +1,38 @@
+.concept {
+    .behanceitems {
+        display: grid;
+        grid-template-columns: 1fr;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin: 2.5rem 0;
+        .card {
+            .card-img {
+                img {
+                    width: 500px;
+                    height: 200px;
+                }
+            }
+        }
+    }
+}
+
+@include md {
+    .concept {
+        .behanceitems {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+    }
+}
+
+@include lg {
+    .concept {
+        .behanceitems {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+    }
+}

@@ -1,0 +1,11 @@
+footer {
+    margin: 2rem auto;
+    .credit {
+        margin-top: 10rem;
+        text-align: center;
+        a {
+            text-decoration: none;
+            color: var(--text);
+        }
+    }
+}

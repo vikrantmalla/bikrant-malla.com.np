@@ -1,0 +1,13 @@
+.switch {
+    background-color: var(--toggle);
+    border: none;
+    padding: .4rem .8rem;
+    border-radius: .5rem;
+    cursor: pointer;
+    i {
+        color: var(--text);
+    }
+    &:hover {
+        border: gray solid .1rem;
+    }
+}

@@ -1,0 +1,78 @@
+    /*Primary */
+    
+    $colorSoftBlue: hsl(231, 69%, 60%);
+    $colorSoftRed: hsl(0, 94%, 66%);
+    /*Neutral */
+    
+    $colorGrayishBlue: hsl(229, 8%, 60%);
+    $colorVeryDarkBlue: hsl(229, 31%, 21%);
+    $colorNavBackground: rgba(37, 43, 70, .9);
+    /* typography */
+    
+    $ff-serif-jose: 'Josefin Sans',
+    sans-serif;
+    $ff-serif-teko: 'Teko',
+    sans-serif;
+    /* typography */
+    
+    .ff-serif-jose {
+        font-family: $ff-serif-jose;
+    }
+    
+    .ff-serif-teko {
+        font-family: $ff-serif-teko;
+    }
+    /* font */
+    
+    .fs-300 {
+        font-size: .8rem;
+    }
+    
+    .fs-400 {
+        font-size: 1rem;
+    }
+    
+    .fs-500 {
+        font-size: 1.5rem;
+    }
+    
+    .fs-600 {
+        font-size: 1.5rem;
+    }
+    
+    .fs-700 {
+        font-size: 3rem;
+    }
+    
+    @include md {
+        .fs-300 {
+            font-size: .9rem;
+        }
+        .fs-400 {
+            font-size: 1.1rem;
+        }
+        .fs-500 {
+            font-size: 1.8rem;
+        }
+        .fs-600 {
+            font-size: 2rem;
+        }
+        .fs-700 {
+            font-size: 5.5rem;
+        }
+    }
+    
+    @include xl {
+        .fs-400 {
+            font-size: 1.2rem;
+        }
+        .fs-500 {
+            font-size: 2rem;
+        }
+        .fs-600 {
+            font-size: 2.2rem;
+        }
+        .fs-700 {
+            font-size: 6rem;
+        }
+    }

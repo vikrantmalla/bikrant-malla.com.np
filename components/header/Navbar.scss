@@ -1,0 +1,79 @@
+.header {
+    height: 4.5rem;
+    width: 100%;
+    .nav-container {
+        @include flex(row, space-between);
+        width: 100%;
+        height: 100%;
+        gap: 1rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        .nav {
+            .nav-menu {
+                @include flex(row, center);
+                gap: 1.5rem;
+                list-style: none;
+                text-align: center;
+                padding: 0;
+                .nav-item {
+                    cursor: pointer;
+                    padding: .5rem;
+                    border-radius: .5rem;
+                    &:hover {
+                        background-color: var(--toggle);
+                    }
+                    a {
+                        text-decoration: none;
+                        color: var(--text);
+                    }
+                }
+            }
+        }
+    }
+    .menu-icon {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 720px) {
+    .header {
+        padding: 0 2rem;
+        .nav-container {
+            position: relative;
+            .nav {
+                .nav-menu {
+                    @include flex(column, center);
+                    width: 80%;
+                    height: 60vh;
+                    margin: 0 2.5rem;
+                    position: absolute;
+                    top: 80px;
+                    left: -100%;
+                    opacity: 1;
+                    transition: all 0.5s ease;
+                }
+                .nav-menu.active {
+                    background-color: var(--navbackground);
+                    left: 0;
+                    opacity: 1;
+                    transition: all 0.5s ease;
+                    z-index: 1;
+                    border-radius: .5rem;
+                    .nav-item {
+                        &:hover {
+                            background-color: transparent;
+                        }
+                        a {
+                            color: var(--headingstroke);
+                        }
+                    }
+                }
+            }
+            .menu-icon {
+                position: absolute;
+                display: block;
+                color: var(--text);
+            }
+        }
+    }
+}

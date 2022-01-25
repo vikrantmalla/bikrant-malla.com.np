@@ -1,0 +1,82 @@
+.headingleft {
+    margin: 1rem 0;
+    @include heading(left);
+    &::after {
+        @include selector();
+        right: 0;
+    }
+}
+
+.headingright {
+    margin: 1rem 0;
+    @include heading(right);
+    &::before {
+        @include selector();
+        left: 0;
+    }
+}
+
+.card {
+    background-color: var(--card);
+    border-radius: .5rem;
+    transition: 0.5s;
+    .card-img {
+        padding: 1rem 1rem 0 1rem;
+        img {
+            border-radius: .5rem;
+        }
+    }
+    .card-details {
+        @include flex(row, space-between);
+        padding: 1rem 1.2rem;
+        .card-head {
+            h1 {
+                color: var(--text);
+            }
+            p {
+                color: var(--text);
+            }
+        }
+        .card-body {
+            a {
+                text-decoration: none;
+            }
+            i {
+                border: .06rem solid var(--text);
+                border-radius: 50%;
+                color: var(--text);
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                height: 2.5rem;
+                width: 2.5rem;
+                cursor: pointer;
+            }
+        }
+    }
+    &:hover {
+        margin-top: -10px;
+    }
+}
+
+@include sm {
+    .card {
+        margin: 0 1.5rem;
+    }
+}
+
+@include md {
+    .card {
+        margin: 0;
+        .card-details {
+            @include flex(row, space-between);
+            padding: 1rem;
+        }
+    }
+    .headingleft {
+        margin: 8rem 0;
+    }
+    .headingright {
+        margin: 8rem 0;
+    }
+}

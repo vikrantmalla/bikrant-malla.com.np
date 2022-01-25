@@ -1,0 +1,146 @@
+.archive {
+    .heading {
+        color: var(--text);
+    }
+    .subheading {
+        color: var(--text);
+    }
+    .archive-lists {
+        margin-top: 2rem;
+        .project {
+            display: grid;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            color: var(--text);
+            background-color: var(--card);
+            border-top-left-radius: 1rem;
+            border-top-right-radius: .2rem;
+            border-bottom-right-radius: 1rem;
+            border-bottom-left-radius: .2rem;
+            .project-head {
+                @include flex(column, flex-start);
+                align-items: flex-start;
+                gap: 1rem;
+                .details {
+                    color: var(--text);
+                    .title {
+                        @include flex(row, center);
+                        gap: .5rem;
+                        margin-bottom: .2rem;
+                        .new {
+                            background-color: hsl(180, 29%, 50%);
+                            color: white;
+                            padding: .5rem .8rem;
+                            border-radius: 1rem;
+                            font-size: .8rem;
+                        }
+                    }
+                }
+                .links {
+                    i {
+                        font-size: 1.2rem;
+                        color: var(--text);
+                        &:nth-child(1) {
+                            margin-right: 1rem;
+                        }
+                    }
+                }
+            }
+            .tag {
+                @include flex(row, flex-start);
+                align-items: flex-start;
+                gap: 1rem;
+                flex-wrap: wrap;
+                span {
+                    background-color: var(--span);
+                    padding: .5rem;
+                    border-radius: .5rem;
+                    color: var(--background);
+                }
+            }
+        }
+    }
+}
+
+@include sm {
+    .archive {
+        .archive-lists {
+            .project {
+                display: grid;
+                align-items: center;
+                .project-head {
+                    @include flex(row, space-between);
+                    align-items: center;
+                    .details {
+                        .title {
+                            @include flex(row, center);
+                            gap: .5rem;
+                            margin-bottom: .2rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@include md {
+    .archive {
+        .archive-lists {
+            .project {
+                grid-template-columns: repeat(2, 1fr);
+                margin-bottom: 2rem;
+                padding: 2rem;
+                color: var(--cardtext);
+                background-color: var(--card);
+                .project-head {
+                    @include flex(column, space-between);
+                    align-items: flex-start;
+                    border-top-left-radius: 2rem;
+                    border-top-right-radius: .3rem;
+                    border-bottom-right-radius: 2rem;
+                    border-bottom-left-radius: .3rem;
+                    gap: .5rem;
+                    .links {
+                        i {
+                            font-size: 1.5rem;
+                        }
+                    }
+                }
+                .tag {
+                    @include flex(row, flex-end);
+                    align-items: center;
+                    span {
+                        padding: .6rem;
+                        border-radius: .5rem;
+                    }
+                }
+                .links {
+                    i {
+                        font-size: 1.5rem;
+                        &:nth-child(1) {
+                            margin-right: 2rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@include lg {
+    .archive {
+        .archive-lists {
+            margin-top: 2rem;
+            .project {
+                .tag {
+                    @include flex(row, flex-end);
+                    align-items: center;
+                    flex-wrap: nowrap;
+                }
+            }
+        }
+    }
+}

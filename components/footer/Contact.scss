@@ -1,0 +1,61 @@
+.contact {
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+    .heading {
+        color: var(--text);
+        margin-bottom: 1rem;
+    }
+    p {
+        color: var(--text);
+        margin-bottom: 4rem;
+    }
+    .button {
+        padding: 1rem;
+        border: .1rem solid var(--link);
+        border-radius: .5rem;
+        color: var(--text);
+        text-decoration: none;
+        &:hover {
+            background-color: var(--text);
+            color: var(--textrev);
+        }
+    }
+    .social-media {
+        @include flex(row, center);
+        gap: 1rem;
+        margin: 5rem 0;
+        a {
+            text-decoration: none;
+        }
+        i {
+            border: .06rem solid var(--text);
+            border-radius: 50%;
+            color: var(--text);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 2.5rem;
+            width: 2.5rem;
+            transition: 0.5s;
+            &:hover {
+                margin-top: -10px;
+                background-color: var(--text);
+                color: var(--textrev);
+            }
+        }
+    }
+}
+
+@media (min-width: 62em) {
+    .contact {
+        margin-top: 20rem;
+        .social-media {
+            i {
+                height: 3.5rem;
+                width: 3.5rem;
+                font-size: 1.5rem;
+            }
+        }
+    }
+}
