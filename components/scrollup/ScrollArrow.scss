@@ -1,0 +1,29 @@
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 1.5rem;
+    background: none;
+    color: var(--text);
+    cursor: pointer;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    width: 2.5rem;
+    transition: 0.5s;
+    border: .1rem solid var(--text);
+}
+
+.back-to-top:hover {
+    background: var(--text);
+    color: var(--toggle);
+}
+
+@include lg {
+    .back-to-top {
+        height: 3rem;
+        width: 3rem;
+    }
+}
