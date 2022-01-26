@@ -1,7 +1,7 @@
 import '../styles/globals.scss'
-import ThemeContext from '../context/ThemeContext'
-import ProjectContext from '../context/ProjectContext'
-import MouseContext from '../context/MouseContext'
+import ThemeContext from '../helpers/context/ThemeContext'
+import ProjectContext from '../helpers/context/ProjectContext'
+import MouseContext from '../helpers/context/MouseContext'
 import DotRing from '../components/cursor/DotRing'
 import Footer from '../components/footer/Footer'
 function MyApp({ Component, pageProps }) {

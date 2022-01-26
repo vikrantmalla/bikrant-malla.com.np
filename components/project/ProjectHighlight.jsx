@@ -1,4 +1,4 @@
-import ProjectData from '../../data/ProjectData'
+import ProjectData from '../../helpers/data/ProjectData'
 import Link from 'next/link'
 import ProjectCard from './ProjectCard'
 const ProjectHighlight = () => {

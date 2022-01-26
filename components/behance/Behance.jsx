@@ -1,5 +1,5 @@
 import React from 'react'
-import  BehanceData  from '../../data/BehanceData'
+import  BehanceData  from '../../helpers/data/BehanceData'
 import BehanceCard from './BehanceCard'
 const Behance = () => {
     return (

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import Head from 'next/head'
 import ArchiveHeader from '../components/archive/ArchiveHeader'
 import ArchiveDetails from '../components/archive/ArchiveCard'
-import { ProjectContext } from '../context/ProjectContext'
+import { ProjectContext } from '../helpers/context/ProjectContext'
 const Archive = () => {
     const { ArchiveData,filterKeyword } = useContext(ProjectContext);
     const [newData, setNewData] = useState([]);

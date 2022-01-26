@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { MouseContext } from '../../context/MouseContext';
+import { MouseContext } from '../../helpers/context/MouseContext';
 
 const AboutMe = () => {
     const { cursorChangeHandler } = useContext(MouseContext);
