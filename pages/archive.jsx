@@ -34,6 +34,7 @@ const Archive = () => {
                 <meta name="google-site-verification" content="pjAbOBn26n0Q6sNbPKdsSIb4F921MU1XrRja9irTkXU" />
                 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
                 <meta property="og:type" content="website" />
+                <meta property="og:site_name" content="Bikrant Malla" />
                 <meta property="og:title" content="Bikrant Malla - Frontend Developer" />
                 <meta property="og:description" content="Bikrant Malla - Creative frontEnd web developer who loves javascript and modern web technologies." />
                 <meta property="og:url" content="https://www.bikrant-malla.com.np/archive" />
@@ -45,6 +46,7 @@ const Archive = () => {
                 <meta property="og:title" content="Bikrant Malla - Frontend Developer" />
                 <meta property="og:description" content="Bikrant Malla - Creative frontEnd web developer who loves javascript and modern web technologies." />
                 <meta property="og:image" content="https://www.bikrant-malla.com.np/ogimg.png" />
+                <meta name="google-site-verification" content="pjAbOBn26n0Q6sNbPKdsSIb4F921MU1XrRja9irTkXU" />
                 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossOrigin="anonymous" />
             </Head>
             <section className='container'>
