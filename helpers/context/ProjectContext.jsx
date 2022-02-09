@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import ArchiveData from '../data/ArchiveData';
 export const ProjectContext = React.createContext();
 
 const ProjectProvider = (props) => {
@@ -19,7 +18,7 @@ const ProjectProvider = (props) => {
     };
 
     const projectContext = {
-        ArchiveData,filterKeyword, AddKeyword, RemoveKeyword, ClearKeywords
+       filterKeyword, AddKeyword, RemoveKeyword, ClearKeywords
     }
     return (
         <>
