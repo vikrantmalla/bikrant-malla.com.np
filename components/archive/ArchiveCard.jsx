@@ -1,9 +1,9 @@
 import { useContext } from 'react'
 import Link from 'next/link'
 import { ProjectContext } from '../../helpers/context/ProjectContext'
-const ArchiveDetails = ({ id, year, title, isnew, buildwith, projectview, viewcode }) => {
+const ArchiveDetails = ({ id, year, title, isnew, build, projectview, viewcode }) => {
     const { AddKeyword } = useContext(ProjectContext);
-    const tags = [...buildwith];
+    const tags = [...build];
     return (
         <>
                 <div className={`${isnew ? "project active" : "project"}`} key={id}>

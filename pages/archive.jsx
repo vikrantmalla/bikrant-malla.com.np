@@ -1,28 +1,8 @@
-import React, { useState, useEffect, useContext } from 'react'
 import Head from 'next/head'
 import ArchiveHeader from '../components/archive/ArchiveHeader'
-import ArchiveDetails from '../components/archive/ArchiveCard'
-import { ProjectContext } from '../helpers/context/ProjectContext'
-const Archive = () => {
-    const { ArchiveData,filterKeyword } = useContext(ProjectContext);
-    const [newData, setNewData] = useState([]);
-    useEffect(() => {
-        const FilteredData = () => {
-            if (filterKeyword) {
-                const filter = ArchiveData.filter((tag) => {
-                    return filterKeyword.every((key) => {
-                        return (
-                            tag.buildwith.includes(key)
-                        );
-                    });
-                });
-                setNewData(filter);
-            } else {
-                setNewData(ArchiveData);
-            }
-        };
-        FilteredData();
-    }, [ArchiveData, filterKeyword]);
+import baseUrl from '../helpers/lib/baseUrl'
+import ArchiveList from '../components/archive/ArchiveList'
+const Archive = ({project}) => {
     return (
         <>
             <Head>
@@ -55,16 +35,18 @@ const Archive = () => {
                     <h1 className='heading ff-serif-teko fs-700'>Archive</h1>
                     <p className='subheading ff-serif-jose fs-600'>A list of things I’ve worked on</p>
                     <div className='archive-lists'>
-                        {
-                            newData.map((project, id) => {
-                                return <ArchiveDetails key={id} {...project} isNew={project.isnew} />
-                            })
-                        }
+                    <ArchiveList project={project} {...project}/>
                     </div>
                 </div>
             </section>
         </>
     )
 }
-
+export async function getServerSideProps() {
+    const res = await fetch(`${baseUrl}/api/projects`);
+    const data = await res.json();
+    return {
+        props: {project : data},
+    };
+}
 export default Archive
