@@ -12,10 +12,11 @@
     }
     .button {
         padding: 1rem;
-        border: .1rem solid var(--link);
-        border-radius: .5rem;
+        border: 0.1rem solid var(--link);
+        border-radius: 0.5rem;
         color: var(--text);
         text-decoration: none;
+        box-shadow: rgba(41, 44, 46, 0.3) 0px 1px 2px 0px, rgba(27, 29, 31, 0.15) 0px 2px 6px 2px;
         &:hover {
             background-color: var(--text);
             color: var(--textrev);
@@ -29,7 +30,7 @@
             text-decoration: none;
         }
         i {
-            border: .06rem solid var(--text);
+            border: 0.06rem solid var(--text);
             border-radius: 50%;
             color: var(--text);
             display: inline-flex;
@@ -38,6 +39,7 @@
             height: 2.5rem;
             width: 2.5rem;
             transition: 0.5s;
+            box-shadow: 0 3px 8px rgb(0 0 0 / 24%);
             &:hover {
                 margin-top: -10px;
                 background-color: var(--text);
@@ -47,7 +49,7 @@
     }
 }
 
-@media (min-width: 62em) {
+@include lg {
     .contact {
         margin-top: 20rem;
         .social-media {

@@ -31,7 +31,7 @@
                 background-color: var(--text);
                 visibility: hidden;
                 top: 25px;
-                left: 490px;
+                left: 250px;
                 z-index: -1;
             }
             &:hover:after {
@@ -52,6 +52,21 @@
                     @include flex(row, space-between);
                     padding: 1rem;
                 }
+            }
+        }
+        .link {
+            &::after {
+                left: 370px;
+            }
+        }
+    }
+}
+
+@include xl {
+    .project {
+        .link {
+            &::after {
+                left: 490px;
             }
         }
     }

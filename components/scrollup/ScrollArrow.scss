@@ -3,8 +3,8 @@
     bottom: 20px;
     right: 20px;
     font-size: 1.5rem;
-    background: none;
-    color: var(--text);
+    background: var(--text);
+    color: var(--toggle);
     cursor: pointer;
     border-radius: 50%;
     display: inline-flex;
@@ -17,8 +17,8 @@
 }
 
 .back-to-top:hover {
-    background: var(--text);
-    color: var(--toggle);
+    background: var(--toggle);
+    color: var(--text);
 }
 
 @include lg {

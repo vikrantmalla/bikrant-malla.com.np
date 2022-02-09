@@ -15,6 +15,7 @@
             background-color: var(--card);
             padding: .8rem;
             border-radius: .5rem;
+            box-shadow: rgba(41, 44, 46, 0.3) 0px 1px 2px 0px, rgba(27, 29, 31, 0.15) 0px 2px 6px 2px;
             .filter_tags {
                 @include flex(row, flex-start);
                 flex-wrap: wrap;
@@ -46,7 +47,7 @@
                 font-weight: 700;
                 cursor: pointer;
                 &:hover {
-                    color: Cyan;
+                    color: hsl(180, 29%, 50%);
                 }
             }
         }
