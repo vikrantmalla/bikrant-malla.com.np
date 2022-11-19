@@ -2,14 +2,13 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    font-size: 1.5rem;
+    font-size: 1rem;
     background: var(--text);
     color: var(--toggle);
     cursor: pointer;
     border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    padding: .5rem;
+    text-align: center; 
     height: 2.5rem;
     width: 2.5rem;
     transition: 0.5s;
@@ -23,6 +22,7 @@
 
 @include lg {
     .back-to-top {
+        font-size: 1.5rem;
         height: 3rem;
         width: 3rem;
     }

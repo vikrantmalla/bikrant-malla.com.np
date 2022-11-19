@@ -1,51 +1,77 @@
-import React, { useState } from 'react'
-import Link from 'next/link'
-import Switch from './Switch'
+import React, { useState } from "react";
+import Link from "next/link";
+import Switch from "./Switch";
+import Backdrop from "./Backdrop";
 
 const NavBar = () => {
-    const [click, setClick] = useState(false);
+  const [click, setClick] = useState(false);
 
-    const handleClick = () => setClick(!click);
+  const handleClick = () => setClick(!click);
 
-    return (
-        <>
+  if (process.browser) {
+    if (click) {
+      document.body.classList.add("active-modal");
+    } else {
+      document.body.classList.remove("active-modal");
+    }
+  }
 
-            <header className="header container">
-                <div className="nav-container">
-                    <nav className="nav">
-                        <ul className={click ? "nav-menu active" : "nav-menu"}>
-                            <li className="nav-item ff-serif-jose fs-400">
-                                <Link href="#aboutme">
-                                    <a>AboutMe</a>
-                                </Link>
-                            </li>
-                            <li className="nav-item ff-serif-jose fs-400">
-                                <Link href="#skill">
-                                    <a>Skill</a>
-                                </Link>
-                            </li>
-                            <li className="nav-item ff-serif-jose fs-400">
-                                <Link href="#project">
-                                    <a>Project</a>
-                                </Link>
-                            </li>
-                            <li className="nav-item ff-serif-jose fs-400">
-                                <Link href="#concept">
-                                    <a>Concept</a>
-                                </Link>
-                            </li>
-                        </ul>
-                    </nav>
+  const _handleTabClick = (tabId) => {
+    const checkWidth = window.matchMedia("(min-width: 677px)");
+    var tab = $(tabId);
+    var tabOffset = tab?.offset();
 
-                    <div className="menu-icon" onClick={handleClick}>
-                        <i className={click ? "fas fa-times" : "fas fa-bars"} />
-                    </div>
-                    <Switch />
-                </div>
-            </header>
+    if (tabOffset != null) {
+      $("html, body").animate(
+        {
+          scrollTop: tabOffset.top - (checkWidth.matches ? 116.5 : 126)
+        },
+        "slow"
+      );
+    }
+    if (checkWidth === "667px") {
+      setClick(!click);
+    }
+  };
 
-        </>
-    )
-}
+  return (
+    <>
+      <header className="header container">
+        <div className="nav-container">
+          <nav className="nav">
+            <ul className={click ? "nav-menu active" : "nav-menu"}>
+              <li className="nav-item ff-serif-jose fs-400">
+                <a onClick={() => _handleTabClick("#aboutme")}>AboutMe</a>
+              </li>
+              <li className="nav-item ff-serif-jose fs-400">
+                <a onClick={() => _handleTabClick("#skill")}>Skill</a>
+              </li>
+              <li className="nav-item ff-serif-jose fs-400">
+                <a onClick={() => _handleTabClick("#project")}>Project</a>
+              </li>
+              <li className="nav-item ff-serif-jose fs-400">
+                <a onClick={() => _handleTabClick("#concept")}>Concept</a>
+              </li>
+            </ul>
+          </nav>
+          {!click && (
+            <div className="menu-icon" onClick={handleClick}>
+              <i className={click ? "fas fa-times" : "fas fa-bars"} />
+            </div>
+          )}
+          {click && (
+            <>
+              <div className="menu-icon" onClick={handleClick}>
+                <i className={click ? "fas fa-times" : "fas fa-bars"} />
+              </div>
+              <Backdrop onClose={handleClick} />
+            </>
+          )}
+          <Switch />
+        </div>
+      </header>
+    </>
+  );
+};
 
-export default NavBar
+export default NavBar;

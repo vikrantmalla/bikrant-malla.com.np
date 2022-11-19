@@ -28,7 +28,7 @@ const AboutMe = () => {
                         <p className="ff-serif-jose fs-400">CSS / SCSS</p>
                         <p className="ff-serif-jose fs-400">JavaScript(ES6+)</p>
                         <p className="ff-serif-jose fs-400">React JS</p>
-                        <p className="ff-serif-jose fs-400">Style Component</p>
+                        <p className="ff-serif-jose fs-400">TypeScript</p>
 
                     </div>
                     <div className="list">
