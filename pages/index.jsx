@@ -4,8 +4,9 @@ import AboutMe from '../components/intro/AboutMe'
 import ProjectHighlight from '../components/project/ProjectHighlight'
 import Behance from '../components/behance/Behance'
 import Contact from '../components/footer/Contact'
+import baseUrl from '../helpers/lib/baseUrl'
 
-export default function Home() {
+const Home = ({ projectData, behanceData }) => {
   return (
     <>
       <Head>
@@ -36,11 +37,26 @@ export default function Home() {
       <main>
         <article className='container'>
           <AboutMe />
-          <ProjectHighlight />
-          <Behance />
+          <ProjectHighlight projectData={projectData} />
+          <Behance behanceData={behanceData} />
           <Contact />
         </article>
       </main>
     </>
   )
 }
+
+export async function getServerSideProps() {
+  const res1 = await fetch(`${baseUrl}/api/projecthighlights`);
+  const res2 = await fetch(`${baseUrl}/api/behance`);
+  console.log(res1,res2)
+  const projectData = await res1.json();
+  const behanceData = await res2.json();
+
+  return {
+      props: {projectData, behanceData},
+  };
+}
+
+export default Home
+

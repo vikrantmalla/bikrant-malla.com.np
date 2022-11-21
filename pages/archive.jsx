@@ -2,6 +2,7 @@ import Head from 'next/head'
 import ArchiveHeader from '../components/archive/ArchiveHeader'
 import baseUrl from '../helpers/lib/baseUrl'
 import ArchiveList from '../components/archive/ArchiveList'
+
 const Archive = ({project}) => {
     return (
         <>

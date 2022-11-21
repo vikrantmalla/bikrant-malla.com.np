@@ -1,7 +1,9 @@
 import { useContext } from 'react'
 import Link from 'next/link'
 import { MouseContext } from '../../helpers/context/MouseContext';
-const BehanceCard = ({ id, images, alt, title, subTitle, tools, projectview }) => {
+
+const BehanceCard = ({ project }) => {
+    const {id, images, alt, title, subTitle, tools, projectview} = project;
     const { cursorChangeHandler } = useContext(MouseContext);
     return (
 
