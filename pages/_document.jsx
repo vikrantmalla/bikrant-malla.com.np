@@ -10,8 +10,6 @@ class LinkDocument extends Document {
         <body>
           <Main />
           <NextScript />
-          <script src="/jquery/jquery.min.js"></script>
-          <script src="/jquery-easing/jquery.easing.min.js"></script>
           <script src="https://kit.fontawesome.com/66b58c16d1.js" crossOrigin="anonymous"></script>
         </body>
       </Html>

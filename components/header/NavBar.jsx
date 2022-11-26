@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Switch from "./Switch";
 import Backdrop from "./Backdrop";
+import $ from "jquery";
 
 const NavBar = () => {
   const [click, setClick] = useState(false);

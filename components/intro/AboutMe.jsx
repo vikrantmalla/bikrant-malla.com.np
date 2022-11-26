@@ -1,8 +1,11 @@
-import { useContext } from 'react'
-import { MouseContext } from '../../helpers/context/MouseContext';
+import React,{useEffect} from "react";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 const AboutMe = () => {
-    const { cursorChangeHandler } = useContext(MouseContext);
+    useEffect(() => {
+        AOS.init();
+      }, [])
     return (
         <>
             <section>
