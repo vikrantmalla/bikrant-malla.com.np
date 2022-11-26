@@ -25,7 +25,7 @@ const NavBar = () => {
     if (tabOffset != null) {
       $("html, body").animate(
         {
-          scrollTop: tabOffset.top - (checkWidth.matches ? 116.5 : 126)
+          scrollTop: tabOffset.top - (checkWidth.matches ? 116.5 : 126),
         },
         "slow"
       );
@@ -65,6 +65,22 @@ const NavBar = () => {
               <div className="menu-icon" onClick={handleClick}>
                 <i className={click ? "fas fa-times" : "fas fa-bars"} />
               </div>
+              <nav className="nav">
+                <ul className={click ? "nav-menu active" : "nav-menu"}>
+                  <li className="nav-item ff-serif-jose fs-400" onClick={handleClick}>
+                    <a onClick={() => _handleTabClick("#aboutme")}>AboutMe</a>
+                  </li>
+                  <li className="nav-item ff-serif-jose fs-400" onClick={handleClick}>
+                    <a onClick={() => _handleTabClick("#skill")}>Skill</a>
+                  </li>
+                  <li className="nav-item ff-serif-jose fs-400" onClick={handleClick}>
+                    <a onClick={() => _handleTabClick("#project")}>Project</a>
+                  </li>
+                  <li className="nav-item ff-serif-jose fs-400" onClick={handleClick}>
+                    <a onClick={() => _handleTabClick("#concept")}>Concept</a>
+                  </li>
+                </ul>
+              </nav>
               <Backdrop onClose={handleClick} />
             </>
           )}
