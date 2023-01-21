@@ -6,17 +6,17 @@
 @import './mixin';
 @import './NotFound.scss';
 @import './utils';
-@import '../components/cursor/Dotring.scss';
-@import '../components/header/Navbar.scss';
-@import '../components/header/Switch.scss';
+@import '../components/shared/cursor/Dotring.scss';
+@import '../components/shared/header/Navbar.scss';
+@import '../components/shared/header/Switch.scss';
 @import '../components/intro/Aboutme.scss';
 @import '../components/project/Project.scss';
 @import '../components/behance/Behance.scss';
 @import '../components/archive/Archive.scss';
 @import '../components/archive/Archiveheader.scss';
-@import '../components/footer/Contact.scss';
-@import '../components/footer/Footer.scss';
-@import '../components/scrollup/ScrollArrow.scss';
+@import '../components/shared/footer/Contact.scss';
+@import '../components/shared/footer/Footer.scss';
+@import '../components/shared/scrollup/ScrollArrow.scss';
 
 /* define all colors as variables */
 
@@ -128,7 +128,7 @@ select {
 }
 
 main {
-    max-width: 1440px;
+    max-width: 1800px;
     margin: auto;
 }
 

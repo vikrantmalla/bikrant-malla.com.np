@@ -1,12 +1,12 @@
-import '../styles/globals.scss'
-import ThemeContext from '../helpers/context/ThemeContext'
-import ProjectContext from '../helpers/context/ProjectContext'
-import MouseContext from '../helpers/context/MouseContext'
-import DotRing from '../components/cursor/DotRing'
-import Footer from '../components/footer/Footer'
-import ScrollArrow from '../components/scrollup/ScrollArrow'
 import Router from "next/router"
 import nProgress from "nprogress"
+import ThemeContext from '../context/ThemeContext'
+import ProjectContext from '../context/ProjectContext'
+import MouseContext from '../context/MouseContext'
+import DotRing from '../components/shared/cursor/DotRing'
+import ScrollArrow from '../components/shared/scrollup/ScrollArrow'
+import Footer from '../components/shared/footer/Footer'
+import '../styles/globals.scss'
 
 Router.events.on("routeChangeStart", nProgress.start);
 Router.events.on("routeChangeError", nProgress.done);

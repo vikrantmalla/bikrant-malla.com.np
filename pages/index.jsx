@@ -1,9 +1,9 @@
 import Head from 'next/head'
-import NavBar from '../components/header/NavBar'
+import NavBar from '../components/shared/header/NavBar'
 import AboutMe from '../components/intro/AboutMe'
 import ProjectHighlight from '../components/project/ProjectHighlight'
 import Behance from '../components/behance/Behance'
-import Contact from '../components/footer/Contact'
+import Contact from '../components/shared/footer/Contact'
 import baseUrl from '../helpers/lib/baseUrl'
 
 const Home = ({ projectData, behanceData }) => {
@@ -49,7 +49,6 @@ const Home = ({ projectData, behanceData }) => {
 export async function getServerSideProps() {
   const res1 = await fetch(`${baseUrl}/api/projecthighlights`);
   const res2 = await fetch(`${baseUrl}/api/behance`);
-  console.log(res1,res2)
   const projectData = await res1.json();
   const behanceData = await res2.json();
 

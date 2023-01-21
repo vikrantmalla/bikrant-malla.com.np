@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import Link from "next/link";
-import { MouseContext } from "../../helpers/context/MouseContext";
+import { MouseContext } from "../../context/MouseContext";
 
 const ProjectCard = ({ project }) => {
   const { images, alt, title, build, projectview } = project;

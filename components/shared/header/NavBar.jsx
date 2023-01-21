@@ -37,7 +37,7 @@ const NavBar = () => {
 
   return (
     <>
-      <header className="header container">
+      <header className="header">
         <div className="nav-container">
           <nav className="nav">
             <ul className={click ? "nav-menu active" : "nav-menu"}>

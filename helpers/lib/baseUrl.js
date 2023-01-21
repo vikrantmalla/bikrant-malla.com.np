@@ -1,2 +1,2 @@
-const baseUrl = process.env.NODE_ENV === 'production' ? "https://bikrant-malla.com.np" : "http://localhost:3000"
+const baseUrl = process.env.NODE_ENV === 'production' ? process.env.APP_URL  : process.env.DEFAULT_APP_URL
 export default baseUrl

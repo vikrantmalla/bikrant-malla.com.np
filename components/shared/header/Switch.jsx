@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { ThemeContext } from '../../helpers/context/ThemeContext';
+import { ThemeContext } from '../../../context/ThemeContext';
 
 
 export default function Switch() {
