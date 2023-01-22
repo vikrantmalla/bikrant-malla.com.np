@@ -2,103 +2,117 @@
   overflow-y: scroll;
 }
 
-.backdrop {
+.header {
   position: fixed;
   top: 0;
-  left: 0;
+  height: 5rem;
   width: 100%;
-  height: 100vh;
-  z-index: -10;
-  background: hsla(0, 0%, 0%, 0.75);
+  z-index: 2;
+  padding: 2rem 0;
+  .nav-container {
+    @include flex(row, space-between);
+    width: 100%;
+    height: 100%;
+    gap: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    .nav {
+      .nav-menu {
+        @include flex(row, center);
+        gap: 1.5rem;
+        list-style: none;
+        text-align: center;
+        padding: 0;
+        .nav-item {
+          cursor: pointer;
+          padding: 0.5rem;
+          border-radius: 0.5rem;
+          &:hover {
+            background-color: var(--toggle);
+          }
+          a {
+            text-decoration: none;
+            color: var(--text);
+          }
+        }
+      }
+      .active {
+        display: none;
+      }
+    }
+  }
+  .menu-icon {
+    display: none;
+  }
 }
 
-.header {
-    height: 4.5rem;
-    width: 100%;
-    .nav-container {
-        @include flex(row, space-between);
-        width: 100%;
-        height: 100%;
-        gap: 1rem;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem 0 0 0;
-        .nav {
-            .nav-menu {
-                @include flex(row, center);
-                gap: 1.5rem;
-                list-style: none;
-                text-align: center;
-                padding: 0;
-                .nav-item {
-                    cursor: pointer;
-                    padding: .5rem;
-                    border-radius: .5rem;
-                    &:hover {
-                        background-color: var(--toggle);
-                    }
-                    a {
-                        text-decoration: none;
-                        color: var(--text);
-                    }
-                }
-            }
-        }
-    }
-    .menu-icon {
-        display: none;
-    }
+.colorChange {
+  background: var(--background);
+  box-shadow: var(--cardBackgroundShadow);
 }
 
 @media screen and (max-width: 720px) {
-    .active-modal {
-        overflow-y: hidden;
-    }
-    .header {
-        padding: 0 2rem;
-        .nav-container {
-            position: relative;
-            z-index: 10;
-            .nav {
-                .nav-menu {
-                   display: none;
-                    width: 70%;
-                    height: 100vh;
-                    margin: 0;
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    opacity: 1;
-                    transition: all 0.5s ease;
-                    .nav-item {
-                        display: none;
-                    }
-                }
-                .nav-menu.active {
-                    @include flex(column, center);
-                    background-color: var(--card);
-                    left: 0;
-                    margin: 0;
-                    opacity: 1;
-                    transition: all 0.5s ease;
-                    z-index: 1;
-                    .nav-item {
-                        display: block;
-                        &:hover {
-                            background-color: transparent;
-                        }
-                        a {
-                            color: var(--text);
-                        }
-                    }
-                }
-            }
-            .menu-icon {
-                position: absolute;
-                display: block;
-                color: var(--text);
-                z-index: 20;
-            }
+  .active-modal {
+    overflow-y: hidden;
+  }
+  .backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: -10;
+    background: hsla(0, 0%, 0%, 0.75);
+  }
+  .header {
+    height: 4rem;
+    padding: 0 2rem;
+    .nav-container {
+      position: relative;
+      z-index: 10;
+      .nav {
+        .nav-menu {
+          display: none;
+          width: 70%;
+          height: 100vh;
+          margin: 0;
+          position: fixed;
+          top: 0;
+          left: 0;
+          opacity: 1;
+          transition: all 0.5s ease;
+          .nav-item {
+            display: none;
+          }
         }
+        .nav-menu.active {
+          @include flex(column, center);
+          background-color: var(--card);
+          left: 0;
+          margin: 0;
+          opacity: 1;
+          transition: all 0.5s ease;
+          z-index: 1;
+          .nav-item {
+            display: block;
+            &:nth-child(1) {
+              margin-top: 4rem;
+            }
+            &:hover {
+              background-color: transparent;
+            }
+            a {
+              color: var(--text);
+            }
+          }
+        }
+      }
+      .menu-icon {
+        position: absolute;
+        display: block;
+        color: var(--text);
+        z-index: 20;
+      }
     }
+  }
 }

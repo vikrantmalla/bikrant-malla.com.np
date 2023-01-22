@@ -18,8 +18,7 @@
 - `pages/*` - The different page (index, archive, 404).
 - `pages/api/*` - [API routes](https://nextjs.org/docs/api-routes/introduction).
 - `helpers/*` - A collection of helpful utilities or code for external services.
-- `helpers/context/*` - A collection of context-API service (MouseContext, ProjectContext, ThemeContext).
-- `helpers/data/*` - A JSON Data (Projectdata, Behancedata).
+- `context/*` - A collection of context-API service (MouseContext, ProjectContext, ThemeContext).
 - `helpers/lib/*` - Short for "library", it contain function for connect mongoose and (baseURL) for prod/dev mode.
 - `helpers/model/*` - My Mongoose schema, which uses a MongoDB database..
 - `pages/*` - All other static pages.

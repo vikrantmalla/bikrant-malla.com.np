@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import ArchiveDetails from './ArchiveCard'
-import { ProjectContext } from '../../helpers/context/ProjectContext'
+import { ProjectContext } from '../../context/ProjectContext'
 const Card = ({ project }) => {
     const { filterKeyword } = useContext(ProjectContext);
     const [newData, setNewData] = useState([]);

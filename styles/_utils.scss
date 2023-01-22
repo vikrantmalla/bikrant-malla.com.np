@@ -19,8 +19,10 @@
 .card {
     background-color: var(--card);
     border-radius: .5rem;
-    transition: 0.5s;
-    box-shadow: 0 3px 8px rgb(0 0 0 / 24%);
+    transition: box-shadow .3s ease-out, transform .3s ease-out, opacity .2s ease-out;
+    transition-delay: .1s;
+    transform: translateZ(0);
+    box-shadow: var(--cardBackgroundShadow);
     .card-img {
         padding: 1rem 1rem 0 1rem;
         img {
@@ -62,6 +64,41 @@
     }
 }
 
+.social-media {
+    @include flex(row, center);
+    gap: 1rem;
+    margin: 5rem 0;
+    a {
+        text-decoration: none;
+    }
+    i {
+        border: 0.06rem solid var(--text);
+        border-radius: 50%;
+        color: var(--text);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 2.5rem;
+        width: 2.5rem;
+        transition: 0.5s;
+        box-shadow: 0 3px 8px rgb(0 0 0 / 24%);
+        &:hover {
+            margin-top: -10px;
+            background-color: var(--text);
+            color: var(--textRev);
+        }
+    }
+    @include lg {
+        .social-media {
+            i {
+                height: 3.5rem;
+                width: 3.5rem;
+                font-size: 1.5rem;
+            }
+        }
+    }
+}
+
 @include sm {
     .card {
         margin: 0 1.5rem;
@@ -77,9 +114,9 @@
         }
     }
     .headingleft {
-        margin: 8rem 0;
+        margin: 5rem 0;
     }
     .headingright {
-        margin: 8rem 0;
+        margin: 5rem 0;
     }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Switch from "./Switch";
 import Backdrop from "./Backdrop";
@@ -6,6 +6,7 @@ import $ from "jquery";
 
 const NavBar = () => {
   const [click, setClick] = useState(false);
+  const [navColor, setNavColor] = useState(false);
 
   const handleClick = () => setClick(!click);
 
@@ -35,9 +36,27 @@ const NavBar = () => {
     }
   };
 
+  useEffect(() => {
+    window.addEventListener("scroll", changeNavbarColor);
+  });
+
+  const changeNavbarColor = () => {
+    if (window.scrollY >= 50) {
+      setNavColor(true);
+    } else {
+      setNavColor(false);
+    }
+  };
+
+  const ExternalLink = ({ href, children }) => (
+    <a target="_blank" rel="noopener noreferrer" href={href}>
+      {children}
+    </a>
+  );
+
   return (
     <>
-      <header className="header">
+      <header className={`header ${navColor ? "colorChange" : ""}`}>
         <div className="nav-container">
           <nav className="nav">
             <ul className={click ? "nav-menu active" : "nav-menu"}>
@@ -67,18 +86,38 @@ const NavBar = () => {
               </div>
               <nav className="nav">
                 <ul className={click ? "nav-menu active" : "nav-menu"}>
-                  <li className="nav-item ff-serif-jose fs-400" onClick={handleClick}>
+                  <li
+                    className="nav-item ff-serif-jose fs-400"
+                    onClick={handleClick}
+                  >
                     <a onClick={() => _handleTabClick("#aboutme")}>AboutMe</a>
                   </li>
-                  <li className="nav-item ff-serif-jose fs-400" onClick={handleClick}>
+                  <li
+                    className="nav-item ff-serif-jose fs-400"
+                    onClick={handleClick}
+                  >
                     <a onClick={() => _handleTabClick("#skill")}>Skill</a>
                   </li>
-                  <li className="nav-item ff-serif-jose fs-400" onClick={handleClick}>
+                  <li
+                    className="nav-item ff-serif-jose fs-400"
+                    onClick={handleClick}
+                  >
                     <a onClick={() => _handleTabClick("#project")}>Project</a>
                   </li>
-                  <li className="nav-item ff-serif-jose fs-400" onClick={handleClick}>
+                  <li
+                    className="nav-item ff-serif-jose fs-400"
+                    onClick={handleClick}
+                  >
                     <a onClick={() => _handleTabClick("#concept")}>Concept</a>
                   </li>
+                  <div className="social-media">
+                  <ExternalLink href="https://github.com/vikrantmalla">
+                    <i className="fab fa-github" />
+                  </ExternalLink>
+                  <ExternalLink href="https://www.linkedin.com/in/vikrant-malla">
+                    <i className="fab fa-linkedin-in" />
+                  </ExternalLink>
+                </div>
                 </ul>
               </nav>
               <Backdrop onClose={handleClick} />

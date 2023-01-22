@@ -22,15 +22,17 @@
 
 :root {
     --background: #f9fafb;
-    --navbackground: #111111;
+    --navBackground: #111111;
+    --navBackgroundShadow: 0 1px 30px 0 rgb(145 145 145 / 20%);
     --text: #000;
-    --textrev: #fff;
-    --headingstroke: #fff;
-    --hoverstroke: #000;
+    --textRev: #fff;
+    --headingStroke: #fff;
+    --hoverStroke: #000;
     --toggle: #eaeaea;
-    --togglehover: #444444;
+    --toggleHover: #444444;
     --link: #444444;
     --card: #dbe1e8;
+    --cardBackgroundShadow: 0 3px 8px rgb(0 0 0 / 24%);
     --span: #3f4954;
 }
 

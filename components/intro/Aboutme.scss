@@ -5,11 +5,11 @@
     .hover {
         text-align: left;
         color: var(--text);
-        -webkit-text-fill-color: var(--headingstroke);
+        -webkit-text-fill-color: var(--headingStroke);
         -webkit-text-stroke-width: 1px;
         &:hover {
-            -webkit-text-fill-color: var(--hoverstroke);
-            color: var(--cardtext);
+            -webkit-text-fill-color: var(--hoverStroke);
+            color: var(--textRev);
         }
     }
     .profession {
@@ -47,10 +47,10 @@
             border-bottom: .1rem solid var(--text);
             span {
                 color: var(--text);
-                -webkit-text-fill-color: var(--headingstroke);
+                -webkit-text-fill-color: var(--headingStroke);
                 -webkit-text-stroke-width: 1px;
                 &:hover {
-                    -webkit-text-fill-color: var(--hoverstroke);
+                    -webkit-text-fill-color: var(--hoverStroke);
                 }
             }
         }
@@ -95,6 +95,9 @@
 }
 
 @include md {
+    .intro {
+        margin: 8.5rem 0 6rem;
+    }
     .aboutme {
         display: grid;
         gap: 1rem;
@@ -125,6 +128,9 @@
 }
 
 @include lg {
+    .intro {
+        margin: 8.5rem 0;
+    }
     .aboutme {
         display: grid;
         gap: 1rem;

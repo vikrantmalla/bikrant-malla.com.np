@@ -15,7 +15,7 @@
         .notfound-404 {
             h1 {
                 color: var(--text);
-                -webkit-text-fill-color: var(--headingstroke);
+                -webkit-text-fill-color: var(--headingStroke);
                 -webkit-text-stroke-width: 1px;
                 font-weight: 700;
                 font-size: 120px;
@@ -42,8 +42,8 @@
             -webkit-transition: 0.2s all;
             transition: 0.2s all;
             &:hover {
-                background: var(--togglehover);
-                color: var(--textrev);
+                background: var(--toggleHover);
+                color: var(--textRev);
             }
         }
     }

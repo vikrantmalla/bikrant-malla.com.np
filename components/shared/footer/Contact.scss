@@ -19,45 +19,13 @@
         box-shadow: rgba(41, 44, 46, 0.3) 0px 1px 2px 0px, rgba(27, 29, 31, 0.15) 0px 2px 6px 2px;
         &:hover {
             background-color: var(--text);
-            color: var(--textrev);
-        }
-    }
-    .social-media {
-        @include flex(row, center);
-        gap: 1rem;
-        margin: 5rem 0;
-        a {
-            text-decoration: none;
-        }
-        i {
-            border: 0.06rem solid var(--text);
-            border-radius: 50%;
-            color: var(--text);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 2.5rem;
-            width: 2.5rem;
-            transition: 0.5s;
-            box-shadow: 0 3px 8px rgb(0 0 0 / 24%);
-            &:hover {
-                margin-top: -10px;
-                background-color: var(--text);
-                color: var(--textrev);
-            }
+            color: var(--textRev);
         }
     }
 }
 
 @include lg {
     .contact {
-        margin-top: 20rem;
-        .social-media {
-            i {
-                height: 3.5rem;
-                width: 3.5rem;
-                font-size: 1.5rem;
-            }
-        }
+        margin-top: 12rem;
     }
 }

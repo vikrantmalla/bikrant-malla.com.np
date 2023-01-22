@@ -31,7 +31,7 @@
     .ring.hovered {
         width: 70px;
         height: 70px;
-        color: var(--headingstroke);
+        color: var(--headingStroke);
         background-color: var(--text);
         &::after {
             content: "View";
