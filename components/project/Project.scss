@@ -26,6 +26,9 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
         }
+        a {
+         text-decoration: none;
+        }
         .link {
             text-decoration: none;
             &:hover {
