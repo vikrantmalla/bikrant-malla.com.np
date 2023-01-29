@@ -1,12 +1,22 @@
 import Link from 'next/link'
 import { Links } from '../../../types/data';
+import * as gtag from "../../../helpers/lib/gtag";
 
+
+const handleClick = () => {
+    gtag.event({
+      action: 'social_media_clicked',
+      category: 'engagement',
+      label: 'method'
+    })
+  }
 
 const ExternalLink = ({ href, children }: Links) => (
     <a
         target="_blank"
         rel="noopener noreferrer"
         href={href}
+        onClick={handleClick}
     >
         {children}
     </a>
