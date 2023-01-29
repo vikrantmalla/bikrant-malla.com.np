@@ -9,7 +9,7 @@ const Archive = ({ projectData }: PageData.ArchivePageData) => {
   return (
     <>
       <Head>
-        <title>Archive - Bikrant Malla</title>
+        {/* <title>Archive - Bikrant Malla</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <meta
           name="description"
@@ -65,7 +65,7 @@ const Archive = ({ projectData }: PageData.ArchivePageData) => {
         <meta
           name="google-site-verification"
           content="pjAbOBn26n0Q6sNbPKdsSIb4F921MU1XrRja9irTkXU"
-        />
+        /> */}
         <link
           rel="stylesheet"
           href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"

@@ -134,6 +134,12 @@ declare namespace Data {
   interface Props {
     children: ReactNode
   }
+
+  interface GTagEvent {
+    action: string
+    category: string
+    label: string
+  }
 }
 
 export = Data;

@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState } from "react";
 import Data, { Contexts } from "../types/data";
+import * as gtag from "../helpers/lib/gtag";
 
 const appContextDefaultValues: Contexts.ProjectContext = {
     filterKeyword: [],
     AddKeyword: () => {},
     RemoveKeyword: () => {},
     ClearKeywords: () => {}
-
 }
 
 const ProjectContext = createContext<Contexts.ProjectContext>(appContextDefaultValues)
@@ -20,6 +20,11 @@ const ProjectProvider = ({ children }: Data.Props) => {
     const AddKeyword = (keyword: never) => {
         if (!filterKeyword.includes(keyword)) {
             setFilterKeyword([...filterKeyword, keyword]);
+            gtag.event({
+                action: 'keyword_clicked',
+                category: 'engagement',
+                label: 'method'
+              })
         }
     };
     const RemoveKeyword = (key: never) => {
