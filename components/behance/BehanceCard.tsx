@@ -38,7 +38,7 @@ const BehanceCard = ({ project }: BehanceCard) => {
             onMouseEnter={() => cursorChangeHandler("hovered")}
             onMouseLeave={() => cursorChangeHandler("")}
           >
-            <Link href={projectview} passHref onClick={handleClick}>
+            <Link href={projectview} passHref onClick={handleClick} aria-label="arrow">
               <i className="fas fa-chevron-right" />
             </Link>
           </div>

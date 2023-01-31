@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from "react";
 
 export default function ScrollArrow() {
   // The back-to-top button is hidden at the beginning
@@ -14,18 +14,18 @@ export default function ScrollArrow() {
     });
   }, []);
 
-  // This function will scroll the window to the top 
+  // This function will scroll the window to the top
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: "smooth",
     });
   };
-  return (<div>
-    {showButton && (
-     
-        <i className="fas fa-chevron-up back-to-top" onClick={scrollToTop}/>
-     
-    )}
-  </div>);
+  return (
+    <div>
+      {showButton && (
+        <i className="fas fa-chevron-up back-to-top" onClick={scrollToTop} />
+      )}
+    </div>
+  );
 }
