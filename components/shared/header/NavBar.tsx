@@ -51,8 +51,8 @@ const NavBar = () => {
     }
   };
 
-  const ExternalLink = ({ href, children }: Links) => (
-    <a target="_blank" rel="noopener noreferrer" href={href}>
+  const ExternalLink = ({ href, children, label }: Links) => (
+    <a target="_blank" rel="noopener noreferrer" href={href} aria-label={label}>
       {children}
     </a>
   );
@@ -114,10 +114,16 @@ const NavBar = () => {
                     <a onClick={() => _handleTabClick("#concept")}>Concept</a>
                   </li>
                   <div className="social-media">
-                    <ExternalLink href="https://github.com/vikrantmalla">
+                    <ExternalLink
+                      href="https://github.com/vikrantmalla"
+                      label="Github"
+                    >
                       <i className="fab fa-github" />
                     </ExternalLink>
-                    <ExternalLink href="https://www.linkedin.com/in/vikrant-malla">
+                    <ExternalLink
+                      href="https://www.linkedin.com/in/vikrant-malla"
+                      label="Linkedin"
+                    >
                       <i className="fab fa-linkedin-in" />
                     </ExternalLink>
                   </div>
