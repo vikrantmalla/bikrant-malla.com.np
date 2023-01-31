@@ -4,7 +4,7 @@ import Document, { Html, Head, Main, NextScript } from "next/document";
 class LinkDocument extends Document {
   render() {
     return (
-      <Html>
+      <Html lang="en" style={{scrollBehavior:'smooth'}}>
         <Head>
           <link
             rel="stylesheet"

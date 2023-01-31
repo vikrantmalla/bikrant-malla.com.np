@@ -127,8 +127,9 @@ declare namespace Data {
   }
 
   interface Links {
-    href: string,
     children: ReactNode
+    href: string,
+    label: string
 }
 
   interface Props {
