@@ -1,7 +1,7 @@
 import { useEffect } from "react";
+import type { AppProps } from "next/app";
 import Router, { useRouter } from "next/router";
 import nProgress from "nprogress";
-import type { AppProps } from "next/app";
 import ThemeContext from "../context/ThemeContext";
 import ProjectContext from "../context/ProjectContext";
 import MouseContext from "../context/MouseContext";
@@ -17,7 +17,7 @@ Router.events.on("routeChangeStart", nProgress.start);
 Router.events.on("routeChangeError", nProgress.done);
 Router.events.on("routeChangeComplete", nProgress.done);
 
-function MyApp({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   useEffect(() => {
     const handleRouteChange = (url: URL) => {
@@ -48,13 +48,13 @@ function MyApp({ Component, pageProps }: AppProps) {
               strategy="afterInteractive"
               dangerouslySetInnerHTML={{
                 __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${gtag.GA_TRACKING_ID}', {
-              page_path: window.location.pathname,
-            });
-          `,
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${gtag.GA_TRACKING_ID}', {
+            page_path: window.location.pathname,
+          });
+        `,
               }}
             />
           </>
@@ -74,5 +74,3 @@ function MyApp({ Component, pageProps }: AppProps) {
     </>
   );
 }
-
-export default MyApp;
