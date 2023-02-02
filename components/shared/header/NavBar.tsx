@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import Switch from "./Switch";
 import Backdrop from "./Backdrop";
+// @ts-ignore:next-line
 import $ from "jquery";
 import { Links } from "../../../types/data";
 
@@ -20,7 +20,6 @@ const NavBar = () => {
   }
 
   const _handleTabClick = (tabId: string) => {
-    console.log(tabId);
     const checkWidth = window.matchMedia("(min-width: 677px)");
     var tab = $(tabId);
     var tabOffset = tab?.offset();
