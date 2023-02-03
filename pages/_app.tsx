@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Head from "next/head";
 import type { AppProps } from "next/app";
 import Router, { useRouter } from "next/router";
-import nProgress from "nprogress";
 import ThemeContext from "../context/ThemeContext";
 import ProjectContext from "../context/ProjectContext";
 import MouseContext from "../context/MouseContext";
@@ -13,12 +13,18 @@ import "../styles/globals.scss";
 import Script from "next/script";
 import MetaTags from "../components/shared/metaTag";
 
-Router.events.on("routeChangeStart", nProgress.start);
-Router.events.on("routeChangeError", nProgress.done);
-Router.events.on("routeChangeComplete", nProgress.done);
-
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
+
+  Router.events.on("routeChangeStart", (url) => {
+    setLoading(true);
+  });
+
+  Router.events.on("routeChangeComplete", (url) => {
+    setLoading(false);
+  });
+
   useEffect(() => {
     const handleRouteChange = (url: URL) => {
       gtag.pageview(url);
@@ -35,19 +41,33 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
-      <>
-        {/* Global Site Tag (gtag.js) - Google Analytics */}
-        {isProduction && (
+      {loading ? (
+        <div className="loading">
+          <div className="loading-text">
+            <span className="loading-text-words">L</span>
+            <span className="loading-text-words">O</span>
+            <span className="loading-text-words">A</span>
+            <span className="loading-text-words">D</span>
+            <span className="loading-text-words">I</span>
+            <span className="loading-text-words">N</span>
+            <span className="loading-text-words">G</span>
+          </div>
+        </div>
+      ) : (
+        <>
           <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script
-              id="gtag-init"
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{
-                __html: `
+            {/* Global Site Tag (gtag.js) - Google Analytics */}
+            {isProduction && (
+              <>
+                <Script
+                  src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
+                  strategy="afterInteractive"
+                />
+                <Script
+                  id="gtag-init"
+                  strategy="afterInteractive"
+                  dangerouslySetInnerHTML={{
+                    __html: `
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
@@ -55,22 +75,24 @@ export default function App({ Component, pageProps }: AppProps) {
             page_path: window.location.pathname,
           });
         `,
-              }}
-            />
+                  }}
+                />
+              </>
+            )}
           </>
-        )}
-      </>
-      <MetaTags />
-      <ThemeContext>
-        <MouseContext>
-          <ProjectContext>
-            <Component {...pageProps} />
-            <DotRing />
-            <ScrollArrow />
-            <Footer />
-          </ProjectContext>
-        </MouseContext>
-      </ThemeContext>
+          <MetaTags />
+          <ThemeContext>
+            <MouseContext>
+              <ProjectContext>
+                <Component {...pageProps} />
+                <DotRing />
+                <ScrollArrow />
+                <Footer />
+              </ProjectContext>
+            </MouseContext>
+          </ThemeContext>
+        </>
+      )}
     </>
   );
 }
