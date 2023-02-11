@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function NotFound() {
     return (
         <>
-            <div id="notfound" className="container">
+            <div id="notfound">
                 <div className="notfound">
                     <div className="notfound-404">
                         <h1 className="ff-serif-teko">404</h1>
