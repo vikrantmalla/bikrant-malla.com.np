@@ -26,6 +26,10 @@ const ProjectProvider = ({ children }: Data.Props) => {
                 label: 'method'
               })
         }
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
     };
     const RemoveKeyword = (key: never) => {
         const newKeyword = filterKeyword.filter((tag) => tag !== key);

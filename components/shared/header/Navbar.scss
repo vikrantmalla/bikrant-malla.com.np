@@ -19,7 +19,7 @@
     .nav {
       .nav-menu {
         @include flex(row, center);
-        gap: 1.5rem;
+        gap: 1rem;
         list-style: none;
         text-align: center;
         padding: 0;
@@ -32,8 +32,11 @@
           }
           a {
             text-decoration: none;
-            color: var(--text);
+            color: var(--navActiveLink);
           }
+        }
+        .activeLink {
+          color: var(--text) !important;
         }
       }
       .active {
@@ -75,6 +78,7 @@
           display: none;
           width: 70%;
           height: 100vh;
+          gap: 1.5rem;
           margin: 0;
           position: fixed;
           top: 0;

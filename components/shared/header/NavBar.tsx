@@ -6,8 +6,9 @@ import $ from "jquery";
 import { Links } from "../../../types/data";
 
 const NavBar = () => {
-  const [click, setClick] = useState(false);
-  const [navColor, setNavColor] = useState(false);
+  const [click, setClick] = useState<boolean>(false);
+  const [navColor, setNavColor] = useState<boolean>(false);
+  const [activeLink, setActiveLink] = useState<string>('About Me');
 
   const handleClick = () => setClick(!click);
 
@@ -40,6 +41,27 @@ const NavBar = () => {
 
   useEffect(() => {
     window.addEventListener("scroll", changeNavbarColor);
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset;
+
+      if (scrollTop >= 515 && scrollTop <= 900) {
+        setActiveLink('About Me');
+      } else if (scrollTop >= 900 && scrollTop <= 1490) {
+        setActiveLink('Skills');
+      } else if (scrollTop >= 1490 && scrollTop <= 2360) {
+        setActiveLink('Projects');
+      } else if (scrollTop >= 2360 && scrollTop <= 3200) {
+        setActiveLink('Concepts');
+      } else if (scrollTop >= 3200 && scrollTop <= 4200) {
+        setActiveLink('Contact');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   });
 
   const changeNavbarColor = () => {
@@ -63,16 +85,19 @@ const NavBar = () => {
           <nav className="nav">
             <ul className={click ? "nav-menu active" : "nav-menu"}>
               <li className="nav-item ff-serif-jose fs-400">
-                <a onClick={() => _handleTabClick("#aboutme")}>AboutMe</a>
+                <a onClick={() => _handleTabClick("#aboutme")} className={activeLink === 'About Me' ? 'activeLink' : ''}>AboutMe</a>
               </li>
               <li className="nav-item ff-serif-jose fs-400">
-                <a onClick={() => _handleTabClick("#skill")}>Skill</a>
+                <a onClick={() => _handleTabClick("#skill")} className={activeLink === 'Skills' ? 'activeLink' : ''}>Skill</a>
               </li>
               <li className="nav-item ff-serif-jose fs-400">
-                <a onClick={() => _handleTabClick("#project")}>Project</a>
+                <a onClick={() => _handleTabClick("#project")} className={activeLink === 'Projects' ? 'activeLink' : ''}>Project</a>
               </li>
               <li className="nav-item ff-serif-jose fs-400">
-                <a onClick={() => _handleTabClick("#concept")}>Concept</a>
+                <a onClick={() => _handleTabClick("#concept")} className={activeLink === 'Concepts' ? 'activeLink' : ''}>Concept</a>
+              </li>
+              <li className="nav-item ff-serif-jose fs-400">
+                <a onClick={() => _handleTabClick("#contact")} className={activeLink === 'Contact' ? 'activeLink' : ''}>Contact</a>
               </li>
             </ul>
           </nav>
