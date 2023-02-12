@@ -1,8 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import Image from "next/image";
 import { useMouseCursor } from "../../context/MouseContext";
 import { ProjectHighlightsCard } from "../../types/data";
 import * as gtag from "../../helpers/lib/gtag";
+import baseUrl from "@/helpers/lib/baseUrl";
 
 const ProjectCard = ({ project }: ProjectHighlightsCard) => {
   const { images, alt, title, build, projectview } = project;
@@ -22,7 +23,7 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
           onMouseLeave={() => cursorChangeHandler("")}
         >
           <Link href={projectview} passHref>
-            <img src={images} alt={alt} />
+            <Image src={`${baseUrl}/${images} `} alt={alt} width={300} height={300}/>
           </Link>
         </div>
       </div>

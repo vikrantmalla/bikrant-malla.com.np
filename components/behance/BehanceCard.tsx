@@ -1,8 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import Image from "next/image";
 import { useMouseCursor } from "../../context/MouseContext";
 import { BehanceCard } from "../../types/data";
 import * as gtag from "../../helpers/lib/gtag";
+import baseUrl from "../../helpers/lib/baseUrl";
 
 const BehanceCard = ({ project }: BehanceCard) => {
   const { id, images, alt, title, subTitle, tools, projectview } = project;
@@ -14,6 +15,7 @@ const BehanceCard = ({ project }: BehanceCard) => {
       label: 'method'
     })
   }
+  const img = '/behance01.png'
   return (
     <div className="card" key={id}>
       <div className="card-img">
@@ -22,7 +24,7 @@ const BehanceCard = ({ project }: BehanceCard) => {
           onMouseLeave={() => cursorChangeHandler("")}
         >
           <Link href={projectview} passHref>
-            <img src={images} alt={alt} />
+            <Image src={`${baseUrl}/${images} `} alt={alt} width={300} height={300}/>
           </Link>
         </div>
       </div>
