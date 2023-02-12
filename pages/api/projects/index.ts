@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     switch (method) {
         case 'GET':
             try {
-                const projects = await Project.find({})
+                const projects = await Project.find().sort({"isnew": -1})
                 res.status(200).json({ success: true, project: projects })
             } catch (error) {
                 res.status(400).json({ success: false })
