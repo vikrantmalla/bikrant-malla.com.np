@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest --watch"
   },
   "dependencies": {
     "@next/font": "13.1.6",
@@ -15,9 +16,12 @@
     "@types/react-dom": "18.0.10",
     "eslint": "8.33.0",
     "eslint-config-next": "13.1.6",
+    "jest-environment-jsdom": "^29.4.2",
     "jquery": "^3.6.3",
     "mongoose": "^6.9.0",
     "next": "13.1.6",
+    "node-fetch": "^2.6.9",
+    "node-mocks-http": "^1.12.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "sass": "^1.58.0",
