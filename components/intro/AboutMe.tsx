@@ -12,8 +12,8 @@ const AboutMe = () => {
             <section id="aboutme">
                 <h1 className="headingleft ff-serif-jose fs-600">About me</h1>
                 <div className="aboutme">
-                    <p className="ff-serif-jose fs-400">{`Hello!`} My name is Bikrant a self-taught passionate FrontEnd developer from Nepal. My interest in Frontend web development started back in 2012 before that I have a exprience as a UI/UX Designer.I had done my undergraduate in Bachelor of Computer Application(BCA) from India.</p>
-                    <p className="ff-serif-jose fs-400">{`I've`} always wanted to create new things and explore new development tools that get me into a web development career that changed a lot of things for me since then, I try to push my work to new horizons with each project, always try to put quality first. To know more, check my work, and get in touch.</p>
+                    <p className="ff-serif-jose fs-400">Hello! My name is Bikrant. I am a self-taught, passionate front-end developer from Nepal. My interest in front-end web development started in 2012. Before that, I had experience as a UI/UX designer. I completed my undergraduate degree in Bachelor of Computer Applications (BCA) from India.</p>
+                    <p className="ff-serif-jose fs-400">I have always wanted to create new things and explore new development tools. This has led me to a career in web development, which has changed a lot for me. I strive to push my work to new horizons with each project and prioritize quality. To learn more, please check my work and feel free to get in touch.</p>
                 </div>
             </section>
             <section id="skill">

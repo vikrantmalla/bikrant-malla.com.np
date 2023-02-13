@@ -23,7 +23,7 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
           onMouseLeave={() => cursorChangeHandler("")}
         >
           <Link href={projectview} passHref>
-            <Image src={`${baseUrl}/${images} `} alt={alt} width={300} height={300}/>
+            <Image src={`${baseUrl}/${images} `} alt={alt} width={300} height={250}/>
           </Link>
         </div>
       </div>

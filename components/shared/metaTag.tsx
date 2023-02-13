@@ -6,18 +6,18 @@ const MetaTags = () => {
   return (
     <Head>
       {router.pathname === "/" ? (
-        <title> Bikrant Malla - FrontEnd Developer </title>
+        <title> Bikrant Malla - Frontend Web Developer </title>
       ) : (
         <title>Archive - Bikrant Malla</title>
       )}
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       <meta
         name="description"
-        content="Bikrant Malla - Creative frontEnd web developer who loves javascript and modern web technologies."
+        content="Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions."
       />
       <meta
         name="keywords"
-        content="bikrant malla, vikrant, ui/ux, portfolio, web, frontend, developer, frontend enginner, project"
+        content="bikrant malla, vikrant malla, ui/ux, portfolio, web, web developer, frontend, developer, frontend enginner, project, design"
       />
       <meta name="author" content="Bikrant Malla" />
       <meta
@@ -33,14 +33,14 @@ const MetaTags = () => {
       {router.pathname === "/" ? (
         <meta
           property="og:title"
-          content="Bikrant Malla - Frontend Developer"
+          content="Bikrant Malla - Frontend Web Developer"
         />
       ) : (
         <meta property="og:title" content="Archive - Bikrant Malla" />
       )}
       <meta
         property="og:description"
-        content="Bikrant Malla - Creative frontEnd web developer who loves javascript and modern web technologies."
+        content="Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions."
       />
       {router.pathname === "/" ? (
         <meta property="og:url" content="https://www.bikrant-malla.com.np" />
@@ -56,7 +56,7 @@ const MetaTags = () => {
       <meta name="twitter:creator" content="@Vikrantmalla09" />
       <meta
         property="og:description"
-        content="Bikrant Malla - Creative frontEnd web developer who loves javascript and modern web technologies."
+        content="Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions."
       />
       <meta
         property="og:image"
