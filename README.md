@@ -1,9 +1,6 @@
 <div align="center">
   <img alt="Logo" src="https://github.com/vikrantmalla/bikrant-malla.com.np/blob/main/public/images/logo.png" width="200" />
 </div>
-<div align="center"> 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/ffd292ca-3c8b-4937-b560-57eb88d47fa7/deploy-status)](https://app.netlify.com/sites/bikrant-malla/deploys)
-</div>
 <h1 align="center">
   <a href="https://bikrant-malla.com.np">bikrant-malla.com.np</a>
 </h1>
