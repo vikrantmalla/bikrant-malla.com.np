@@ -5,8 +5,8 @@ import AboutMe from "../components/intro/AboutMe";
 import ProjectHighlight from "../components/project/ProjectHighlight";
 import Behance from "../components/behance/Behance";
 import Contact from "../components/shared/footer/Contact";
-import baseUrl from "../helpers/lib/baseUrl";
 import Data, { PageData } from "../types/data";
+import { fetchProjectHighlights, fetchBehanceData } from '@/service/apiService';
 
 const Home = ({
   projectHighlightData,
@@ -31,11 +31,8 @@ export const getServerSideProps: GetServerSideProps<{
   projectHighlightData: Data.ProjectHighlightData;
   behanceData: Data.BehanceData;
 }> = async (context) => {
-  const res1 = await fetch(`${baseUrl}/api/projecthighlights`);
-  const res2 = await fetch(`${baseUrl}/api/behance`);
-  const projectHighlightData = await res1.json();
-  const behanceData = await res2.json();
-
+  const projectHighlightData = await fetchProjectHighlights();
+  const behanceData = await fetchBehanceData();
   return {
     props: { projectHighlightData, behanceData },
   };
