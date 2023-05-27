@@ -1,6 +1,4 @@
-import Head from "next/head";
 import { GetServerSideProps } from "next";
-import NavBar from "../components/shared/header/NavBar";
 import AboutMe from "../components/intro/AboutMe";
 import ProjectHighlight from "../components/project/ProjectHighlight";
 import Behance from "../components/behance/Behance";
@@ -14,7 +12,6 @@ const Home = ({
 }: PageData.ProjectPageData) => {
   return (
     <>
-      <NavBar />
       <main>
         <article className="container">
           <AboutMe />

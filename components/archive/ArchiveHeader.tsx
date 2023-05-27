@@ -7,9 +7,6 @@ const ArchiveHeader = () => {
   return (
     <>
       <header className="archive-header">
-        <Link href="/" className="return ff-serif-teko fs-600" passHref>
-          Back to home
-        </Link>
         <div className="center">
           <div className={`${filterKeyword.length > 0 ? "search" : null}`}>
             <div className="filter_tags">
