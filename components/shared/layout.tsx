@@ -6,6 +6,7 @@ import Footer from "./footer/Footer";
 import ThemeProvider from "@/context/ThemeContext";
 import MouseContextProvider from "@/context/MouseContext";
 import ProjectProvider from "@/context/ProjectContext";
+import NavBar from "./header/NavBar";
 
 interface Props {
   children: ReactNode;
@@ -21,6 +22,7 @@ const Layout = ({ children }: Props) => {
             {children}
             <DotRing />
             <ScrollArrow />
+            <NavBar/>
             <Footer />
           </ProjectProvider>
         </MouseContextProvider>
