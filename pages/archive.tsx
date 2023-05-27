@@ -1,8 +1,8 @@
 import { GetServerSideProps } from "next";
 import ArchiveHeader from "../components/archive/ArchiveHeader";
-import baseUrl from "../helpers/lib/baseUrl";
 import ArchiveList from "../components/archive/ArchiveList";
 import Data, { PageData } from "../types/data";
+import { fetchProjectData } from "@/service/apiService";
 
 const Archive = ({ projectData }: PageData.ArchivePageData) => {
   return (
@@ -25,8 +25,7 @@ const Archive = ({ projectData }: PageData.ArchivePageData) => {
 export const getServerSideProps: GetServerSideProps<{
   projectData: Data.ProjectData;
 }> = async (context) => {
-  const res = await fetch(`${baseUrl}/api/projects`);
-  const projectData = await res.json();
+  const projectData = await fetchProjectData();
   return {
     props: { projectData },
   };
