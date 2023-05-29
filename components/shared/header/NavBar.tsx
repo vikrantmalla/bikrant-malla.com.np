@@ -87,78 +87,78 @@ const NavBar = () => {
       <header className={`header ${navColor ? "colorChange" : ""}`}>
         <div className="nav-container">
           <nav className="nav">
-            {router.pathname === "/" ? (
-              <ul className={click ? "nav-menu active" : "nav-menu"}>
-                <li className="nav-item ff-serif-jose fs-400">
+            <ul className={click ? "nav-menu active" : "nav-menu"}>
+              <li className="nav-item ff-serif-jose fs-400">
+                {router.pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#aboutme")}
                     className={activeLink === "About Me" ? "activeLink" : ""}
                   >
                     AboutMe
                   </a>
-                </li>
-                <li className="nav-item ff-serif-jose fs-400">
+                ) : (
+                  <Link href="/" passHref>
+                    AboutMe
+                  </Link>
+                )}
+              </li>
+              <li className="nav-item ff-serif-jose fs-400">
+                {router.pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#skill")}
                     className={activeLink === "Skills" ? "activeLink" : ""}
                   >
                     Skill
                   </a>
-                </li>
-                <li className="nav-item ff-serif-jose fs-400">
+                ) : (
+                  <Link href="/" passHref>
+                    Skill
+                  </Link>
+                )}
+              </li>
+              <li className="nav-item ff-serif-jose fs-400">
+                {router.pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#project")}
                     className={activeLink === "Projects" ? "activeLink" : ""}
                   >
                     Project
                   </a>
-                </li>
-                <li className="nav-item ff-serif-jose fs-400">
+                ) : (
+                  <Link href="/" passHref>
+                    Project
+                  </Link>
+                )}
+              </li>
+              <li className="nav-item ff-serif-jose fs-400">
+                {router.pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#concept")}
                     className={activeLink === "Concepts" ? "activeLink" : ""}
                   >
                     Concept
                   </a>
-                </li>
-                <li className="nav-item ff-serif-jose fs-400">
+                ) : (
+                  <Link href="/" passHref>
+                    Concept
+                  </Link>
+                )}
+              </li>
+              <li className="nav-item ff-serif-jose fs-400">
+                {router.pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#contact")}
                     className={activeLink === "Contact" ? "activeLink" : ""}
                   >
                     Contact
                   </a>
-                </li>
-              </ul>
-            ) : (
-              <ul className={click ? "nav-menu active" : "nav-menu"}>
-                <li className="nav-item ff-serif-jose fs-400">
-                  <Link href="/" passHref>
-                    AboutMe
-                  </Link>
-                </li>
-                <li className="nav-item ff-serif-jose fs-400">
-                  <Link href="/" passHref>
-                    Skill
-                  </Link>
-                </li>
-                <li className="nav-item ff-serif-jose fs-400">
-                  <Link href="/" passHref>
-                    Project
-                  </Link>
-                </li>
-                <li className="nav-item ff-serif-jose fs-400">
-                  <Link href="/" passHref>
-                    Concept
-                  </Link>
-                </li>
-                <li className="nav-item ff-serif-jose fs-400">
+                ) : (
                   <Link href="/" passHref>
                     Contact
                   </Link>
-                </li>
-              </ul>
-            )}
+                )}
+              </li>
+            </ul>
           </nav>
           {!click && (
             <div className="menu-icon" onClick={handleClick}>
@@ -167,105 +167,101 @@ const NavBar = () => {
           )}
           {click && (
             <>
-              {router.pathname === "/" ? (
-                <>
-                  <div className="menu-icon" onClick={handleClick}>
-                    <i className={click ? "fas fa-times" : "fas fa-bars"} />
-                  </div>
-                  <nav className="nav">
-                    <ul className={click ? "nav-menu active" : "nav-menu"}>
-                      <li
-                        className="nav-item ff-serif-jose fs-400"
-                        onClick={handleClick}
+              <div className="menu-icon" onClick={handleClick}>
+                <i className={click ? "fas fa-times" : "fas fa-bars"} />
+              </div>
+              <nav className="nav">
+                <ul className={click ? "nav-menu active" : "nav-menu"}>
+                  <li
+                    className="nav-item ff-serif-jose fs-400"
+                    onClick={handleClick}
+                  >
+                    {router.pathname === "/" ? (
+                      <a
+                        onClick={() => _handleTabClick("#aboutme")}
+                        className={
+                          activeLink === "About Me" ? "activeLink" : ""
+                        }
                       >
-                        <a onClick={() => _handleTabClick("#aboutme")}>
-                          AboutMe
-                        </a>
-                      </li>
-                      <li
-                        className="nav-item ff-serif-jose fs-400"
-                        onClick={handleClick}
+                        AboutMe
+                      </a>
+                    ) : (
+                      <Link href="/" passHref>
+                        AboutMe
+                      </Link>
+                    )}
+                  </li>
+                  <li
+                    className="nav-item ff-serif-jose fs-400"
+                    onClick={handleClick}
+                  >
+                    {router.pathname === "/" ? (
+                      <a
+                        onClick={() => _handleTabClick("#skill")}
+                        className={activeLink === "Skills" ? "activeLink" : ""}
                       >
-                        <a onClick={() => _handleTabClick("#skill")}>Skill</a>
-                      </li>
-                      <li
-                        className="nav-item ff-serif-jose fs-400"
-                        onClick={handleClick}
+                        Skill
+                      </a>
+                    ) : (
+                      <Link href="/" passHref>
+                        Skill
+                      </Link>
+                    )}
+                  </li>
+                  <li
+                    className="nav-item ff-serif-jose fs-400"
+                    onClick={handleClick}
+                  >
+                    {router.pathname === "/" ? (
+                      <a
+                        onClick={() => _handleTabClick("#project")}
+                        className={
+                          activeLink === "Projects" ? "activeLink" : ""
+                        }
                       >
-                        <a onClick={() => _handleTabClick("#project")}>
-                          Project
-                        </a>
-                      </li>
-                      <li
-                        className="nav-item ff-serif-jose fs-400"
-                        onClick={handleClick}
+                        Project
+                      </a>
+                    ) : (
+                      <Link href="/" passHref>
+                        Project
+                      </Link>
+                    )}
+                  </li>
+                  <li
+                    className="nav-item ff-serif-jose fs-400"
+                    onClick={handleClick}
+                  >
+                    {router.pathname === "/" ? (
+                      <a
+                        onClick={() => _handleTabClick("#concept")}
+                        className={
+                          activeLink === "Concepts" ? "activeLink" : ""
+                        }
                       >
-                        <a onClick={() => _handleTabClick("#concept")}>
-                          Concept
-                        </a>
-                      </li>
-                      <div className="social-media">
-                        <ExternalLink
-                          href="https://github.com/vikrantmalla"
-                          label="Github"
-                        >
-                          <i className="fab fa-github" />
-                        </ExternalLink>
-                        <ExternalLink
-                          href="https://www.linkedin.com/in/vikrant-malla"
-                          label="Linkedin"
-                        >
-                          <i className="fab fa-linkedin-in" />
-                        </ExternalLink>
-                      </div>
-                    </ul>
-                  </nav>
-                </>
-              ) : (
-                <>
-                  <div className="menu-icon" onClick={handleClick}>
-                    <i className={click ? "fas fa-times" : "fas fa-bars"} />
-                  </div>
-                  <nav className="nav">
-                    <ul className={click ? "nav-menu active" : "nav-menu"}>
-                      <li className="nav-item ff-serif-jose fs-400">
-                        <Link href="/" passHref>
-                          AboutMe
-                        </Link>
-                      </li>
-                      <li className="nav-item ff-serif-jose fs-400">
-                        <Link href="/" passHref>
-                          Skill
-                        </Link>
-                      </li>
-                      <li className="nav-item ff-serif-jose fs-400">
-                        <Link href="/" passHref>
-                          Project
-                        </Link>
-                      </li>
-                      <li className="nav-item ff-serif-jose fs-400">
-                        <Link href="/" passHref>
-                          Concept
-                        </Link>
-                      </li>
-                      <div className="social-media">
-                        <ExternalLink
-                          href="https://github.com/vikrantmalla"
-                          label="Github"
-                        >
-                          <i className="fab fa-github" />
-                        </ExternalLink>
-                        <ExternalLink
-                          href="https://www.linkedin.com/in/vikrant-malla"
-                          label="Linkedin"
-                        >
-                          <i className="fab fa-linkedin-in" />
-                        </ExternalLink>
-                      </div>
-                    </ul>
-                  </nav>
-                </>
-              )}
+                        Concept
+                      </a>
+                    ) : (
+                      <Link href="/" passHref>
+                        Concept
+                      </Link>
+                    )}
+                  </li>
+                  <li className="social-media">
+                    <ExternalLink
+                      href="https://github.com/vikrantmalla"
+                      label="Github"
+                    >
+                      <i className="fab fa-github" />
+                    </ExternalLink>
+                    <ExternalLink
+                      href="https://www.linkedin.com/in/vikrant-malla"
+                      label="Linkedin"
+                    >
+                      <i className="fab fa-linkedin-in" />
+                    </ExternalLink>
+                  </li>
+                </ul>
+              </nav>
               <Backdrop onClose={handleClick} />
             </>
           )}
