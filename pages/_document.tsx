@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-sync-scripts */
 import Document, { Html, Head, Main, NextScript } from "next/document";
+import Script from "next/script";
 
 class LinkDocument extends Document {
   render() {
@@ -25,10 +26,11 @@ class LinkDocument extends Document {
         <body>
           <Main />
           <NextScript />
-          <script
+          <Script
             src="https://kit.fontawesome.com/66b58c16d1.js"
+            strategy="afterInteractive"
             crossOrigin="anonymous"
-          ></script>
+          />
         </body>
       </Html>
     );

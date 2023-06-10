@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import Image from "next/image";
 import { useMouseCursor } from "../../context/MouseContext";
@@ -10,20 +11,21 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
   const { cursorChangeHandler } = useMouseCursor();
   const handleClick = () => {
     gtag.event({
-      action: 'project_highlight_clicked',
-      category: 'engagement',
-      label: 'method'
-    })
-  }
+      action: "project_highlight_clicked",
+      category: "engagement",
+      label: "method",
+    });
+  };
   return (
     <div className="card">
       <div className="card-img">
         <div
+          className="image-wrapper"
           onMouseEnter={() => cursorChangeHandler("hovered")}
           onMouseLeave={() => cursorChangeHandler("")}
         >
           <Link href={projectview} passHref>
-            <Image src={`${baseUrl}/${images} `} alt={alt} width={300} height={250}/>
+            <img src={images} alt={alt} className="responsive-image" />
           </Link>
         </div>
       </div>
@@ -37,7 +39,12 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
             onMouseEnter={() => cursorChangeHandler("hovered")}
             onMouseLeave={() => cursorChangeHandler("")}
           >
-            <Link href={projectview} passHref onClick={handleClick} aria-label="arrow">
+            <Link
+              href={projectview}
+              passHref
+              onClick={handleClick}
+              aria-label="arrow"
+            >
               <i className="fas fa-chevron-right" />
             </Link>
           </div>
