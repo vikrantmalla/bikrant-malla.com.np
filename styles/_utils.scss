@@ -46,8 +46,6 @@
     .card-body {
       a {
         text-decoration: none;
-      }
-      i {
         border: 0.06rem solid var(--text);
         border-radius: 50%;
         color: var(--text);
@@ -73,8 +71,6 @@
   margin: 5rem 0;
   a {
     text-decoration: none;
-  }
-  i {
     border: 0.06rem solid var(--text);
     border-radius: 50%;
     color: var(--text);
@@ -93,9 +89,9 @@
   }
   @include lg {
     .social-media {
-      i {
-        height: 3.5rem;
-        width: 3.5rem;
+      a {
+        height: 4.5rem;
+        width: 4.5rem;
         font-size: 1.5rem;
       }
     }

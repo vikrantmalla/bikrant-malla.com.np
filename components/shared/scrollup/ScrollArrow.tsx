@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { FaChevronUp } from "react-icons/fa";
 
 export default function ScrollArrow() {
   // The back-to-top button is hidden at the beginning
@@ -24,7 +25,7 @@ export default function ScrollArrow() {
   return (
     <div>
       {showButton && (
-        <i className="fas fa-chevron-up back-to-top" onClick={scrollToTop} />
+        <FaChevronUp className="back-to-top" onClick={scrollToTop}/>
       )}
     </div>
   );

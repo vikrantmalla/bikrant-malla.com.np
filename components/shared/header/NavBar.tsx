@@ -6,6 +6,7 @@ import Backdrop from "./Backdrop";
 import $ from "jquery";
 import { Links } from "../../../types/data";
 import Link from "next/link";
+import { FaTimes, FaBars, FaGithub,  FaLinkedinIn } from "react-icons/fa";
 
 const NavBar = () => {
   const [click, setClick] = useState<boolean>(false);
@@ -162,13 +163,13 @@ const NavBar = () => {
           </nav>
           {!click && (
             <div className="menu-icon" onClick={handleClick}>
-              <i className={click ? "fas fa-times" : "fas fa-bars"} />
+              {click ? <FaTimes /> : <FaBars />}
             </div>
           )}
           {click && (
             <>
               <div className="menu-icon" onClick={handleClick}>
-                <i className={click ? "fas fa-times" : "fas fa-bars"} />
+                {click ? <FaTimes /> : <FaBars />}
               </div>
               <nav className="nav">
                 <ul className={click ? "nav-menu active" : "nav-menu"}>
@@ -251,13 +252,13 @@ const NavBar = () => {
                       href="https://github.com/vikrantmalla"
                       label="Github"
                     >
-                      <i className="fab fa-github" />
+                      <FaGithub/>
                     </ExternalLink>
                     <ExternalLink
                       href="https://www.linkedin.com/in/vikrant-malla"
                       label="Linkedin"
                     >
-                      <i className="fab fa-linkedin-in" />
+                      <FaLinkedinIn/>
                     </ExternalLink>
                   </li>
                 </ul>

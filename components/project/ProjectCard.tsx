@@ -5,6 +5,7 @@ import { useMouseCursor } from "../../context/MouseContext";
 import { ProjectHighlightsCard } from "../../types/data";
 import * as gtag from "../../helpers/lib/gtag";
 import baseUrl from "@/helpers/lib/baseUrl";
+import { FaChevronRight } from "react-icons/fa";
 
 const ProjectCard = ({ project }: ProjectHighlightsCard) => {
   const { images, alt, title, build, projectview } = project;
@@ -45,7 +46,7 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
               onClick={handleClick}
               aria-label="arrow"
             >
-              <i className="fas fa-chevron-right" />
+              <FaChevronRight size={20} />
             </Link>
           </div>
         </div>
