@@ -4,8 +4,7 @@ import Image from "next/image";
 import { useMouseCursor } from "../../context/MouseContext";
 import { BehanceCard } from "../../types/data";
 import * as gtag from "../../helpers/lib/gtag";
-import baseUrl from "../../public/images/behance01.png";
-
+import { FaChevronRight } from "react-icons/fa";
 const BehanceCard = ({ project }: BehanceCard) => {
   const { id, images, alt, title, subTitle, tools, projectview } = project;
   const { cursorChangeHandler } = useMouseCursor();
@@ -48,7 +47,7 @@ const BehanceCard = ({ project }: BehanceCard) => {
               onClick={handleClick}
               aria-label="arrow"
             >
-              <i className="fas fa-chevron-right" />
+              <FaChevronRight size={20}/>
             </Link>
           </div>
         </div>
