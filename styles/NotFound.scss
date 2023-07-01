@@ -1,66 +1,66 @@
 #notfound {
-    position: relative;
-    height: 100vh;
-    margin-top: 0 !important;
-    .notfound {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        max-width: 920px;
-        width: 100%;
-        line-height: 1.4;
-        text-align: center;
-        padding-left: 15px;
-        padding-right: 15px;
-        .notfound-404 {
-            h1 {
-                color: var(--text);
-                -webkit-text-fill-color: var(--headingStroke);
-                -webkit-text-stroke-width: 1px;
-                font-weight: 700;
-                font-size: 120px;
-            }
-        }
-        h2 {
-            color: var(--text);
-            text-transform: uppercase;
-        }
-        p {
-            color: var(--text);
-            margin-top: .9rem;
-        }
-        a {
-            margin-top: 2rem;
-            text-decoration: none;
-            text-transform: uppercase;
-            background: var(--toggle);
-            display: inline-block;
-            padding: 16px 38px;
-            border: .1rem solid var(--text);
-            border-radius: 40px;
-            color: var(--text);
-            -webkit-transition: 0.2s all;
-            transition: 0.2s all;
-            &:hover {
-                background: var(--toggleHover);
-                color: var(--textRev);
-            }
-        }
+  position: relative;
+  height: 100vh;
+  margin-top: 0 !important;
+  .notfound {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 920px;
+    width: 100%;
+    line-height: 1.4;
+    text-align: center;
+    padding-left: 15px;
+    padding-right: 15px;
+    .notfound-404 {
+      h1 {
+        color: var(--text);
+        -webkit-text-fill-color: var(--headingStroke);
+        -webkit-text-stroke-width: 1px;
+        font-weight: 700;
+        font-size: 120px;
+      }
     }
+    h2 {
+      color: var(--text);
+      text-transform: uppercase;
+    }
+    p {
+      color: var(--text);
+      margin-top: 0.9rem;
+    }
+    a {
+      margin-top: 2rem;
+      text-decoration: none;
+      text-transform: uppercase;
+      background: var(--toggle);
+      display: inline-block;
+      padding: 16px 38px;
+      border: 0.1rem solid var(--text);
+      border-radius: 40px;
+      color: var(--text);
+      -webkit-transition: 0.2s all;
+      transition: 0.2s all;
+      &:hover {
+        background: var(--toggleHover);
+        color: var(--textRev);
+      }
+    }
+  }
 }
 
 @include lg {
-    #notfound {
-        .notfound {
-            .notfound-404 {
-                h1 {
-                    font-size: 150px;
-                }
-            }
-            p {
-                padding: 0 6rem;
-            }
+  #notfound {
+    .notfound {
+      .notfound-404 {
+        h1 {
+          font-size: 150px;
         }
+      }
+      p {
+        padding: 0 6rem;
+      }
     }
+  }
 }

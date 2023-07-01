@@ -55,13 +55,13 @@ const Contact = () => {
             href="https://www.linkedin.com/in/vikrant-malla"
             label="Linkedin"
           >
-            <FaLinkedinIn size={20}/>
+            <FaLinkedinIn size={20} />
           </ExternalLink>
           <ExternalLink
             href="https://twitter.com/Vikrantmalla09"
             label="Twitter"
           >
-            <FaTwitter size={20}/>
+            <FaTwitter size={20} />
           </ExternalLink>
         </div>
       </section>

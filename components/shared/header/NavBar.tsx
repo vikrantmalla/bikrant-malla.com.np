@@ -6,7 +6,7 @@ import Backdrop from "./Backdrop";
 import $ from "jquery";
 import { Links } from "../../../types/data";
 import Link from "next/link";
-import { FaTimes, FaBars, FaGithub,  FaLinkedinIn } from "react-icons/fa";
+import { FaTimes, FaBars, FaGithub, FaLinkedinIn } from "react-icons/fa";
 
 const NavBar = () => {
   const [click, setClick] = useState<boolean>(false);
@@ -252,13 +252,13 @@ const NavBar = () => {
                       href="https://github.com/vikrantmalla"
                       label="Github"
                     >
-                      <FaGithub/>
+                      <FaGithub />
                     </ExternalLink>
                     <ExternalLink
                       href="https://www.linkedin.com/in/vikrant-malla"
                       label="Linkedin"
                     >
-                      <FaLinkedinIn/>
+                      <FaLinkedinIn />
                     </ExternalLink>
                   </li>
                 </ul>

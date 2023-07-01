@@ -47,7 +47,7 @@ const BehanceCard = ({ project }: BehanceCard) => {
               onClick={handleClick}
               aria-label="arrow"
             >
-              <FaChevronRight size={20}/>
+              <FaChevronRight size={20} />
             </Link>
           </div>
         </div>

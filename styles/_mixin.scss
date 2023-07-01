@@ -1,21 +1,21 @@
 @mixin flex($direction, $justify) {
-    display: flex;
-    flex-direction: $direction;
-    justify-content: $justify;
-    align-items: center;
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: center;
 }
 
 @mixin heading($align) {
-    color: var(--text);
-    position: relative;
-    text-align: $align;
+  color: var(--text);
+  position: relative;
+  text-align: $align;
 }
 
 @mixin selector() {
-    content: '';
-    position: absolute;
-    background: var(--text);
-    width: 40%;
-    height: 0.1rem;
-    transform: translateY(1.2rem);
+  content: "";
+  position: absolute;
+  background: var(--text);
+  width: 40%;
+  height: 0.1rem;
+  transform: translateY(1.2rem);
 }
