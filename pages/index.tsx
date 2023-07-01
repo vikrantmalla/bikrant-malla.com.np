@@ -4,7 +4,7 @@ import ProjectHighlight from "../components/project/ProjectHighlight";
 import Behance from "../components/behance/Behance";
 import Contact from "../components/shared/footer/Contact";
 import Data, { PageData } from "../types/data";
-import { fetchProjectHighlights, fetchBehanceData } from '@/service/apiService';
+import { fetchProjectHighlights, fetchBehanceData } from "@/service/apiService";
 
 const Home = ({
   projectHighlightData,

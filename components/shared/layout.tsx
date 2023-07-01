@@ -22,7 +22,7 @@ const Layout = ({ children }: Props) => {
             {children}
             <DotRing />
             <ScrollArrow />
-            <NavBar/>
+            <NavBar />
             <Footer />
           </ProjectProvider>
         </MouseContextProvider>

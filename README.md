@@ -13,10 +13,9 @@
 - **Analytics** [Google Analytics](https://analytics.google.com)
 - **Deployment**: [Netlify](https://www.netlify.com/)
 
-
 ## Overview
 
-- `__test__` - Test 
+- `__test__` - Test
 - `pages/*` - The different page (index, archive, 404).
 - `pages/api/*` - [API routes](https://nextjs.org/docs/api-routes/introduction).
 - `helpers/*` - A collection of helpful utilities or code for external services.

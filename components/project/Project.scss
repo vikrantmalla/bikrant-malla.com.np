@@ -1,75 +1,75 @@
 .project {
-    .projectItem {
-        display: grid;
-        grid-template-columns: 1fr;
-        justify-content: center;
-        align-items: center;
-        gap: 1rem;
-        margin: 2.5rem 0;
-    }
-    a {
-        text-decoration: none;
-    }
-    .link {
-        width: 200px;
-        margin: 0 auto;
-        text-align: center;
-        color: var(--text);
-        cursor: pointer;
-        text-decoration: underline;
-        text-underline-offset: 5px;
-        text-decoration-thickness: 2px;
-    }
+  .projectItem {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 2.5rem 0;
+  }
+  a {
+    text-decoration: none;
+  }
+  .link {
+    width: 200px;
+    margin: 0 auto;
+    text-align: center;
+    color: var(--text);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    text-decoration-thickness: 2px;
+  }
 }
 
 @include md {
-    .project {
-        .projectItem {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-        a {
-         text-decoration: none;
-        }
-        .link {
-            text-decoration: none;
-            &:hover {
-                text-decoration: underline;
-                text-underline-offset: 5px;
-                text-decoration-thickness: 2px;
-            }
-        }
+  .project {
+    .projectItem {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
     }
+    a {
+      text-decoration: none;
+    }
+    .link {
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+        text-underline-offset: 5px;
+        text-decoration-thickness: 2px;
+      }
+    }
+  }
 }
 
 @include lg {
-    .project {
-        .projectItem {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            .card {
-                .card-details {
-                    @include flex(row, space-between);
-                    padding: 1rem;
-                }
-            }
+  .project {
+    .projectItem {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      .card {
+        .card-details {
+          @include flex(row, space-between);
+          padding: 1rem;
         }
-        .link {
-            &::after {
-                left: 370px;
-            }
-        }
+      }
     }
+    .link {
+      &::after {
+        left: 370px;
+      }
+    }
+  }
 }
 
 @include xl {
-    .project {
-        .link {
-            &::after {
-                left: 490px;
-            }
-        }
+  .project {
+    .link {
+      &::after {
+        left: 490px;
+      }
     }
+  }
 }
