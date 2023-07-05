@@ -1,12 +1,13 @@
+"use client";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 
 const Footer = () => {
-  const router = useRouter();
+  const pathname = usePathname()
   return (
     <>
       <footer
-        className={`${router.pathname === "/404" ? "notfoundFooter" : ""}`}
+        className={`${pathname === "/404" ? "notfoundFooter" : ""}`}
       >
         <div className="credit">
           <Link

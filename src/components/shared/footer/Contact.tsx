@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { Links } from "../../../types/data";
 import * as gtag from "../../../helpers/lib/gtag";

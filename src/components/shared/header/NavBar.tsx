@@ -1,5 +1,6 @@
+"use client";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { usePathname } from 'next/navigation'
 import Switch from "./Switch";
 import Backdrop from "./Backdrop";
 // @ts-ignore:next-line
@@ -13,7 +14,7 @@ const NavBar = () => {
   const [navColor, setNavColor] = useState<boolean>(false);
   const [activeLink, setActiveLink] = useState<string>("About Me");
 
-  const router = useRouter();
+  const pathname = usePathname()
 
   const handleClick = () => setClick(!click);
 
@@ -90,7 +91,7 @@ const NavBar = () => {
           <nav className="nav">
             <ul className={click ? "nav-menu active" : "nav-menu"}>
               <li className="nav-item ff-serif-jose fs-400">
-                {router.pathname === "/" ? (
+                {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#aboutme")}
                     className={activeLink === "About Me" ? "activeLink" : ""}
@@ -104,7 +105,7 @@ const NavBar = () => {
                 )}
               </li>
               <li className="nav-item ff-serif-jose fs-400">
-                {router.pathname === "/" ? (
+                {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#skill")}
                     className={activeLink === "Skills" ? "activeLink" : ""}
@@ -118,7 +119,7 @@ const NavBar = () => {
                 )}
               </li>
               <li className="nav-item ff-serif-jose fs-400">
-                {router.pathname === "/" ? (
+                {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#project")}
                     className={activeLink === "Projects" ? "activeLink" : ""}
@@ -132,7 +133,7 @@ const NavBar = () => {
                 )}
               </li>
               <li className="nav-item ff-serif-jose fs-400">
-                {router.pathname === "/" ? (
+                {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#concept")}
                     className={activeLink === "Concepts" ? "activeLink" : ""}
@@ -146,7 +147,7 @@ const NavBar = () => {
                 )}
               </li>
               <li className="nav-item ff-serif-jose fs-400">
-                {router.pathname === "/" ? (
+                {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#contact")}
                     className={activeLink === "Contact" ? "activeLink" : ""}
@@ -177,7 +178,7 @@ const NavBar = () => {
                     className="nav-item ff-serif-jose fs-400"
                     onClick={handleClick}
                   >
-                    {router.pathname === "/" ? (
+                    {pathname === "/" ? (
                       <a
                         onClick={() => _handleTabClick("#aboutme")}
                         className={
@@ -196,7 +197,7 @@ const NavBar = () => {
                     className="nav-item ff-serif-jose fs-400"
                     onClick={handleClick}
                   >
-                    {router.pathname === "/" ? (
+                    {pathname === "/" ? (
                       <a
                         onClick={() => _handleTabClick("#skill")}
                         className={activeLink === "Skills" ? "activeLink" : ""}
@@ -213,7 +214,7 @@ const NavBar = () => {
                     className="nav-item ff-serif-jose fs-400"
                     onClick={handleClick}
                   >
-                    {router.pathname === "/" ? (
+                    {pathname === "/" ? (
                       <a
                         onClick={() => _handleTabClick("#project")}
                         className={
@@ -232,7 +233,7 @@ const NavBar = () => {
                     className="nav-item ff-serif-jose fs-400"
                     onClick={handleClick}
                   >
-                    {router.pathname === "/" ? (
+                    {pathname === "/" ? (
                       <a
                         onClick={() => _handleTabClick("#concept")}
                         className={
