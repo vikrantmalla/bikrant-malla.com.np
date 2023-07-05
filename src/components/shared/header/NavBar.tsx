@@ -1,5 +1,6 @@
+"use client";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { usePathname } from 'next/navigation'
 import Switch from "./Switch";
 import Backdrop from "./Backdrop";
 // @ts-ignore:next-line
@@ -14,7 +15,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
   const [navColor, setNavColor] = useState<boolean>(false);
   const [activeLink, setActiveLink] = useState<string>("About Me");
 
-  const router = useRouter();
+  const pathname = usePathname()
 
   const handleClick = () => setClick(!click);
 
@@ -85,7 +86,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
           <nav className="nav">
             <ul className={click ? "nav-menu active" : "nav-menu"}>
               <li className="nav-item ff-serif-jose fs-400">
-                {router.pathname === "/" ? (
+                {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#aboutme")}
                     className={activeLink === "About Me" ? "activeLink" : ""}
@@ -99,7 +100,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                 )}
               </li>
               <li className="nav-item ff-serif-jose fs-400">
-                {router.pathname === "/" ? (
+                {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#skill")}
                     className={activeLink === "Skills" ? "activeLink" : ""}
@@ -113,7 +114,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                 )}
               </li>
               <li className="nav-item ff-serif-jose fs-400">
-                {router.pathname === "/" ? (
+                {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#project")}
                     className={activeLink === "Projects" ? "activeLink" : ""}
@@ -127,7 +128,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                 )}
               </li>
               <li className="nav-item ff-serif-jose fs-400">
-                {router.pathname === "/" ? (
+                {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#concept")}
                     className={activeLink === "Concepts" ? "activeLink" : ""}
@@ -141,7 +142,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                 )}
               </li>
               <li className="nav-item ff-serif-jose fs-400">
-                {router.pathname === "/" ? (
+                {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#contact")}
                     className={activeLink === "Contact" ? "activeLink" : ""}
@@ -172,7 +173,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                     className="nav-item ff-serif-jose fs-400"
                     onClick={handleClick}
                   >
-                    {router.pathname === "/" ? (
+                    {pathname === "/" ? (
                       <a
                         onClick={() => _handleTabClick("#aboutme")}
                         className={
@@ -191,7 +192,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                     className="nav-item ff-serif-jose fs-400"
                     onClick={handleClick}
                   >
-                    {router.pathname === "/" ? (
+                    {pathname === "/" ? (
                       <a
                         onClick={() => _handleTabClick("#skill")}
                         className={activeLink === "Skills" ? "activeLink" : ""}
@@ -208,7 +209,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                     className="nav-item ff-serif-jose fs-400"
                     onClick={handleClick}
                   >
-                    {router.pathname === "/" ? (
+                    {pathname === "/" ? (
                       <a
                         onClick={() => _handleTabClick("#project")}
                         className={
@@ -227,7 +228,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                     className="nav-item ff-serif-jose fs-400"
                     onClick={handleClick}
                   >
-                    {router.pathname === "/" ? (
+                    {pathname === "/" ? (
                       <a
                         onClick={() => _handleTabClick("#concept")}
                         className={
