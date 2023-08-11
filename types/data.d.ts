@@ -22,6 +22,7 @@ declare namespace Data {
     interface ProjectPageData {
       behanceData: BehanceData;
       projectHighlightData: ProjectHighlightData;
+      metaTagData: MetaTagData;
     }
     interface ArchivePageData {
       projectData: ProjectData[];
@@ -35,6 +36,11 @@ declare namespace Data {
   interface ProjectHighlightData {
     success: boolean;
     projectHighlights: ProjectHighlights[];
+  }
+
+  interface MetaTagData {
+    success: boolean;
+    metaTags: any;
   }
 
   interface ProjectHighlights {
