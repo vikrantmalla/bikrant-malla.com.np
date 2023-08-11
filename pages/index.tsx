@@ -4,11 +4,12 @@ import ProjectHighlight from "../components/project/ProjectHighlight";
 import Behance from "../components/behance/Behance";
 import Contact from "../components/shared/footer/Contact";
 import Data, { PageData } from "../types/data";
-import { fetchProjectHighlights, fetchBehanceData } from "@/service/apiService";
+import { fetchProjectHighlights, fetchBehanceData, fetchMetaTagData } from "@/service/apiService";
 
 const Home = ({
   projectHighlightData,
   behanceData,
+  metaTagData
 }: PageData.ProjectPageData) => {
   return (
     <>
@@ -27,11 +28,13 @@ const Home = ({
 export const getServerSideProps: GetServerSideProps<{
   projectHighlightData: Data.ProjectHighlightData;
   behanceData: Data.BehanceData;
+  metaTagData: Data.MetaTagData;
 }> = async (context) => {
   const projectHighlightData = await fetchProjectHighlights();
   const behanceData = await fetchBehanceData();
+  const metaTagData = await fetchMetaTagData();
   return {
-    props: { projectHighlightData, behanceData },
+    props: { projectHighlightData, behanceData, metaTagData },
   };
 };
 

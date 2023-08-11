@@ -17,3 +17,9 @@ export async function fetchProjectData() {
   const data = await res.json();
   return data;
 }
+
+export async function fetchMetaTagData() {
+  const res = await fetch(`${baseUrl}/api/metatags`);
+  const data = await res.json();
+  return data;
+}
