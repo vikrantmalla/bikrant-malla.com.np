@@ -40,7 +40,18 @@ declare namespace Data {
 
   interface MetaTagData {
     success: boolean;
-    metaTags: any;
+    metaTags: MetaTag;
+  }
+
+  interface MetaTag {
+    title: string;
+    pageTitle: string;
+    description: string;
+    keyword: string;
+    author: string;
+    fbID: string;
+    twitterID: string;
+    googleSiteID: string;
   }
 
   interface ProjectHighlights {
