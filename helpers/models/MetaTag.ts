@@ -36,4 +36,4 @@ const MetatagSchema = new mongoose.Schema({
 });
 
 export default mongoose.models.Metatag ||
-  mongoose.model("MetaTag", MetatagSchema);
+  mongoose.model("Metatag", MetatagSchema);

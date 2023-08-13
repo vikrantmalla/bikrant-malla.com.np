@@ -7,18 +7,20 @@ import ThemeProvider from "@/context/ThemeContext";
 import MouseContextProvider from "@/context/MouseContext";
 import ProjectProvider from "@/context/ProjectContext";
 import NavBar from "./header/NavBar";
+import { MetaTagData } from "@/types/data";
 
 interface Props {
   children: ReactNode;
+  metaTagData?: MetaTagData;
 }
 
-const Layout = ({ children }: Props) => {
+const Layout = ({ children, metaTagData }: Props) => {
   return (
     <>
       <ThemeProvider>
         <MouseContextProvider>
           <ProjectProvider>
-            <MetaTags />
+          {metaTagData && <MetaTags metaTagData={metaTagData} />}
             {children}
             <DotRing />
             <ScrollArrow />

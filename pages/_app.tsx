@@ -6,8 +6,11 @@ import Gtag from "@/components/shared/gtag";
 import Layout from "@/components/shared/layout";
 import Loading from "@/components/shared/loading";
 import "../styles/globals.scss";
+import baseUrl from "@/helpers/lib/baseUrl";
+import { fetchMetaTagData } from "@/service/apiService";
+import { MetaTagData } from "@/types/data";
 
-export default function App({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -38,7 +41,7 @@ export default function App({ Component, pageProps }: AppProps) {
       ) : (
         <>
           <Gtag />
-          <Layout>
+          <Layout metaTagData={pageProps.metaTagData}>
             <Component {...pageProps} />
           </Layout>
         </>
@@ -46,3 +49,22 @@ export default function App({ Component, pageProps }: AppProps) {
     </>
   );
 }
+
+MyApp.getInitialProps = async ({ Component, ctx }: AppProps & { ctx: any }) => {
+  const metaTagData: MetaTagData = await fetchMetaTagData();
+
+  // Call the getInitialProps of the child component if it exists
+  let pageProps = {};
+  if (Component.getInitialProps) {
+    const componentProps = await Component.getInitialProps(ctx);
+    pageProps = { ...componentProps };
+  }
+
+  return { pageProps: { ...pageProps, metaTagData } };
+};
+
+export default MyApp;
+
+
+
+

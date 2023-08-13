@@ -8,8 +8,7 @@ import { fetchProjectHighlights, fetchBehanceData, fetchMetaTagData } from "@/se
 
 const Home = ({
   projectHighlightData,
-  behanceData,
-  metaTagData
+  behanceData
 }: PageData.ProjectPageData) => {
   return (
     <>
@@ -28,13 +27,11 @@ const Home = ({
 export const getServerSideProps: GetServerSideProps<{
   projectHighlightData: Data.ProjectHighlightData;
   behanceData: Data.BehanceData;
-  metaTagData: Data.MetaTagData;
 }> = async (context) => {
   const projectHighlightData = await fetchProjectHighlights();
   const behanceData = await fetchBehanceData();
-  const metaTagData = await fetchMetaTagData();
   return {
-    props: { projectHighlightData, behanceData, metaTagData },
+    props: { projectHighlightData, behanceData },
   };
 };
 
