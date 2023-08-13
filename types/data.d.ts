@@ -22,7 +22,6 @@ declare namespace Data {
     interface ProjectPageData {
       behanceData: BehanceData;
       projectHighlightData: ProjectHighlightData;
-      metaTagData: MetaTagData;
     }
     interface ArchivePageData {
       projectData: ProjectData[];
