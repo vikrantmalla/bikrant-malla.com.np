@@ -2,10 +2,16 @@ import { MetaTagData } from "@/types/data";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
-const MetaTags = ({ metaTagData }: any) => {
+
+interface Props {
+  metaTagData: MetaTagData
+}
+
+const MetaTags = ({ metaTagData }: Props) => {
   const router = useRouter();
   return (
     <Head>
+      <meta charSet="utf-8" />
       {router.pathname === "/" ? (
         <title> {metaTagData.metaTag[0].title} </title>
       ) : (
@@ -18,7 +24,7 @@ const MetaTags = ({ metaTagData }: any) => {
       />
       <meta
         name="keywords"
-        content={metaTagData.metaTag[0].keywords}
+        content={metaTagData.metaTag[0].keyword}
       />
       <meta name="author" content={metaTagData.metaTag[0].author} />
       <meta
@@ -63,6 +69,8 @@ const MetaTags = ({ metaTagData }: any) => {
         property="og:image"
         content={`${process.env.NEXT_PUBLIC_APP_URL}/ogimg.png`}
       />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="675" />
     </Head>
   );
 };
