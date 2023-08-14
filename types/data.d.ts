@@ -39,7 +39,7 @@ declare namespace Data {
 
   interface MetaTagData {
     success: boolean;
-    metaTags: MetaTag;
+    metaTag: MetaTag[];
   }
 
   interface MetaTag {
