@@ -20,6 +20,7 @@ declare namespace Data {
 
   declare namespace PageData {
     interface ProjectPageData {
+      aboutMeData: any;
       behanceData: BehanceData;
       projectHighlightData: ProjectHighlightData;
     }
