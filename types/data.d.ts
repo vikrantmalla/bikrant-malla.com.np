@@ -20,22 +20,13 @@ declare namespace Data {
 
   declare namespace PageData {
     interface ProjectPageData {
-      aboutMeData: any;
+      aboutMeData: AboutMeData;
       behanceData: BehanceData;
       projectHighlightData: ProjectHighlightData;
     }
     interface ArchivePageData {
       projectData: ProjectData[];
     }
-  }
-
-  interface ProjectHighlightPageData {
-    projectHighlightData: ProjectHighlightData;
-  }
-
-  interface ProjectHighlightData {
-    success: boolean;
-    projectHighlights: ProjectHighlights[];
   }
 
   interface MetaTagData {
@@ -52,6 +43,36 @@ declare namespace Data {
     fbID: string;
     twitterID: string;
     googleSiteID: string;
+  }
+
+  interface AboutMePageData {
+    aboutMeData: AboutMeData;
+  }
+
+  interface AboutMeData {
+    success: boolean;
+    aboutme: Aboutme[];
+  }
+
+  interface Aboutme {
+    _id: string;
+    __v: number;
+    title: string;
+    jobTitle: string;
+    subTitle: string;
+    aboutDescription1: string;
+    aboutDescription2: string;
+    skill1: string[];
+    skill2: string[];
+  }
+
+  interface ProjectHighlightPageData {
+    projectHighlightData: ProjectHighlightData;
+  }
+
+  interface ProjectHighlightData {
+    success: boolean;
+    projectHighlights: ProjectHighlights[];
   }
 
   interface ProjectHighlights {

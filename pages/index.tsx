@@ -11,12 +11,11 @@ const Home = ({
   projectHighlightData,
   behanceData
 }: PageData.ProjectPageData) => {
-  console.log(aboutMeData)
   return (
     <>
       <main>
         <article className="container">
-          <AboutMe />
+          <AboutMe aboutMeData={aboutMeData}/>
           <ProjectHighlight projectHighlightData={projectHighlightData} />
           <Behance behanceData={behanceData} />
           <Contact />
@@ -29,6 +28,7 @@ const Home = ({
 export const getServerSideProps: GetServerSideProps<{
   projectHighlightData: Data.ProjectHighlightData;
   behanceData: Data.BehanceData;
+  aboutMeData: Data.AboutMeData
 }> = async (context) => {
   const aboutMeData = await fetchAboutMeData();
   const projectHighlightData = await fetchProjectHighlights();
