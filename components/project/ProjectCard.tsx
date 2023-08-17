@@ -40,14 +40,13 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
             onMouseEnter={() => cursorChangeHandler("hovered")}
             onMouseLeave={() => cursorChangeHandler("")}
           >
-            <Link
+            <a
               href={projectview}
-              passHref
               onClick={handleClick}
               aria-label="arrow"
             >
               <FaChevronRight size={20} />
-            </Link>
+            </a>
           </div>
         </div>
       </div>

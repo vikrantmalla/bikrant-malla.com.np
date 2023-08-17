@@ -34,13 +34,12 @@ const Contact = () => {
           {`I'll`} try my best to get back to you!
         </p>
 
-        <Link
+        <a
           href="mailto:vikrantmalla999@gmail.com"
           className="button ff-serif-jose fs-500"
-          passHref
         >
           {`Say Hello!!`}
-        </Link>
+        </a>
         <div className="social-media">
           <ExternalLink href="https://github.com/vikrantmalla" label="Github">
             <FaGithub size={20} />
