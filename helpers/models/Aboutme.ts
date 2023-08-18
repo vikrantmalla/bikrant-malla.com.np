@@ -5,6 +5,25 @@ const AboutMeDetailsSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  jobTitle: {
+    type: String,
+    required: true,
+  },
+  subTitle: {
+    type: String,
+  },
+  aboutDescription1: {
+    type: String,
+  },
+  aboutDescription2: {
+    type: String,
+  },
+  skill1: {
+    type: [String],
+  },
+  skill2: {
+    type: [String],
+  },
 });
 
 export default mongoose.models.Aboutme ||
