@@ -4,11 +4,12 @@ import Switch from "./Switch";
 import Backdrop from "./Backdrop";
 // @ts-ignore:next-line
 import $ from "jquery";
-import { Links } from "../../../types/data";
+import { ContactPageData } from "../../../types/data";
 import Link from "next/link";
-import { FaTimes, FaBars, FaGithub, FaLinkedinIn } from "react-icons/fa";
+import SocialMedia from "../footer/SocialMedia";
+import { FaTimes, FaBars } from "react-icons/fa";
 
-const NavBar = () => {
+const NavBar = ({ contactData }: ContactPageData) => {
   const [click, setClick] = useState<boolean>(false);
   const [navColor, setNavColor] = useState<boolean>(false);
   const [activeLink, setActiveLink] = useState<string>("About Me");
@@ -76,12 +77,6 @@ const NavBar = () => {
       setNavColor(false);
     }
   };
-
-  const ExternalLink = ({ href, children, label }: Links) => (
-    <a target="_blank" rel="noopener noreferrer" href={href} aria-label={label}>
-      {children}
-    </a>
-  );
 
   return (
     <>
@@ -248,18 +243,7 @@ const NavBar = () => {
                     )}
                   </li>
                   <li className="social-media">
-                    <ExternalLink
-                      href="https://github.com/vikrantmalla"
-                      label="Github"
-                    >
-                      <FaGithub />
-                    </ExternalLink>
-                    <ExternalLink
-                      href="https://www.linkedin.com/in/vikrant-malla"
-                      label="Linkedin"
-                    >
-                      <FaLinkedinIn />
-                    </ExternalLink>
+                    <SocialMedia contactData={contactData} visibleCount={2} />
                   </li>
                 </ul>
               </nav>

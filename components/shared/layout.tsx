@@ -7,14 +7,15 @@ import ThemeProvider from "@/context/ThemeContext";
 import MouseContextProvider from "@/context/MouseContext";
 import ProjectProvider from "@/context/ProjectContext";
 import NavBar from "./header/NavBar";
-import { MetaTagData } from "@/types/data";
+import { ContactData, MetaTagData } from "@/types/data";
 
 interface LayoutProps {
   children: ReactNode;
   metaTagData: MetaTagData;
+  contactData: ContactData;
 }
 
-const Layout = ({ children, metaTagData }: LayoutProps) => {
+const Layout = ({ children, metaTagData, contactData }: LayoutProps) => {
   return (
     <>
       <ThemeProvider>
@@ -24,7 +25,7 @@ const Layout = ({ children, metaTagData }: LayoutProps) => {
             {children}
             <DotRing />
             <ScrollArrow />
-            <NavBar />
+            <NavBar contactData={contactData}/>
             <Footer />
           </ProjectProvider>
         </MouseContextProvider>

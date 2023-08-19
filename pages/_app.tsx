@@ -7,8 +7,8 @@ import Layout from "@/components/shared/layout";
 import Loading from "@/components/shared/loading";
 import "../styles/globals.scss";
 import baseUrl from "@/helpers/lib/baseUrl";
-import { fetchMetaTagData } from "@/service/apiService";
-import { MetaTagData } from "@/types/data";
+import { fetchContactData, fetchMetaTagData } from "@/service/apiService";
+import { ContactData, MetaTagData } from "@/types/data";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -41,7 +41,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       ) : (
         <>
           <Gtag />
-          <Layout metaTagData={pageProps.metaTagData}>
+          <Layout metaTagData={pageProps.metaTagData} contactData={pageProps.contactData}>
             <Component {...pageProps} />
           </Layout>
         </>
@@ -52,6 +52,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 MyApp.getInitialProps = async ({ Component, ctx }: AppProps & { ctx: any }) => {
   const metaTagData: MetaTagData = await fetchMetaTagData();
+  const contactData: ContactData = await fetchContactData();
 
   // Call the getInitialProps of the child component if it exists
   let pageProps = {};
@@ -60,7 +61,7 @@ MyApp.getInitialProps = async ({ Component, ctx }: AppProps & { ctx: any }) => {
     pageProps = { ...componentProps };
   }
 
-  return { pageProps: { ...pageProps, metaTagData } };
+  return { pageProps: { ...pageProps, metaTagData, contactData } };
 };
 
 export default MyApp;

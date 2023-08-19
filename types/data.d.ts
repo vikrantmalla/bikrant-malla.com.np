@@ -23,6 +23,7 @@ declare namespace Data {
       aboutMeData: AboutMeData;
       behanceData: BehanceData;
       projectHighlightData: ProjectHighlightData;
+      contactData: ContactData;
     }
     interface ArchivePageData {
       projectData: ProjectData[];
@@ -162,6 +163,27 @@ declare namespace Data {
     title: string;
     viewcode: string;
     year: number;
+  }
+
+  interface ContactPageData {
+    contactData: ContactData;
+  }
+
+  interface ContactData {
+    success: boolean;
+    contact: Contact[];
+  }
+
+  interface Contact {
+    _id: string;
+    __v: number;
+    message: string;
+    ctaMessage: string;
+    emailUrl: string;
+    githubUrl: string;
+    behanceUrl: string;
+    linkedinUrl: string;
+    twitterUrl: string;
   }
 
   interface Links {

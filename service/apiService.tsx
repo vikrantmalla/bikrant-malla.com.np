@@ -30,3 +30,9 @@ export async function fetchProjectData() {
   const data = await res.json();
   return data;
 }
+
+export async function fetchContactData() {
+  const res = await fetch(`${baseUrl}/api/contact`);
+  const data = await res.json();
+  return data;
+}
