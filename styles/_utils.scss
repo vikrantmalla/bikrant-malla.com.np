@@ -68,7 +68,7 @@
 .social-media {
   @include flex(row, center);
   gap: 1rem;
-  margin: 5rem 0;
+  margin: 1rem 0;
   a {
     text-decoration: none;
     border: 0.06rem solid var(--text);
@@ -87,13 +87,15 @@
       color: var(--textRev);
     }
   }
-  @include lg {
-    .social-media {
-      a {
-        height: 4.5rem;
-        width: 4.5rem;
-        font-size: 1.5rem;
-      }
+}
+
+@include md {
+  .social-media {
+    margin: 5rem 0;
+    a {
+      height: 3rem;
+      width: 3rem;
+      font-size: 1.5rem;
     }
   }
 }
