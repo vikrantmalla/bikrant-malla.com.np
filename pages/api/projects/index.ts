@@ -9,25 +9,35 @@ export default async function handler(
 ) {
   const { method } = req;
 
-  switch (method) {
-    case "GET":
-      try {
+  try {
+    switch (method) {
+      case "GET":
         const projects = await Project.find().sort({ isnew: -1 });
         res.status(200).json({ success: true, project: projects });
-      } catch (error) {
-        res.status(400).json({ success: false });
-      }
-      break;
-    case "POST":
-      try {
+        break;
+      case "POST":
         const project = await Project.create(req.body);
         res.status(201).json({ success: true, project: project });
-      } catch (error) {
-        res.status(400).json({ success: false });
-      }
-      break;
-    default:
-      res.status(400).json({ success: false });
-      break;
+        break;
+      case "PUT":
+        const { _id, ...updatedData } = req.body;
+        const updatedProjectData = await Project.findByIdAndUpdate(
+          _id,
+          updatedData,
+          { new: true }
+        );
+        if (updatedProjectData) {
+          res.status(200).json({ success: true, aboutme: updatedProjectData });
+        } else {
+          res
+            .status(404)
+            .json({ success: false, message: "Project not found" });
+        }
+        break;
+      default:
+        res.status(400).json({ success: false, message: "Invalid method" });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }

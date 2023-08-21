@@ -9,29 +9,35 @@ export default async function handler(
 ) {
   const { method } = req;
 
-  switch (method) {
-    case "GET":
-      try {
+  try {
+    switch (method) {
+      case "GET":
         const projecthighlights = await Projecthighlight.find({});
-        res
-          .status(200)
-          .json({ success: true, projectHighlights: projecthighlights });
-      } catch (error) {
-        res.status(400).json({ success: false });
-      }
-      break;
-    case "POST":
-      try {
+        res.status(200).json({ success: true, projectHighlights: projecthighlights });
+        break;
+      case "POST":
         const projecthighlight = await Projecthighlight.create(req.body);
-        res
-          .status(201)
-          .json({ success: true, projectHighlights: projecthighlight });
-      } catch (error) {
-        res.status(400).json({ success: false });
-      }
-      break;
-    default:
-      res.status(400).json({ success: false });
-      break;
+        res.status(201).json({  success: true, projectHighlights: projecthighlight });
+        break;
+      case "PUT":
+        const { _id, ...updatedData } = req.body;
+        const updatedProjecthighlightData = await Projecthighlight.findByIdAndUpdate(
+          _id,
+          updatedData,
+          { new: true }
+        );
+        if (updatedProjecthighlightData) {
+          res.status(200).json({ success: true, aboutme: updatedProjecthighlightData });
+        } else {
+          res
+            .status(404)
+            .json({ success: false, message: "Projecthighlight not found" });
+        }
+        break;
+      default:
+        res.status(400).json({ success: false, message: "Invalid method" });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
