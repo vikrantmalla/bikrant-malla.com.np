@@ -9,29 +9,39 @@ export default async function handler(
 ) {
   const { method } = req;
 
-  switch (method) {
-    case "GET":
-      try {
+  try {
+    switch (method) {
+      case "GET":
         const behancehighlights = await Behance.find({});
         res
           .status(200)
           .json({ success: true, behanceProject: behancehighlights });
-      } catch (error) {
-        res.status(400).json({ success: false });
-      }
-      break;
-    case "POST":
-      try {
+        break;
+      case "POST":
         const behancehighlight = await Behance.create(req.body);
         res
           .status(201)
           .json({ success: true, behanceProject: behancehighlight });
-      } catch (error) {
-        res.status(400).json({ success: false });
-      }
-      break;
-    default:
-      res.status(400).json({ success: false });
-      break;
+        break;
+      case "PUT":
+        const { _id, ...updatedData } = req.body;
+        const updatedBehanceData = await Behance.findByIdAndUpdate(
+          _id,
+          updatedData,
+          { new: true }
+        );
+        if (updatedBehanceData) {
+          res.status(200).json({ success: true, aboutme: updatedBehanceData });
+        } else {
+          res
+            .status(404)
+            .json({ success: false, message: "Behance not found" });
+        }
+        break;
+      default:
+        res.status(400).json({ success: false, message: "Invalid method" });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
