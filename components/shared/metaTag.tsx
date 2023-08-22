@@ -61,6 +61,11 @@ const MetaTags = ({ metaTagData }: Props) => {
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:site" content={metaTagData.metaTag[0].twitterID} />
       <meta name="twitter:creator" content={metaTagData.metaTag[0].twitterID} />
+      <meta name="twitter:title" content={metaTagData.metaTag[0].title} />
+      <meta
+        name="twitter:description"
+        content={metaTagData.metaTag[0].description}
+      />
       <meta
         property="og:description"
         content={metaTagData.metaTag[0].description}

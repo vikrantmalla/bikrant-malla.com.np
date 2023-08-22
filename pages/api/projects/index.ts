@@ -27,7 +27,7 @@ export default async function handler(
           { new: true }
         );
         if (updatedProjectData) {
-          res.status(200).json({ success: true, aboutme: updatedProjectData });
+          res.status(200).json({ success: true, project: updatedProjectData });
         } else {
           res
             .status(404)

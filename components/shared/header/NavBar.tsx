@@ -242,7 +242,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                       </Link>
                     )}
                   </li>
-                  <li className="social-media">
+                  <li className="social-media" style={{margin: "1rem 0"}}>
                     <SocialMedia contactData={contactData} visibleCount={2} />
                   </li>
                 </ul>
