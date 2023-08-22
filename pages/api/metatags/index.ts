@@ -27,7 +27,7 @@ export default async function handler(
           { new: true }
         );
         if (updatedMetaTagData) {
-          res.status(200).json({ success: true, aboutme: updatedMetaTagData });
+          res.status(200).json({ success: true, metatag: updatedMetaTagData });
         } else {
           res
             .status(404)

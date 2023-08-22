@@ -31,7 +31,7 @@ export default async function handler(
           { new: true }
         );
         if (updatedBehanceData) {
-          res.status(200).json({ success: true, aboutme: updatedBehanceData });
+          res.status(200).json({ success: true, behanceProject: updatedBehanceData });
         } else {
           res
             .status(404)
