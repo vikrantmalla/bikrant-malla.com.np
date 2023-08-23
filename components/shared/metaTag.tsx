@@ -66,6 +66,7 @@ const MetaTags = ({ metaTagData }: Props) => {
         name="twitter:description"
         content={metaTagData.metaTag[0].description}
       />
+      <meta property="twitter:image" content={`${process.env.NEXT_PUBLIC_APP_URL}/ogimg.png`}/>
       <meta
         property="og:description"
         content={metaTagData.metaTag[0].description}
