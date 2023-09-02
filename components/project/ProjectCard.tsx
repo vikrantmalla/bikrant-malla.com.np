@@ -26,7 +26,7 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
           onMouseLeave={() => cursorChangeHandler("")}
         >
           <Link href={projectview} passHref>
-            <img src={images} alt={alt} className="responsive-image" />
+            <img loading="lazy" src={images} alt={alt} className="responsive-image" />
           </Link>
         </div>
       </div>

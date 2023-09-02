@@ -15,7 +15,7 @@ const BehanceCard = ({ project }: BehanceCard) => {
       label: "method",
     });
   };
-  const img = "/behance01.png";
+
   return (
     <div className="card" key={id}>
       <div className="card-img">
@@ -25,7 +25,7 @@ const BehanceCard = ({ project }: BehanceCard) => {
           onMouseLeave={() => cursorChangeHandler("")}
         >
           <Link href={projectview} passHref>
-            <img src={images} alt={alt} className="responsive-image" />
+            <img loading="lazy" src={images} alt={alt} className="responsive-image" />
           </Link>
         </div>
       </div>

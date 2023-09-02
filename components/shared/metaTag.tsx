@@ -13,9 +13,9 @@ const MetaTags = ({ metaTagData }: Props) => {
     <Head>
       <meta charSet="utf-8" />
       {router.pathname === "/" ? (
-        <title> {metaTagData.metaTag[0].title} </title>
+        <title>Bikrant Malla - Frontend Web Developer</title>
       ) : (
-        <title>{metaTagData.metaTag[0].pageTitle}</title>
+        <title>Archive - Bikrant Malla</title>
       )}
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       <meta
@@ -40,10 +40,10 @@ const MetaTags = ({ metaTagData }: Props) => {
       {router.pathname === "/" ? (
         <meta
           property="og:title"
-          content={metaTagData.metaTag[0].title}
+          content="Bikrant Malla - Frontend Web Developer"
         />
       ) : (
-        <meta property="og:title" content={metaTagData.metaTag[0].pageTitle} />
+        <meta property="og:title" content="Archive - Bikrant Malla" />
       )}
       <meta
         property="og:description"
@@ -66,7 +66,7 @@ const MetaTags = ({ metaTagData }: Props) => {
         name="twitter:description"
         content={metaTagData.metaTag[0].description}
       />
-      <meta property="twitter:image" content={`${process.env.NEXT_PUBLIC_APP_URL}/ogimg.png`}/>
+      <meta property="twitter:image" content={`${process.env.NEXT_PUBLIC_APP_URL}/ogimg.png`} />
       <meta
         property="og:description"
         content={metaTagData.metaTag[0].description}
