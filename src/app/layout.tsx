@@ -3,6 +3,7 @@ import NavBar from "@/components/shared/header/NavBar";
 import "../styles/globals.scss";
 import Footer from "@/components/shared/footer/Footer";
 import Head from "next/head";
+import ThemeProvider from "@/context/ThemeContext";
 
 export const metadata = {
   title: "Create Next App",
@@ -16,11 +17,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <NavBar />
-        {children}
-        <Footer />
-      </body>
+      <ThemeProvider>
+        <body>
+          <NavBar />
+          {children}
+          <Footer />
+        </body>
+      </ThemeProvider>
     </html>
   );
 }
