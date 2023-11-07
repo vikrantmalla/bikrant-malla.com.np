@@ -1,9 +1,8 @@
-/* eslint-disable @next/next/no-page-custom-font */
-import NavBar from "@/components/shared/header/NavBar";
-import "../styles/globals.scss";
-import Footer from "@/components/shared/footer/Footer";
-import Head from "next/head";
 import ThemeProvider from "@/context/ThemeContext";
+import Provider from "@/utils/provider";
+import NavBar from "@/components/shared/header/NavBar";
+import Footer from "@/components/shared/footer/Footer";
+import "../styles/globals.scss";
 
 export const metadata = {
   title: "Create Next App",
@@ -19,9 +18,11 @@ export default function RootLayout({
     <html lang="en">
       <ThemeProvider>
         <body>
-          <NavBar />
-          {children}
-          <Footer />
+          <Provider>
+            <NavBar />
+            {children}
+            <Footer />
+          </Provider>
         </body>
       </ThemeProvider>
     </html>
