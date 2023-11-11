@@ -7,7 +7,7 @@ export async function fetchMetaTagData() {
 }
 
 export async function fetchAboutMeData() {
-  const res = await fetch(`${baseUrl}/api/aboutme`);
+  const res = await fetch(`${baseUrl}/api/aboutme`, { cache: 'no-store' });
   const data = await res.json();
   return data;
 }
@@ -20,7 +20,7 @@ export async function fetchProjectHighlights() {
 }
 
 export async function fetchBehanceData() {
-  const res = await fetch(`${baseUrl}/api/behance`);
+  const res = await fetch(`${baseUrl}/api/behance`, { cache: 'no-store' });
   const data = await res.json();
   return data;
 }

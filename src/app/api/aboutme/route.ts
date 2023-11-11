@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "../../../helpers/lib/dbConnect";
 import Aboutme from "../../../helpers/models/Aboutme";
 import { NextResponse } from "next/server";
