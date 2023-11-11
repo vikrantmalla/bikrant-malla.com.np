@@ -1,5 +1,4 @@
 import ThemeProvider from "@/context/ThemeContext";
-import Provider from "@/utils/provider";
 import NavBar from "@/components/shared/header/NavBar";
 import Footer from "@/components/shared/footer/Footer";
 import "../styles/globals.scss";
@@ -18,11 +17,9 @@ export default function RootLayout({
     <html lang="en">
       <ThemeProvider>
         <body>
-          <Provider>
             <NavBar />
             {children}
             <Footer />
-          </Provider>
         </body>
       </ThemeProvider>
     </html>
