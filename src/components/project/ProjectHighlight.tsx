@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link";
 import { ProjectHighlightPageData, ProjectHighlights } from "../../types/data";
 import ProjectCard from "./ProjectCard";
