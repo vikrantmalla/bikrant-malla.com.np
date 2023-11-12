@@ -14,7 +14,7 @@ export async function fetchAboutMeData() {
 
 
 export async function fetchProjectHighlights() {
-  const res = await fetch(`${baseUrl}/api/projecthighlights`);
+  const res = await fetch(`${baseUrl}/api/projecthighlight`, { cache: 'no-store' });
   const data = await res.json();
   return data;
 }
