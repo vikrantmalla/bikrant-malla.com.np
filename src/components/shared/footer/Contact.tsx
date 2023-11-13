@@ -1,3 +1,4 @@
+"use client"
 import { ContactPageData } from "../../../types/data";
 import SocialMedia from "./SocialMedia";
 
