@@ -32,7 +32,7 @@ export async function fetchProjectData() {
 }
 
 export async function fetchContactData() {
-  const res = await fetch(`${baseUrl}/api/contact`);
+  const res = await fetch(`${baseUrl}/api/contact`, { cache: 'no-store' });
   const data = await res.json();
   return data;
 }

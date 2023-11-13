@@ -1,3 +1,4 @@
+"use client"
 import { useState, useEffect } from "react";
 import { FaChevronUp } from "react-icons/fa";
 
@@ -26,7 +27,7 @@ export default function ScrollArrow() {
     <div>
       {showButton && (
         <div className="back-to-top">
-          <FaChevronUp onClick={scrollToTop}  className="topArrow"/>
+          <FaChevronUp onClick={scrollToTop} className="topArrow" />
         </div>
       )}
     </div>

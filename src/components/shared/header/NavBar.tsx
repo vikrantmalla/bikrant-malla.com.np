@@ -10,7 +10,7 @@ import Link from "next/link";
 import SocialMedia from "../footer/SocialMedia";
 import { FaTimes, FaBars } from "react-icons/fa";
 
-const NavBar = () => {
+const NavBar = ({ contactData }: ContactPageData) => {
   const [click, setClick] = useState<boolean>(false);
   const [navColor, setNavColor] = useState<boolean>(false);
   const [activeLink, setActiveLink] = useState<string>("About Me");
@@ -243,8 +243,8 @@ const NavBar = () => {
                       </Link>
                     )}
                   </li>
-                  <li className="social-media" style={{margin: "1rem 0"}}>
-                    {/* <SocialMedia contactData={contactData} visibleCount={2} /> */}
+                  <li className="social-media" style={{ margin: "1rem 0" }}>
+                    <SocialMedia contactData={contactData} visibleCount={2} />
                   </li>
                 </ul>
               </nav>
