@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect, useContext } from "react";
 import ArchiveDetails from "./ArchiveCard";
 import { useProjectData } from "../../context/ProjectContext";

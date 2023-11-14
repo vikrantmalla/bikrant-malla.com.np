@@ -26,7 +26,7 @@ export async function fetchBehanceData() {
 }
 
 export async function fetchProjectData() {
-  const res = await fetch(`${baseUrl}/api/projects`);
+  const res = await fetch(`${baseUrl}/api/projects`, { cache: 'no-store' });
   const data = await res.json();
   return data;
 }
