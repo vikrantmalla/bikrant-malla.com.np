@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import Data, { Contexts } from "../types/data";
+import * as gtag from "../helpers/lib/gtag";
 
 const appContextDefaultValues: Contexts.ThemeContext = {
   dark: false,
@@ -45,6 +46,13 @@ const ThemeProvider = ({ children }: Data.Props) => {
     setDark(!dark);
     // @ts-ignore:next-line
     window.localStorage.setItem("darkTheme", !dark);
+ 
+    const theme  = dark ? "light_theme" : "dark_theme"
+    gtag.event({
+      action: `${theme}`,
+      category: "ui_theme",
+      label: "switched_theme",
+    });
   };
 
   return (

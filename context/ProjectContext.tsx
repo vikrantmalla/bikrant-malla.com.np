@@ -18,14 +18,15 @@ export function useProjectData(): Contexts.ProjectContext {
 }
 
 const ProjectProvider = ({ children }: Data.Props) => {
-  const [filterKeyword, setFilterKeyword] = useState([]);
+  const [filterKeyword, setFilterKeyword] = useState<string[]>([]);
   const AddKeyword = (keyword: never) => {
+    const techKeyword = (keyword as string).toLowerCase().replace(/\s+/g, '_');
     if (!filterKeyword.includes(keyword)) {
       setFilterKeyword([...filterKeyword, keyword]);
       gtag.event({
-        action: "keyword_clicked",
-        category: "engagement",
-        label: "method",
+        action: `${techKeyword}`,
+        category: "keyword_filtering",
+        label: "keyword_list_update",
       });
     }
     window.scrollTo({
