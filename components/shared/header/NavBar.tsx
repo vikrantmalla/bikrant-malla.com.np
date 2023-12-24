@@ -8,6 +8,7 @@ import { ContactPageData } from "../../../types/data";
 import Link from "next/link";
 import SocialMedia from "../footer/SocialMedia";
 import { FaTimes, FaBars } from "react-icons/fa";
+import * as gtag from "../../../helpers/lib/gtag";
 
 const NavBar = ({ contactData }: ContactPageData) => {
   const [click, setClick] = useState<boolean>(false);
@@ -16,7 +17,15 @@ const NavBar = ({ contactData }: ContactPageData) => {
 
   const router = useRouter();
 
-  const handleClick = () => setClick(!click);
+  const handleClick = () => {
+    setClick(!click);
+    const mobileNav = !click ? "mobile_nav_open" : "mobile_nav_close";
+    gtag.event({
+      action: `${mobileNav}`,
+      category: "mobile_navigation",
+      label: "hamburger_menu_click",
+    });
+  };
 
   if (process.browser) {
     if (click) {
@@ -30,7 +39,11 @@ const NavBar = ({ contactData }: ContactPageData) => {
     const checkWidth = window.matchMedia("(min-width: 677px)");
     var tab = $(tabId);
     var tabOffset = tab?.offset();
-
+    gtag.event({
+      action: `${tabId}`,
+      category: "ui_interaction",
+      label: "tab_id_click",
+    });
     if (tabOffset != null) {
       $("html, body").animate(
         {
@@ -242,7 +255,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                       </Link>
                     )}
                   </li>
-                  <li className="social-media" style={{margin: "1rem 0"}}>
+                  <li className="social-media" style={{ margin: "1rem 0" }}>
                     <SocialMedia contactData={contactData} visibleCount={2} />
                   </li>
                 </ul>
