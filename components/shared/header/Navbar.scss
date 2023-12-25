@@ -9,6 +9,9 @@
   width: 100%;
   z-index: 2;
   padding: 2rem 0;
+  @include md {
+    padding: 0 40px;
+  }
   .nav-container {
     @include flex(row, space-between);
     width: 100%;
