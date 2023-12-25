@@ -29,9 +29,9 @@ const AboutMe = ({ aboutMeData }: AboutMePageData) => {
       </section>
       <section id="skill">
         <h1 className="headingright ff-serif-jose fs-600">Skillsets</h1>
-        <div className="techstack">
+        <div>
           {aboutMeData.aboutme.map((skill, index) => (
-            <div key={index}>
+            <div key={index} className="techstack">
               <div className="list">
                 <h2 className="ff-serif-jose fs-500">
                   {`I'm`} <span>Comfortable</span> With
@@ -42,7 +42,7 @@ const AboutMe = ({ aboutMeData }: AboutMePageData) => {
                   </p>
                 ))}
               </div>
-              <div className="list" key={index}>
+              <div className="list">
                 <h2 className="ff-serif-jose fs-500">
                   I Also <span>Can Work</span> With
                 </h2>

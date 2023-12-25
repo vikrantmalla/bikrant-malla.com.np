@@ -9,7 +9,7 @@
     }
   }
   .center {
-    margin: 5rem 0;
+    margin: 8rem 0 0 0;
     .search {
       @include flex(row, space-between);
       background-color: var(--card);

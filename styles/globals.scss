@@ -132,6 +132,12 @@ main {
   margin: 2rem auto;
   padding: 0 20px;
   box-sizing: border-box;
+  @include md {
+    padding: 0 40px;
+  }
+  @include lg {
+    padding: 0;
+  }
 }
 
 section {
