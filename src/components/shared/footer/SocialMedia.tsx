@@ -56,7 +56,7 @@ const SocialMedia = ({ contactData, visibleCount }: SocialMediaProps) => {
   return (
     <>
       <div className="social-media">
-        {visibleSocialMediaIcons.map((socialMedia, index) => (
+        {visibleSocialMediaIcons.map((socialMedia) => (
           <ExternalLink
             key={socialMedia.key}
             href={socialMedia.url}

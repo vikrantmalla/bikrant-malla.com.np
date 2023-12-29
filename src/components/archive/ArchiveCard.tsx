@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { useProjectData } from "../../context/ProjectContext";
 import { ArchiveDetailsData } from "../../types/data";
 import { joseFont } from "@/helpers/lib/font";
+import { FaGithub, FaLink } from "react-icons/fa";
 
 const ArchiveDetails = ({
   id,
@@ -26,12 +26,12 @@ const ArchiveDetails = ({
             <p className={`${joseFont} fs-300`}>{year}</p>
           </div>
           <div className="links">
-            <Link href={viewcode} passHref>
-              <i className="fab fa-github" />
-            </Link>
-            <Link href={projectview} passHref>
-              <i className="fas fa-external-link-alt" />
-            </Link>
+            <a href={viewcode}>
+              <FaGithub />
+            </a>
+            <a href={projectview}>
+              <FaLink />
+            </a>
           </div>
         </div>
         <div className="tag">
