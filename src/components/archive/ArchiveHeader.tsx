@@ -26,7 +26,7 @@ const ArchiveHeader = () => {
             </div>
             {filterKeyword.length > 0 && (
               <button
-                className="clear ff-serif-jose fs-400"
+                className={`clear ${joseFont} fs-400`}
                 onClick={ClearKeywords}
               >
                 Clear
