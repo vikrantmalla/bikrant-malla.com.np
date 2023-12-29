@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect, useContext } from "react";
 import ArchiveDetails from "./ArchiveCard";
 import { useProjectData } from "../../context/ProjectContext";
@@ -10,11 +10,13 @@ const Card = ({ project }: ArchiveList) => {
   useEffect(() => {
     const FilteredData = () => {
       if (filterKeyword) {
-        const filter = project.filter((tag: ArchiveDetailsData) => {
-          return filterKeyword.every((key: string) => {
-            return tag.build.includes(key);
-          });
-        });
+        const filter = project.projectHighlights.filter(
+          (tag: ArchiveDetailsData) => {
+            return filterKeyword.every((key: string) => {
+              return tag.build.includes(key);
+            });
+          }
+        );
         setNewData(filter);
       } else {
         setNewData(project);

@@ -21,7 +21,7 @@ const ArchiveDetails = ({
           <div className="details">
             <div className="title">
               <h1 className={`${joseFont} fs-400`}>{title}</h1>
-              {isnew && <span className="new ff-serif-jose">{`NEW!`}</span>}
+              {isnew && <span className={`new ${joseFont}`}>{`NEW!`}</span>}
             </div>
             <p className={`${joseFont} fs-300`}>{year}</p>
           </div>
