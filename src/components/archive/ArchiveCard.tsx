@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useProjectData } from "../../context/ProjectContext";
 import { ArchiveDetailsData } from "../../types/data";
+import { joseFont } from "@/helpers/lib/font";
 
 const ArchiveDetails = ({
   id,
@@ -19,10 +20,10 @@ const ArchiveDetails = ({
         <div className="project-head">
           <div className="details">
             <div className="title">
-              <h1 className="ff-serif-jose fs-400">{title}</h1>
+              <h1 className={`${joseFont} fs-400`}>{title}</h1>
               {isnew && <span className="new ff-serif-jose">{`NEW!`}</span>}
             </div>
-            <p className="ff-serif-jose fs-300">{year}</p>
+            <p className={`${joseFont} fs-300`}>{year}</p>
           </div>
           <div className="links">
             <Link href={viewcode} passHref>
@@ -37,7 +38,7 @@ const ArchiveDetails = ({
           {tags.map((tag, id) => {
             return (
               <span
-                className="ff-serif-jose fs-300"
+                className={`${joseFont} fs-300`}
                 key={id}
                 onClick={() => AddKeyword(tag)}
               >

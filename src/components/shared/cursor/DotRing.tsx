@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useContext } from "react";
 import useMousePosition from "../../../context/hooks/useMousePosition";
 import { useMouseCursor } from "../../../context/MouseContext";
