@@ -2,6 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { useProjectData } from "../../context/ProjectContext";
+import { joseFont } from "@/helpers/lib/font";
 
 const ArchiveHeader = () => {
   const { filterKeyword, RemoveKeyword, ClearKeywords } = useProjectData();
@@ -14,7 +15,7 @@ const ArchiveHeader = () => {
               {filterKeyword.map((tag: string, id: number) => {
                 return (
                   <div className="filter" key={id}>
-                    <span className="ff-serif-jose fs-400">{tag}</span>
+                    <span className={`link ${joseFont} fs-400`}>{tag}</span>
                     <i
                       className="fas fa-times"
                       onClick={() => RemoveKeyword(tag)}

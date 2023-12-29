@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { usePathname } from 'next/navigation'
+import { usePathname } from "next/navigation";
 import Switch from "./Switch";
 import Backdrop from "./Backdrop";
 // @ts-ignore:next-line
@@ -9,13 +9,14 @@ import { ContactPageData } from "../../../types/data";
 import Link from "next/link";
 import SocialMedia from "../footer/SocialMedia";
 import { FaTimes, FaBars } from "react-icons/fa";
+import { joseFont } from "@/helpers/lib/font";
 
 const NavBar = ({ contactData }: ContactPageData) => {
   const [click, setClick] = useState<boolean>(false);
   const [navColor, setNavColor] = useState<boolean>(false);
   const [activeLink, setActiveLink] = useState<string>("About Me");
 
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   const handleClick = () => setClick(!click);
 
@@ -85,7 +86,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
         <div className="nav-container">
           <nav className="nav">
             <ul className={click ? "nav-menu active" : "nav-menu"}>
-              <li className="nav-item ff-serif-jose fs-400">
+              <li className={`nav-item ${joseFont} fs-400`}>
                 {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#aboutme")}
@@ -99,7 +100,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                   </Link>
                 )}
               </li>
-              <li className="nav-item ff-serif-jose fs-400">
+              <li className={`nav-item ${joseFont} fs-400`}>
                 {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#skill")}
@@ -113,7 +114,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                   </Link>
                 )}
               </li>
-              <li className="nav-item ff-serif-jose fs-400">
+              <li className={`nav-item ${joseFont} fs-400`}>
                 {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#project")}
@@ -127,7 +128,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                   </Link>
                 )}
               </li>
-              <li className="nav-item ff-serif-jose fs-400">
+              <li className={`nav-item ${joseFont} fs-400`}>
                 {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#concept")}
@@ -141,7 +142,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                   </Link>
                 )}
               </li>
-              <li className="nav-item ff-serif-jose fs-400">
+              <li className={`nav-item ${joseFont} fs-400`}>
                 {pathname === "/" ? (
                   <a
                     onClick={() => _handleTabClick("#contact")}
@@ -170,7 +171,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
               <nav className="nav">
                 <ul className={click ? "nav-menu active" : "nav-menu"}>
                   <li
-                    className="nav-item ff-serif-jose fs-400"
+                    className={`nav-item ${joseFont} fs-400`}
                     onClick={handleClick}
                   >
                     {pathname === "/" ? (
@@ -189,7 +190,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                     )}
                   </li>
                   <li
-                    className="nav-item ff-serif-jose fs-400"
+                    className={`nav-item ${joseFont} fs-400`}
                     onClick={handleClick}
                   >
                     {pathname === "/" ? (
@@ -206,7 +207,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                     )}
                   </li>
                   <li
-                    className="nav-item ff-serif-jose fs-400"
+                    className={`nav-item ${joseFont} fs-400`}
                     onClick={handleClick}
                   >
                     {pathname === "/" ? (
@@ -225,7 +226,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                     )}
                   </li>
                   <li
-                    className="nav-item ff-serif-jose fs-400"
+                    className={`nav-item ${joseFont} fs-400`}
                     onClick={handleClick}
                   >
                     {pathname === "/" ? (

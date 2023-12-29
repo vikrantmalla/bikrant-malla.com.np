@@ -1,12 +1,13 @@
 import React from "react";
 import { BehancePageData, BehanceProject } from "../../types/data";
 import BehanceCard from "./BehanceCard";
+import { joseFont } from "@/helpers/lib/font";
 
 const Behance = ({ behanceData }: BehancePageData) => {
   return (
     <>
       <section className="concept" id="concept">
-        <h1 className="headingright ff-serif-jose fs-600">UI/UX Concept</h1>
+        <h1 className={`headingright ${joseFont} fs-600`}>UI/UX Concept</h1>
         <div className="behanceitems">
           {behanceData.behanceProject.map(
             (project: BehanceProject, index: number) => {
