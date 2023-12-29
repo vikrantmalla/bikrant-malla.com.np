@@ -6,6 +6,7 @@ import { ProjectHighlightsCard } from "../../types/data";
 import * as gtag from "../../helpers/lib/gtag";
 import baseUrl from "@/helpers/lib/baseUrl";
 import { FaChevronRight } from "react-icons/fa";
+import { joseFont } from "@/helpers/lib/font";
 
 const ProjectCard = ({ project }: ProjectHighlightsCard) => {
   const { images, alt, title, build, projectview } = project;
@@ -26,25 +27,26 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
           onMouseLeave={() => cursorChangeHandler("")}
         >
           <Link href={projectview} passHref>
-            <img loading="lazy" src={images} alt={alt} className="responsive-image" />
+            <img
+              loading="lazy"
+              src={images}
+              alt={alt}
+              className="responsive-image"
+            />
           </Link>
         </div>
       </div>
       <div className="card-details">
         <div className="card-head">
-          <h1 className="ff-serif-jose fs-400">{title}</h1>
-          <p className="ff-serif-jose fs-300">{build}</p>
+          <h1 className={`${joseFont} fs-400`}>{title}</h1>
+          <p className={`${joseFont} fs-300`}>{build}</p>
         </div>
         <div className="card-body">
           <div
             onMouseEnter={() => cursorChangeHandler("hovered")}
             onMouseLeave={() => cursorChangeHandler("")}
           >
-            <a
-              href={projectview}
-              onClick={handleClick}
-              aria-label="arrow"
-            >
+            <a href={projectview} onClick={handleClick} aria-label="arrow">
               <FaChevronRight size={20} />
             </a>
           </div>

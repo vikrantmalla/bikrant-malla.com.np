@@ -1,7 +1,8 @@
-"use client"
+"use client";
 import Link from "next/link";
 import { ProjectHighlightPageData, ProjectHighlights } from "../../types/data";
 import ProjectCard from "./ProjectCard";
+import { joseFont } from "@/helpers/lib/font";
 
 const ProjectHighlight = ({
   projectHighlightData,
@@ -9,7 +10,7 @@ const ProjectHighlight = ({
   return (
     <>
       <section className="project" id="project">
-        <h1 className="headingleft ff-serif-jose fs-600">Projects</h1>
+        <h1 className={`headingleft ${joseFont} fs-600`}>Projects</h1>
         <div className="projectItem">
           {projectHighlightData.projectHighlights.map(
             (project: ProjectHighlights, index: number) => {
@@ -18,7 +19,7 @@ const ProjectHighlight = ({
           )}
         </div>
         <Link href="/archive" passHref>
-          <h1 className="link ff-serif-jose fs-400">View the Archive</h1>
+          <h1 className={`link ${joseFont} fs-400`}>View the Archive</h1>
         </Link>
       </section>
     </>
