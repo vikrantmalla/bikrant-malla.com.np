@@ -1,8 +1,28 @@
 import ArchiveHeader from '@/components/archive/ArchiveHeader';
 import ArchiveList from '@/components/archive/ArchiveList';
 import { joseFont, tekoFont } from '@/helpers/lib/font';
-import { fetchProjectData } from '@/service/apiService';
+import { fetchMetaData, fetchProjectData } from '@/service/apiService';
 import React from 'react'
+
+export async function generateMetadata() {
+  const metatData = await fetchMetaData();
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  console.log(metatData);
+  return {
+    metadataBase: new URL(`${appUrl}`),
+    title: "Archive - Bikrant Malla",
+    authors: [{ name: `${metatData.metaTag[0].author}`, url: `${appUrl}/archive` }],
+    openGraph: {
+      title: "Archive - Bikrant Malla",
+      authors: [{ name: `${metatData.metaTag[0].author}`, url: `${appUrl}/archive` }],
+    },
+    twitter: {
+      title: "Archive - Bikrant Malla",
+    },
+  };
+}
+
+
 
 const Archive = async () => {
   const projectData = await fetchProjectData();
