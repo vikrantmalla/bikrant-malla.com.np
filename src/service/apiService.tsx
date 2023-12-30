@@ -1,11 +1,5 @@
 import baseUrl from "@/helpers/lib/baseUrl";
 
-export async function fetchMetaTagData() {
-  const res = await fetch(`${baseUrl}/api/metatags`);
-  const data = await res.json();
-  return data;
-}
-
 export async function fetchAboutMeData() {
   const res = await fetch(`${baseUrl}/api/aboutme`, { cache: 'no-store' });
   const data = await res.json();
@@ -33,6 +27,12 @@ export async function fetchProjectData() {
 
 export async function fetchContactData() {
   const res = await fetch(`${baseUrl}/api/contact`, { cache: 'no-store' });
+  const data = await res.json();
+  return data;
+}
+
+export async function fetchMetaData() {
+  const res = await fetch(`${baseUrl}/api/metadata`, { cache: 'no-store' });
   const data = await res.json();
   return data;
 }
