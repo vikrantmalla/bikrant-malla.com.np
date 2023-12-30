@@ -30,10 +30,10 @@ const AboutMe = ({ aboutMeData }: AboutMePageData) => {
       </section>
       <section id="skill">
         <h1 className={`headingright ${joseFont} fs-600`}>Skillsets</h1>
-        <div className="techstack">
+        <div>
           {aboutMeData.aboutme.map((skill, index) => (
-            <>
-              <div className="list" key={index}>
+            <div className="techstack" key={index}>
+              <div className="list">
                 <h2 className={`${joseFont} fs-500`}>
                   {`I'm`} <span>Comfortable</span> With
                 </h2>
@@ -53,7 +53,7 @@ const AboutMe = ({ aboutMeData }: AboutMePageData) => {
                   </p>
                 ))}
               </div>
-            </>
+            </div>
           ))}
         </div>
       </section>
