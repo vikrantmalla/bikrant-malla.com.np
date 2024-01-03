@@ -1,11 +1,12 @@
+import type { Viewport } from 'next'
 import ThemeProvider from "@/context/ThemeContext";
+import { fetchContactData, fetchMetaData } from "@/service/apiService";
 import NavBar from "@/components/shared/header/NavBar";
 import Footer from "@/components/shared/footer/Footer";
-import "../styles/globals.scss";
 import ScrollArrow from "@/components/shared/scrollup/ScrollArrow";
 import DotRing from "@/components/shared/cursor/DotRing";
 import MouseContextProvider from "@/context/MouseContext";
-import { fetchContactData, fetchMetaData } from "@/service/apiService";
+import "../styles/globals.scss";
 
 export async function generateMetadata() {
   const metatData = await fetchMetaData();
@@ -60,7 +61,21 @@ export async function generateMetadata() {
         "en-US": "/en-US",
       },
     },
+    verification: {
+      google: 'google',
+    },
   };
+}
+
+export function generateViewport(): Viewport {
+  return {
+    themeColor: 'black',
+    colorScheme: 'dark',
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: true
+  }
 }
 
 export default async function RootLayout({
