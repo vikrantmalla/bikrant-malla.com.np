@@ -201,6 +201,16 @@ declare namespace Data {
     category: string;
     label: string;
   }
+
+
+
+  declare namespace ProviderContext {
+    interface AppSlice {
+      toggleMenu: boolean;
+      navColor: boolean;
+      activeLink: string;
+    }
+  }
 }
 
 export = Data;

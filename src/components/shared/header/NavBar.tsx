@@ -1,27 +1,29 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import { FaTimes, FaBars } from "react-icons/fa";
+import Link from "next/link";
 import Switch from "./Switch";
 import Backdrop from "./Backdrop";
-// @ts-ignore:next-line
-import $ from "jquery";
-import { ContactPageData } from "../../../types/data";
-import Link from "next/link";
 import SocialMedia from "../footer/SocialMedia";
-import { FaTimes, FaBars } from "react-icons/fa";
 import * as gtag from "../../../helpers/lib/gtag";
 import { joseFont } from "@/helpers/lib/font";
+import { ContactPageData } from "../../../types/data";
+import { setActiveLink, setNavColor, setToggleMenu } from "@/redux/feature/appSlice";
 
 const NavBar = ({ contactData }: ContactPageData) => {
-  const [click, setClick] = useState<boolean>(false);
-  const [navColor, setNavColor] = useState<boolean>(false);
-  const [activeLink, setActiveLink] = useState<string>("About Me");
+  const dispatch = useDispatch<AppDispatch>();
+  const toggleMenu = useSelector((state: RootState) => state.app.toggleMenu);
+  const navColor = useSelector((state: RootState) => state.app.navColor);
+  const activeLink = useSelector((state: RootState) => state.app.activeLink);
 
   const pathname = usePathname();
 
   const handleClick = () => {
-    setClick(!click);
-    const mobileNav = !click ? "mobile_nav_open" : "mobile_nav_close";
+    dispatch(setToggleMenu(!toggleMenu));
+    const mobileNav = !toggleMenu ? "mobile_nav_open" : "mobile_nav_close";
     gtag.event({
       action: `${mobileNav}`,
       category: "mobile_navigation",
@@ -43,13 +45,14 @@ const NavBar = ({ contactData }: ContactPageData) => {
       const activeSection = sections.find(section => scrollTop >= section.range[0] && scrollTop <= section.range[1]);
 
       if (activeSection) {
-        setActiveLink(activeSection.label);
+        dispatch(setActiveLink(activeSection.label));
       }
     };
 
     const changeNavbarColor = () => {
-      setNavColor(window.scrollY >= 50);
+      dispatch(setNavColor(window.scrollY >= 50));
     };
+
 
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("scroll", changeNavbarColor);
@@ -58,7 +61,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("scroll", changeNavbarColor);
     };
-  }, []);
+  }, [dispatch]);
 
   const _handleTabClick = (tabId: string) => {
     const checkWidth = window.matchMedia("(min-width: 677px)");
@@ -73,7 +76,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
     element?.scrollIntoView({ behavior: 'smooth' });
 
     if (checkWidth.matches) {
-      setClick(!click);
+      setToggleMenu(!toggleMenu);
     }
   };
 
@@ -100,18 +103,18 @@ const NavBar = ({ contactData }: ContactPageData) => {
             ))}
           </ul>
         </nav>
-        {!click && (
+        {!toggleMenu && (
           <div className="menu-icon" onClick={handleClick}>
-            {click ? <FaTimes /> : <FaBars />}
+            {toggleMenu ? <FaTimes /> : <FaBars />}
           </div>
         )}
-        {click && (
+        {toggleMenu && (
           <>
             <div className="menu-icon" onClick={handleClick}>
-              {click ? <FaTimes /> : <FaBars />}
+              {toggleMenu ? <FaTimes /> : <FaBars />}
             </div>
             <nav className="nav">
-              <ul className={click ? "nav-menu active" : "nav-menu"}>
+              <ul className={toggleMenu ? "nav-menu active" : "nav-menu"}>
                 {['aboutme', 'skill', 'project', 'concept', 'contact'].map((tabId) => (
                   <li
                     key={tabId}
@@ -148,259 +151,3 @@ const NavBar = ({ contactData }: ContactPageData) => {
 };
 
 export default NavBar;
-
-// const NavBar = ({ contactData }: ContactPageData) => {
-//   const [click, setClick] = useState<boolean>(false);
-//   const [navColor, setNavColor] = useState<boolean>(false);
-//   const [activeLink, setActiveLink] = useState<string>("About Me");
-
-//   const pathname = usePathname();
-
-//   const handleClick = () => {
-//     setClick(!click);
-//     const mobileNav = !click ? "mobile_nav_open" : "mobile_nav_close";
-//     gtag.event({
-//       action: `${mobileNav}`,
-//       category: "mobile_navigation",
-//       label: "hamburger_menu_click",
-//     });
-//   };
-
-//   if (process.browser) {
-//     if (click) {
-//       document.body.classList.add("active-modal");
-//     } else {
-//       document.body.classList.remove("active-modal");
-//     }
-//   }
-
-//   const _handleTabClick = (tabId: string) => {
-//     console.log(tabId)
-//     const checkWidth = window.matchMedia("(min-width: 677px)");
-//     console.log(checkWidth)
-//     gtag.event({
-//       action: `#${tabId}`,
-//       category: "ui_interaction",
-//       label: "tab_id_click",
-//     });
-//     const element = document.getElementById(tabId);
-//     element?.scrollIntoView({
-//       behavior: 'smooth'
-//     });
-//     // @ts-ignore:next-line
-//     if (checkWidth === "667px") {
-//       setClick(!click);
-//     }
-//   };
-
-//   useEffect(() => {
-//     window.addEventListener("scroll", changeNavbarColor);
-//     const handleScroll = () => {
-//       const scrollTop = window.pageYOffset;
-
-//       if (scrollTop >= 515 && scrollTop <= 900) {
-//         setActiveLink("About Me");
-//       } else if (scrollTop >= 900 && scrollTop <= 1490) {
-//         setActiveLink("Skills");
-//       } else if (scrollTop >= 1490 && scrollTop <= 2360) {
-//         setActiveLink("Projects");
-//       } else if (scrollTop >= 2360 && scrollTop <= 3200) {
-//         setActiveLink("Concepts");
-//       } else if (scrollTop >= 3200 && scrollTop <= 4200) {
-//         setActiveLink("Contact");
-//       }
-//     };
-
-//     window.addEventListener("scroll", handleScroll);
-
-//     return () => {
-//       window.removeEventListener("scroll", handleScroll);
-//     };
-//   });
-
-//   const changeNavbarColor = () => {
-//     if (window.scrollY >= 50) {
-//       setNavColor(true);
-//     } else {
-//       setNavColor(false);
-//     }
-//   };
-
-//   return (
-//       <header className={`header ${navColor ? "colorChange" : ""}`}>
-//         <div className="nav-container">
-//           <nav className="nav">
-//             <ul className={click ? "nav-menu active" : "nav-menu"}>
-//               <li className={`nav-item ${joseFont} fs-400`}>
-//                 {pathname === "/" ? (
-//                   <a
-//                     onClick={() => _handleTabClick("aboutme")}
-//                     className={activeLink === "About Me" ? "activeLink" : ""}
-//                   >
-//                     AboutMe
-//                   </a>
-//                 ) : (
-//                   <Link href="/" passHref>
-//                     AboutMe
-//                   </Link>
-//                 )}
-//               </li>
-//               <li className={`nav-item ${joseFont} fs-400`}>
-//                 {pathname === "/" ? (
-//                   <a
-//                     onClick={() => _handleTabClick("skill")}
-//                     className={activeLink === "Skills" ? "activeLink" : ""}
-//                   >
-//                     Skill
-//                   </a>
-//                 ) : (
-//                   <Link href="/" passHref>
-//                     Skill
-//                   </Link>
-//                 )}
-//               </li>
-//               <li className={`nav-item ${joseFont} fs-400`}>
-//                 {pathname === "/" ? (
-//                   <a
-//                     onClick={() => _handleTabClick("#project")}
-//                     className={activeLink === "Projects" ? "activeLink" : ""}
-//                   >
-//                     Project
-//                   </a>
-//                 ) : (
-//                   <Link href="/" passHref>
-//                     Project
-//                   </Link>
-//                 )}
-//               </li>
-//               <li className={`nav-item ${joseFont} fs-400`}>
-//                 {pathname === "/" ? (
-//                   <a
-//                     onClick={() => _handleTabClick("concept")}
-//                     className={activeLink === "Concepts" ? "activeLink" : ""}
-//                   >
-//                     Concept
-//                   </a>
-//                 ) : (
-//                   <Link href="/" passHref>
-//                     Concept
-//                   </Link>
-//                 )}
-//               </li>
-//               <li className={`nav-item ${joseFont} fs-400`}>
-//                 {pathname === "/" ? (
-//                   <a
-//                     onClick={() => _handleTabClick("contact")}
-//                     className={activeLink === "Contact" ? "activeLink" : ""}
-//                   >
-//                     Contact
-//                   </a>
-//                 ) : (
-//                   <Link href="/" passHref>
-//                     Contact
-//                   </Link>
-//                 )}
-//               </li>
-//             </ul>
-//           </nav>
-//           {!click && (
-//             <div className="menu-icon" onClick={handleClick}>
-//               {click ? <FaTimes /> : <FaBars />}
-//             </div>
-//           )}
-//           {click && (
-//             <>
-//               <div className="menu-icon" onClick={handleClick}>
-//                 {click ? <FaTimes /> : <FaBars />}
-//               </div>
-//               <nav className="nav">
-//                 <ul className={click ? "nav-menu active" : "nav-menu"}>
-//                   <li
-//                     className={`nav-item ${joseFont} fs-400`}
-//                     onClick={handleClick}
-//                   >
-//                     {pathname === "/" ? (
-//                       <a
-//                         onClick={() => _handleTabClick("aboutme")}
-//                         className={
-//                           activeLink === "About Me" ? "activeLink" : ""
-//                         }
-//                       >
-//                         AboutMe
-//                       </a>
-//                     ) : (
-//                       <Link href="/" passHref>
-//                         AboutMe
-//                       </Link>
-//                     )}
-//                   </li>
-//                   <li
-//                     className={`nav-item ${joseFont} fs-400`}
-//                     onClick={handleClick}
-//                   >
-//                     {pathname === "/" ? (
-//                       <a
-//                         onClick={() => _handleTabClick("skill")}
-//                         className={activeLink === "Skills" ? "activeLink" : ""}
-//                       >
-//                         Skill
-//                       </a>
-//                     ) : (
-//                       <Link href="/" passHref>
-//                         Skill
-//                       </Link>
-//                     )}
-//                   </li>
-//                   <li
-//                     className={`nav-item ${joseFont} fs-400`}
-//                     onClick={handleClick}
-//                   >
-//                     {pathname === "/" ? (
-//                       <a
-//                         onClick={() => _handleTabClick("project")}
-//                         className={
-//                           activeLink === "Projects" ? "activeLink" : ""
-//                         }
-//                       >
-//                         Project
-//                       </a>
-//                     ) : (
-//                       <Link href="/" passHref>
-//                         Project
-//                       </Link>
-//                     )}
-//                   </li>
-//                   <li
-//                     className={`nav-item ${joseFont} fs-400`}
-//                     onClick={handleClick}
-//                   >
-//                     {pathname === "/" ? (
-//                       <a
-//                         onClick={() => _handleTabClick("concept")}
-//                         className={
-//                           activeLink === "Concepts" ? "activeLink" : ""
-//                         }
-//                       >
-//                         Concept
-//                       </a>
-//                     ) : (
-//                       <Link href="/" passHref>
-//                         Concept
-//                       </Link>
-//                     )}
-//                   </li>
-//                   <li className="social-media" style={{ margin: "1rem 0" }}>
-//                     <SocialMedia contactData={contactData} visibleCount={2} />
-//                   </li>
-//                 </ul>
-//               </nav>
-//               <Backdrop onClose={handleClick} />
-//             </>
-//           )}
-//           <Switch />
-//         </div>
-//       </header>
-//   );
-// };
-
-// export default NavBar;
