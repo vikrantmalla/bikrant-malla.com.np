@@ -1,4 +1,4 @@
-import type { Viewport } from 'next'
+import type { Viewport } from "next";
 import ThemeProvider from "@/context/ThemeContext";
 import { fetchContactData, fetchMetaData } from "@/service/apiService";
 import NavBar from "@/components/shared/header/NavBar";
@@ -7,6 +7,7 @@ import ScrollArrow from "@/components/shared/scrollup/ScrollArrow";
 import DotRing from "@/components/shared/cursor/DotRing";
 import MouseContextProvider from "@/context/MouseContext";
 import "../styles/globals.scss";
+import { ReduxProvider } from "@/redux/Provider";
 
 export async function generateMetadata() {
   const metatData = await fetchMetaData();
@@ -18,7 +19,7 @@ export async function generateMetadata() {
     keywords: `${metatData.metaTag[0].keyword}`,
     authors: [{ name: `${metatData.metaTag[0].author}`, url: `${appUrl}` }],
     referrer: "origin-when-cross-origin",
-    category: 'portfolio',
+    category: "portfolio",
     openGraph: {
       title: "Bikrant Malla - Frontend Web Developer",
       description: `${metatData.metaTag[0].description}`,
@@ -35,12 +36,12 @@ export async function generateMetadata() {
       type: "website",
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: "Bikrant Malla - Frontend Web Developer",
       description: `${metatData.metaTag[0].description}`,
       creator: `${metatData.metaTag[0].twitterID}`,
       creatorId: `${metatData.metaTag[0].twitterID}`,
-      images: [ `${appUrl}/ogimg.png`],
+      images: [`${appUrl}/ogimg.png`],
     },
     robots: {
       index: false,
@@ -62,20 +63,20 @@ export async function generateMetadata() {
       },
     },
     verification: {
-      google: 'google',
+      google: "google",
     },
   };
 }
 
 export function generateViewport(): Viewport {
   return {
-    themeColor: 'black',
-    colorScheme: 'dark',
-    width: 'device-width',
+    themeColor: "black",
+    colorScheme: "dark",
+    width: "device-width",
     initialScale: 1,
     maximumScale: 1,
-    userScalable: true
-  }
+    userScalable: true,
+  };
 }
 
 export default async function RootLayout({
@@ -87,15 +88,17 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <ThemeProvider>
-        <body>
-          <MouseContextProvider>
-            <NavBar contactData={contactData} />
-            {children}
-            <DotRing />
-            <ScrollArrow />
-            <Footer />
-          </MouseContextProvider>
-        </body>
+        <ReduxProvider>
+          <body>
+            <MouseContextProvider>
+              <NavBar contactData={contactData} />
+              {children}
+              <DotRing />
+              <ScrollArrow />
+              <Footer />
+            </MouseContextProvider>
+          </body>
+        </ReduxProvider>
       </ThemeProvider>
     </html>
   );
