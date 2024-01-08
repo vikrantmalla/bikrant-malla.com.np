@@ -210,6 +210,10 @@ declare namespace Data {
       navColor: boolean;
       activeLink: string;
     }
+
+    interface ThemeSlice {
+      isDarkTheme: boolean
+    }
   }
 }
 
