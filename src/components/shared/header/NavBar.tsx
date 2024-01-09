@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { FaTimes, FaBars } from "react-icons/fa";
 import Link from "next/link";
-import Switch from "./Switch";
+import ThemeSwitch from "./ThemeSwitch";
 import Backdrop from "./Backdrop";
 import SocialMedia from "../footer/SocialMedia";
 import * as gtag from "../../../helpers/lib/gtag";
@@ -144,7 +144,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
             <Backdrop onClose={handleClick} />
           </>
         )}
-        <Switch />
+        <ThemeSwitch />
       </div>
     </header>
   );
