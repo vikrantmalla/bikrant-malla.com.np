@@ -86,8 +86,7 @@ export default async function RootLayout({
 }) {
   const contactData = await fetchContactData();
   return (
-    <html lang="en">
-      <ThemeProvider>
+    <html lang="en" >
         <ReduxProvider>
           <body>
             <MouseContextProvider>
@@ -99,7 +98,6 @@ export default async function RootLayout({
             </MouseContextProvider>
           </body>
         </ReduxProvider>
-      </ThemeProvider>
     </html>
   );
 }
