@@ -1,11 +1,23 @@
 "use client";
 import React from "react";
-import Link from "next/link";
-import { useProjectData } from "../../context/ProjectContext";
+import { useSelector } from "react-redux";
+import { RootState, store } from "@/redux/store";
 import { joseFont } from "@/helpers/lib/font";
+import { IoIosClose } from "react-icons/io";
+import { clearKeywords, removeKeyword } from "@/redux/feature/projectSlice";
 
 const ArchiveHeader = () => {
-  const { filterKeyword, RemoveKeyword, ClearKeywords } = useProjectData();
+  const filterKeyword = useSelector(
+    (state: RootState) => state.project.filterKeyword
+  );
+
+  const RemoveKeyword = (key: string) => {
+    store.dispatch(removeKeyword(key));
+  };
+
+  const ClearKeywords = () => {
+    store.dispatch(clearKeywords());
+  };
   return (
     <>
       <header className="archive-header">
@@ -16,8 +28,9 @@ const ArchiveHeader = () => {
                 return (
                   <div className="filter" key={id}>
                     <span className={`link ${joseFont} fs-400`}>{tag}</span>
-                    <i
-                      className="fas fa-times"
+                    <IoIosClose
+                      className="close"
+                      size={35}
                       onClick={() => RemoveKeyword(tag)}
                     />
                   </div>

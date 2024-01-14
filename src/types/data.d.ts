@@ -212,12 +212,17 @@ declare namespace Data {
     }
 
     interface ThemeSlice {
-      isDarkTheme: boolean
+      isDarkTheme: boolean;
       currentTheme: string[];
       themes: {
         light: string[];
         dark: string[];
       };
+    }
+
+    interface ProjectSlice {
+      filterKeyword: string[];
+      projectList: string[];
     }
   }
 }

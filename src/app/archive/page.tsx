@@ -7,7 +7,6 @@ import React from 'react'
 export async function generateMetadata() {
   const metatData = await fetchMetaData();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  console.log(metatData);
   return {
     metadataBase: new URL(`${appUrl}`),
     title: "Archive - Bikrant Malla",
