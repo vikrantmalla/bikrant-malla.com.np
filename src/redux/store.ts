@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import appReducer from "./feature/appSlice";
 import themeReducer from "./feature/themeSlice";
+import projectReducer from "./feature/projectSlice"
 
 export const store = configureStore({
   reducer: {
     app: appReducer,
-    theme: themeReducer
+    theme: themeReducer,
+    project: projectReducer
   },
   devTools: process.env.NODE_ENV !== "production",
 });
