@@ -10,20 +10,19 @@ import "../styles/globals.scss";
 import { ReduxProvider } from "@/redux/Provider";
 
 export async function generateMetadata() {
-  const metatData = await fetchMetaData();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
   return {
     metadataBase: new URL(`${appUrl}`),
     title: "Bikrant Malla - Frontend Web Developer",
-    description: `${metatData.metaTag[0].description}`,
-    keywords: `${metatData.metaTag[0].keyword}`,
-    authors: [{ name: `${metatData.metaTag[0].author}`, url: `${appUrl}` }],
+    description: "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
+    keywords: "bikrant malla, vikrant malla, ui/ux, portfolio, web, web developer, frontend, developer, frontend enginner, project, design, bikrantmalla.com.np, reactjs",
+    authors: [{ name: "Bikrant Malla", url: `${appUrl}` }],
     referrer: "origin-when-cross-origin",
     category: "portfolio",
     openGraph: {
       title: "Bikrant Malla - Frontend Web Developer",
-      description: `${metatData.metaTag[0].description}`,
-      authors: [{ name: `${metatData.metaTag[0].author}`, url: `${appUrl}` }],
+      description: "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
+      authors: [{ name: "Bikrant Malla", url: `${appUrl}` }],
       url: `${appUrl}`,
       siteName: "Bikrant Malla",
       images: [
@@ -38,9 +37,9 @@ export async function generateMetadata() {
     twitter: {
       card: "summary_large_image",
       title: "Bikrant Malla - Frontend Web Developer",
-      description: `${metatData.metaTag[0].description}`,
-      creator: `${metatData.metaTag[0].twitterID}`,
-      creatorId: `${metatData.metaTag[0].twitterID}`,
+      description: "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
+      creator: "@Vikrantmalla09",
+      creatorId: "@Vikrantmalla09",
       images: [`${appUrl}/ogimg.png`],
     },
     robots: {
