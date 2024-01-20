@@ -50,7 +50,7 @@ export default function Switch() {
       onClick={() => toggle(currentTheme)}
       aria-label="theme-switch"
     >
-      {!isDarkTheme ? <FaMoon /> : <FaSun size={15} style={{ color: "fff" }} />}
+      {!isDarkTheme ? <FaMoon style={{ color: "#000" }} /> : <FaSun size={15} style={{ color: "fff" }} />}
     </button>
   );
 }

@@ -14,14 +14,17 @@ export async function generateMetadata() {
   return {
     metadataBase: new URL(`${appUrl}`),
     title: "Bikrant Malla - Frontend Web Developer",
-    description: "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
-    keywords: "bikrant malla, vikrant malla, ui/ux, portfolio, web, web developer, frontend, developer, frontend enginner, project, design, bikrantmalla.com.np, reactjs",
+    description:
+      "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
+    keywords:
+      "bikrant malla, vikrant malla, ui/ux, portfolio, web, web developer, frontend, developer, frontend enginner, project, design, bikrantmalla.com.np, reactjs",
     authors: [{ name: "Bikrant Malla", url: `${appUrl}` }],
     referrer: "origin-when-cross-origin",
     category: "portfolio",
     openGraph: {
       title: "Bikrant Malla - Frontend Web Developer",
-      description: "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
+      description:
+        "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
       authors: [{ name: "Bikrant Malla", url: `${appUrl}` }],
       url: `${appUrl}`,
       siteName: "Bikrant Malla",
@@ -37,7 +40,8 @@ export async function generateMetadata() {
     twitter: {
       card: "summary_large_image",
       title: "Bikrant Malla - Frontend Web Developer",
-      description: "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
+      description:
+        "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
       creator: "@Vikrantmalla09",
       creatorId: "@Vikrantmalla09",
       images: [`${appUrl}/ogimg.png`],
@@ -69,8 +73,11 @@ export async function generateMetadata() {
 
 export function generateViewport(): Viewport {
   return {
-    themeColor: "black",
-    colorScheme: "dark",
+    themeColor: [
+      { media: "(prefers-color-scheme: light)", color: "#f9fafb" },
+      { media: "(prefers-color-scheme: dark)", color: "#13141c" },
+    ],
+    colorScheme: "dark light",
     width: "device-width",
     initialScale: 1,
     maximumScale: 1,
@@ -85,18 +92,18 @@ export default async function RootLayout({
 }) {
   const contactData = await fetchContactData();
   return (
-    <html lang="en" >
-        <ReduxProvider>
-          <body>
-            <MouseContextProvider>
-              <NavBar contactData={contactData} />
-              {children}
-              <DotRing />
-              <ScrollArrow />
-              <Footer />
-            </MouseContextProvider>
-          </body>
-        </ReduxProvider>
+    <html lang="en">
+      <ReduxProvider>
+        <body>
+          <MouseContextProvider>
+            <NavBar contactData={contactData} />
+            {children}
+            <DotRing />
+            <ScrollArrow />
+            <Footer />
+          </MouseContextProvider>
+        </body>
+      </ReduxProvider>
     </html>
   );
 }
