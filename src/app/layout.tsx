@@ -1,13 +1,11 @@
 import type { Viewport } from "next";
-import ThemeProvider from "@/context/ThemeContext";
-import { fetchContactData, fetchMetaData } from "@/service/apiService";
+import { ReduxProvider } from "@/redux/Provider";
+import { fetchContactData } from "@/service/apiService";
 import NavBar from "@/components/shared/header/NavBar";
 import Footer from "@/components/shared/footer/Footer";
 import ScrollArrow from "@/components/shared/scrollup/ScrollArrow";
 import DotRing from "@/components/shared/cursor/DotRing";
-import MouseContextProvider from "@/context/MouseContext";
 import "../styles/globals.scss";
-import { ReduxProvider } from "@/redux/Provider";
 
 export async function generateMetadata() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;

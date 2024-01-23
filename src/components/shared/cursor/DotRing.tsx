@@ -1,9 +1,8 @@
 "use client";
-import React, { useContext } from "react";
-import useMousePosition from "../../../context/hooks/useMousePosition";
-import { useMouseCursor } from "../../../context/MouseContext";
+import React from "react";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
+import useMousePosition from "../../../context/hooks/useMousePosition";
 
 const DotRing = () => {
   const cursorType = useSelector(

@@ -1,15 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import Image from "next/image";
-import { useMouseCursor } from "../../context/MouseContext";
-import { ProjectHighlightsCard } from "../../types/data";
-import * as gtag from "../../helpers/lib/gtag";
-import baseUrl from "@/helpers/lib/baseUrl";
-import { FaChevronRight } from "react-icons/fa";
-import { joseFont } from "@/helpers/lib/font";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
+import { FaChevronRight } from "react-icons/fa";
+import { joseFont } from "@/helpers/lib/font";
+import { ProjectHighlightsCard } from "../../types/data";
 import { setCursorType } from "@/redux/feature/mouseSlice";
+import * as gtag from "../../helpers/lib/gtag";
 
 const ProjectCard = ({ project }: ProjectHighlightsCard) => {
   const { images, alt, title, build, projectview } = project;
