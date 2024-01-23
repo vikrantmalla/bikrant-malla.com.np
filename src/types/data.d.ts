@@ -224,6 +224,11 @@ declare namespace Data {
       filterKeyword: string[];
       projectList: string[];
     }
+
+    interface MouseSlice {
+      cursorType: string;
+      mousePosition: { x: number; y: number };
+    }
   }
 }
 

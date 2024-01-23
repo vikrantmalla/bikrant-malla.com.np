@@ -7,15 +7,22 @@ import { BehanceCard } from "../../types/data";
 import * as gtag from "../../helpers/lib/gtag";
 import { FaChevronRight } from "react-icons/fa";
 import { joseFont } from "@/helpers/lib/font";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { setCursorType } from "@/redux/feature/mouseSlice";
 const BehanceCard = ({ project }: BehanceCard) => {
   const { id, images, alt, title, subTitle, tools, projectview } = project;
-  const { cursorChangeHandler } = useMouseCursor();
+  const dispatch = useDispatch<AppDispatch>();
   const handleClick = () => {
     gtag.event({
       action: "behance_project_clicked",
       category: "engagement",
       label: "method",
     });
+  };
+
+  const cursorChangeHandler = (cursorType: React.SetStateAction<string>) => {
+    dispatch(setCursorType(cursorType));
   };
 
   return (
