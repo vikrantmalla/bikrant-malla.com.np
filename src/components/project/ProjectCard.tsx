@@ -7,10 +7,13 @@ import * as gtag from "../../helpers/lib/gtag";
 import baseUrl from "@/helpers/lib/baseUrl";
 import { FaChevronRight } from "react-icons/fa";
 import { joseFont } from "@/helpers/lib/font";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { setCursorType } from "@/redux/feature/mouseSlice";
 
 const ProjectCard = ({ project }: ProjectHighlightsCard) => {
   const { images, alt, title, build, projectview } = project;
-  const { cursorChangeHandler } = useMouseCursor();
+  const dispatch = useDispatch<AppDispatch>();
   const handleClick = () => {
     gtag.event({
       action: "project_highlight_clicked",
@@ -18,6 +21,11 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
       label: "method",
     });
   };
+
+  const cursorChangeHandler = (cursorType: React.SetStateAction<string>) => {
+    dispatch(setCursorType(cursorType));
+  };
+
   return (
     <div className="card">
       <div className="card-img">

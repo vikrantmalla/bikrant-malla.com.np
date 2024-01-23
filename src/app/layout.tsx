@@ -95,13 +95,11 @@ export default async function RootLayout({
     <html lang="en">
       <ReduxProvider>
         <body>
-          <MouseContextProvider>
             <NavBar contactData={contactData} />
             {children}
             <DotRing />
             <ScrollArrow />
             <Footer />
-          </MouseContextProvider>
         </body>
       </ReduxProvider>
     </html>

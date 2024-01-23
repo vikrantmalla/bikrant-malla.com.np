@@ -2,9 +2,13 @@
 import React, { useContext } from "react";
 import useMousePosition from "../../../context/hooks/useMousePosition";
 import { useMouseCursor } from "../../../context/MouseContext";
+import { RootState } from "@/redux/store";
+import { useSelector } from "react-redux";
 
 const DotRing = () => {
-  const { cursorType } = useMouseCursor();
+  const cursorType = useSelector(
+    (state: RootState) => state.mouseEffect.cursorType
+  );
   const { x, y } = useMousePosition();
   return (
     <>
