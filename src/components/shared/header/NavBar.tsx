@@ -11,7 +11,11 @@ import SocialMedia from "../footer/SocialMedia";
 import * as gtag from "../../../helpers/lib/gtag";
 import { joseFont } from "@/helpers/lib/font";
 import { ContactPageData } from "../../../types/data";
-import { setActiveLink, setNavColor, setToggleMenu } from "@/redux/feature/appSlice";
+import {
+  setActiveLink,
+  setNavColor,
+  setToggleMenu,
+} from "@/redux/feature/appSlice";
 
 const NavBar = ({ contactData }: ContactPageData) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -42,10 +46,13 @@ const NavBar = ({ contactData }: ContactPageData) => {
         { id: "contact", range: [3200, 4200], label: "Contact" },
       ];
 
-      const activeSection = sections.find(section => scrollTop >= section.range[0] && scrollTop <= section.range[1]);
+      const activeSection = sections.find(
+        (section) =>
+          scrollTop >= section.range[0] && scrollTop <= section.range[1]
+      );
 
-      if (activeSection) {
-        dispatch(setActiveLink(activeSection.label));
+      if (activeSection && activeSection.id !== activeLink) {
+        dispatch(setActiveLink(activeSection.id));
       }
     };
 
@@ -61,7 +68,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("scroll", changeNavbarColor);
     };
-  }, [dispatch]);
+  }, [activeLink, dispatch]);
 
   const _handleTabClick = (tabId: string) => {
     const checkWidth = window.matchMedia("(min-width: 677px)");
@@ -73,7 +80,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
     });
 
     const element = document.getElementById(tabId);
-    element?.scrollIntoView({ behavior: 'smooth' });
+    element?.scrollIntoView({ behavior: "smooth" });
 
     if (checkWidth.matches) {
       setToggleMenu(!toggleMenu);
@@ -85,22 +92,32 @@ const NavBar = ({ contactData }: ContactPageData) => {
       <div className="nav-container">
         <nav className="nav">
           <ul className={"nav-menu"}>
-            {['aboutme', 'skill', 'project', 'concept', 'contact'].map((tabId) => (
-              <li key={tabId} className={`nav-item ${joseFont} fs-400 `}  style={{ textTransform: 'capitalize' }}>
-                {pathname === "/" ? (
-                  <a
-                    onClick={() => _handleTabClick(tabId)}
-                    className={activeLink === tabId.replace('#', '') ? "activeLink" : ""}
-                  >
-                    {tabId.replace('#', '')}
-                  </a>
-                ) : (
-                  <Link href="/" passHref>
-                    {tabId.replace('#', '')}
-                  </Link>
-                )}
-              </li>
-            ))}
+            {["aboutme", "skill", "project", "concept", "contact"].map(
+              (tabId) => (
+                <li
+                  key={tabId}
+                  className={`nav-item ${joseFont} fs-400 `}
+                  style={{ textTransform: "capitalize" }}
+                >
+                  {pathname === "/" ? (
+                    <a
+                      onClick={() => _handleTabClick(tabId)}
+                      className={
+                        activeLink === tabId.replace("#", "")
+                          ? "activeLink"
+                          : ""
+                      }
+                    >
+                      {tabId.replace("#", "")}
+                    </a>
+                  ) : (
+                    <Link href="/" passHref>
+                      {tabId.replace("#", "")}
+                    </Link>
+                  )}
+                </li>
+              )
+            )}
           </ul>
         </nav>
         {!toggleMenu && (
@@ -115,27 +132,33 @@ const NavBar = ({ contactData }: ContactPageData) => {
             </div>
             <nav className="nav">
               <ul className={toggleMenu ? "nav-menu active" : "nav-menu"}>
-                {['aboutme', 'skill', 'project', 'concept', 'contact'].map((tabId) => (
-                  <li
-                    key={tabId}
-                    className={`nav-item ${joseFont} fs-400`}
-                    onClick={handleClick}
-                    style={{ textTransform: 'capitalize' }}
-                  >
-                    {pathname === "/" ? (
-                      <a
-                        onClick={() => _handleTabClick(tabId)}
-                        className={activeLink === tabId.replace('#', '') ? "activeLink" : ""}
-                      >
-                        {tabId.replace('#', '')}
-                      </a>
-                    ) : (
-                      <Link href="/" passHref>
-                        {tabId.replace('#', '')}
-                      </Link>
-                    )}
-                  </li>
-                ))}
+                {["aboutme", "skill", "project", "concept", "contact"].map(
+                  (tabId) => (
+                    <li
+                      key={tabId}
+                      className={`nav-item ${joseFont} fs-400`}
+                      onClick={handleClick}
+                      style={{ textTransform: "capitalize" }}
+                    >
+                      {pathname === "/" ? (
+                        <a
+                          onClick={() => _handleTabClick(tabId)}
+                          className={
+                            activeLink === tabId.replace("#", "")
+                              ? "activeLink"
+                              : ""
+                          }
+                        >
+                          {tabId.replace("#", "")}
+                        </a>
+                      ) : (
+                        <Link href="/" passHref>
+                          {tabId.replace("#", "")}
+                        </Link>
+                      )}
+                    </li>
+                  )
+                )}
                 <li className="social-media" style={{ margin: "1rem 0" }}>
                   <SocialMedia contactData={contactData} visibleCount={2} />
                 </li>
