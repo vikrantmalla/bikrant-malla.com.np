@@ -10,10 +10,10 @@ export async function generateMetadata() {
   return {
     metadataBase: new URL(`${appUrl}`),
     title: "Archive - Bikrant Malla",
-    authors: [{ name: `${metatData.metaTag[0].author}`, url: `${appUrl}/archive` }],
+    authors: [{ name: "Bikrant Malla", url: `${appUrl}/archive` }],
     openGraph: {
       title: "Archive - Bikrant Malla",
-      authors: [{ name: `${metatData.metaTag[0].author}`, url: `${appUrl}/archive` }],
+      authors: [{ name: "Bikrant Malla", url: `${appUrl}/archive` }],
     },
     twitter: {
       title: "Archive - Bikrant Malla",
