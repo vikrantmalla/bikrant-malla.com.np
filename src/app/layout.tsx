@@ -90,7 +90,7 @@ export default async function RootLayout({
 }) {
   const contactData = await fetchContactData();
   return (
-    <html>
+    <html lang="en">
       <ReduxProvider>
         <body>
             <NavBar contactData={contactData} />
