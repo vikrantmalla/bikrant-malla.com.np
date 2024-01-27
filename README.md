@@ -11,17 +11,17 @@
 - **Styling**: [SCSS](https://sass-lang.com/)
 - **Testing framework**: [Jest](https://jestjs.io/)
 - **Analytics** [Google Analytics](https://analytics.google.com)
-- **Deployment**: [Netlify](https://www.netlify.com/)
+- **Deployment**: [Vercel](https://vercel.com/)
 
 ## Overview
 
 - `__test__` - Test
-- `pages/*` - The different page (index, archive, 404).
-- `pages/api/*` - [API routes](https://nextjs.org/docs/api-routes/introduction).
+- `app/page.tsx` - The home page(index).
+- `app/archive/*` - The archive page.
+- `app/api/*` - [API routes](https://nextjs.org/docs/api-routes/introduction).
+- `app/service/*` - API call services
 - `helpers/*` - A collection of helpful utilities or code for external services.
-- `context/*` - A collection of context-API service (MouseContext, ProjectContext, ThemeContext).
 - `helpers/lib/*` - Short for "library", it contain function for connect mongoose and (baseURL) for prod/dev mode.
 - `helpers/model/*` - My Mongoose schema, which uses a MongoDB database..
-- `pages/*` - All other static pages.
 - `public/*` - Static assets including fonts and images.
 - `styles/*` - All style CSS.
