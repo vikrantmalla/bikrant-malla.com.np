@@ -81,3 +81,34 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { _id } = await request.json();
+
+    const deletedAboutmeData = await Aboutme.findByIdAndDelete(_id);
+
+    if (deletedAboutmeData) {
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Data deleted successfully",
+        },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        { success: false, message: "Data not found" },
+        { status: 404 }
+      );
+    }
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal server error",
+      },
+      { status: 500 }
+    );
+  }
+}
