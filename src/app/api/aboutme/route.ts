@@ -44,3 +44,40 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { _id, ...updatedData } = body;
+
+    const updatedAboutmeData = await Aboutme.findByIdAndUpdate(
+      _id,
+      updatedData,
+      { new: true }
+    );
+
+    if (updatedAboutmeData) {
+      return NextResponse.json(
+        {
+          success: true,
+          aboutme: updatedAboutmeData,
+          message: "Data updated successfully",
+        },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json(
+        { success: false, message: "Data not found" },
+        { status: 404 }
+      );
+    }
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal server error",
+      },
+      { status: 500 }
+    );
+  }
+}
