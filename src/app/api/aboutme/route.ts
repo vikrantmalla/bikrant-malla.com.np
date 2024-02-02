@@ -6,11 +6,17 @@ dbConnect();
 export async function GET() {
   try {
     const aboutmeDetails = await Aboutme.find({});
-    return NextResponse.json({ success: true, aboutme: aboutmeDetails });
+    return NextResponse.json(
+      { success: true, aboutme: aboutmeDetails },
+      { status: 200 }
+    );
   } catch (error) {
-    return NextResponse.json({
-      success: false,
-      message: "Internal server error",
-    });
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal server error",
+      },
+      { status: 500 }
+    );
   }
 }
