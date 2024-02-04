@@ -9,6 +9,7 @@ import "../styles/globals.scss";
 
 export async function generateMetadata() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const googleSiteID = process.env.NEXT_PUBLIC_GOOGLE_SITE_ID
   return {
     metadataBase: new URL(`${appUrl}`),
     title: "Bikrant Malla - Frontend Web Developer",
@@ -64,7 +65,7 @@ export async function generateMetadata() {
       },
     },
     verification: {
-      google: "google",
+      google: `${googleSiteID}`,
     },
   };
 }
