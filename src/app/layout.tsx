@@ -6,10 +6,12 @@ import Footer from "@/components/shared/footer/Footer";
 import ScrollArrow from "@/components/shared/scrollup/ScrollArrow";
 import DotRing from "@/components/shared/cursor/DotRing";
 import "../styles/globals.scss";
+import { GoogleAnalytics } from "@next/third-parties/google";
+import Gtag from "@/components/shared/gtag";
 
 export async function generateMetadata() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  const googleSiteID = process.env.NEXT_PUBLIC_GOOGLE_SITE_ID
+  const googleSiteID = process.env.NEXT_PUBLIC_GOOGLE_SITE_ID;
   return {
     metadataBase: new URL(`${appUrl}`),
     title: "Bikrant Malla - Frontend Web Developer",
@@ -80,7 +82,7 @@ export function generateViewport(): Viewport {
     width: "device-width",
     initialScale: 1,
     maximumScale: 1,
-    userScalable: true,
+    userScalable: false,
   };
 }
 
@@ -91,15 +93,17 @@ export default async function RootLayout({
 }) {
   const contactData = await fetchContactData();
   return (
-    <html>
+    <html lang="en">
       <ReduxProvider>
         <body>
-            <NavBar contactData={contactData} />
-            {children}
-            <DotRing />
-            <ScrollArrow />
-            <Footer />
+          <Gtag />
+          <NavBar contactData={contactData} />
+          {children}
+          <DotRing />
+          <ScrollArrow />
+          <Footer />
         </body>
+        <GoogleAnalytics gaId="G-SRCBZ07DTG" />
       </ReduxProvider>
     </html>
   );
