@@ -5,9 +5,8 @@ import NavBar from "@/components/shared/header/NavBar";
 import Footer from "@/components/shared/footer/Footer";
 import ScrollArrow from "@/components/shared/scrollup/ScrollArrow";
 import DotRing from "@/components/shared/cursor/DotRing";
-import "../styles/globals.scss";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import Gtag from "@/components/shared/gtag";
+import "../styles/globals.scss";
 
 export async function generateMetadata() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
@@ -103,7 +102,6 @@ export default async function RootLayout({
           <ScrollArrow />
           <Footer />
         </body>
-        <GoogleAnalytics gaId="G-SRCBZ07DTG" />
       </ReduxProvider>
     </html>
   );
