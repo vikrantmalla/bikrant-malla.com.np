@@ -14,7 +14,7 @@ const Home = async () => {
     <main>
       <article className="container">
         <AboutMe aboutMeData={aboutMeData} />
-        {/* <ProjectHighlight projectHighlightData={projectHighlightData} /> */}
+        <ProjectHighlight projectHighlightData={projectHighlightData} />
         <Behance behanceData={behanceData} />
         <Contact contactData={contactData} />
       </article>
