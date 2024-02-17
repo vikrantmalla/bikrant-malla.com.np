@@ -60,10 +60,7 @@ export async function generateMetadata() {
       },
     },
     alternates: {
-      canonical: "/",
-      languages: {
-        "en-US": "/en-US",
-      },
+      canonical: "/"
     },
     verification: {
       google: `${googleSiteID}`,
