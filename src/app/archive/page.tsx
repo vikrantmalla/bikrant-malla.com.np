@@ -1,11 +1,10 @@
 import ArchiveHeader from '@/components/archive/ArchiveHeader';
 import ArchiveList from '@/components/archive/ArchiveList';
 import { joseFont, tekoFont } from '@/helpers/lib/font';
-import { fetchMetaData, fetchProjectData } from '@/service/apiService';
+import { fetchProjectData } from '@/service/apiService';
 import React from 'react'
 
 export async function generateMetadata() {
-  const metatData = await fetchMetaData();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
   return {
     metadataBase: new URL(`${appUrl}`),
@@ -18,6 +17,9 @@ export async function generateMetadata() {
     twitter: {
       title: "Archive - Bikrant Malla",
     },
+    alternates: {
+      canonical: "/archive",
+    }
   };
 }
 
