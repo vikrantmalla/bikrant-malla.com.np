@@ -14,7 +14,7 @@ const Card = ({ project }: ArchiveList) => {
   useEffect(() => {
     const FilteredData = () => {
       if (filterKeyword) {
-        const filter = project.projectHighlights.filter(
+        const filter = project.filter(
           (tag: ArchiveDetailsData) => {
             return filterKeyword.every((key: string) => {
               return tag.build.includes(key);

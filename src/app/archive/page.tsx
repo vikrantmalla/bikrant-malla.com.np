@@ -1,3 +1,4 @@
+import ArchiveFilterMenu from '@/components/archive/ArchiveFilterMenu';
 import ArchiveHeader from '@/components/archive/ArchiveHeader';
 import ArchiveList from '@/components/archive/ArchiveList';
 import { joseFont, tekoFont } from '@/helpers/lib/font';
@@ -36,6 +37,9 @@ const Archive = async () => {
           <p className={`subheading ${joseFont} fs-600`}>
             A list of things I’ve worked on
           </p>
+          <div>
+            <ArchiveFilterMenu project={projectData} {...projectData}/>
+          </div>
           <div className="archive-lists">
             <ArchiveList project={projectData} {...projectData} />
           </div>
