@@ -1,8 +1,9 @@
 import { ProviderContext } from "@/types/data";
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 const initialState: ProviderContext.ProjectSlice = {
   filterKeyword: [],
+  selectedTag: 'All',
   projectList: []
 };
 
@@ -27,11 +28,16 @@ export const project = createSlice({
     clearKeywords: (state) => {
       state.filterKeyword = [];
     },
+    setSelectedTag: (state, action: PayloadAction<string>) => {
+      state.selectedTag = action.payload;
+    },
     setProjectList: (state, action) => {
+      console.log(state.projectList.length)
+      console.log(state.projectList)
       state.projectList = action.payload;
     },
   },
 });
 
-export const { setFilterKeyword, addKeyword, removeKeyword, clearKeywords, setProjectList } = project.actions;
+export const { setFilterKeyword, addKeyword, removeKeyword, clearKeywords, setSelectedTag, setProjectList } = project.actions;
 export default project.reducer;

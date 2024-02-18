@@ -223,6 +223,7 @@ declare namespace Data {
     interface ProjectSlice {
       filterKeyword: string[];
       projectList: ArchiveDetailsData[];
+      selectedTag: string,
     }
 
     interface MouseSlice {
