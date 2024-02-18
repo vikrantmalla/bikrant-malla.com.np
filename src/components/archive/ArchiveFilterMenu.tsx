@@ -3,30 +3,33 @@ import { joseFont } from "@/helpers/lib/font";
 import Data, { ArchiveList } from "../../types/data";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
-import {  setProjectList } from "@/redux/feature/projectSlice";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import {  setProjectList, setSelectedTag } from "@/redux/feature/projectSlice";
 
 const ArchiveFilterMenu = ({ project }: ArchiveList) => {
   const dispatch = useDispatch<AppDispatch>();
+  const selectedTag = useSelector((state: RootState) => state.project.selectedTag); 
   const search = useSearchParams();
-  const [selectedTag, setSelectedTag] = useState(search.get("Html") || "All");
-  const filterProjects = (tag: string, projects: Data.ArchiveDetailsData[]) => {
+  const initialTag = search.get("tag") || "All";
+  useEffect(() => {
     if (selectedTag === "All") {
-      return projects;
+      dispatch(setProjectList(project));
+    }
+  }, [selectedTag, project, dispatch]);
+
+  const handleTagSelect = (techTag: string) => {
+    dispatch(setSelectedTag(techTag));
+    if (techTag === "All") {
+      dispatch(setProjectList(project));
     } else {
-      return projects.filter((p) => p.build.includes(tag));
+      const filteredProjects = project.filter(p => p.build.includes(techTag));
+      dispatch(setProjectList(filteredProjects));
     }
   };
 
-  const handleTagSelect = (techTag: string) => {
-    setSelectedTag(techTag);
-    const filteredProjects = filterProjects(techTag, project);
-    dispatch(setProjectList(filteredProjects));
-  };
-
-  const tech = ["All", "Feature", "Html", "CSS", "ReactJS"];
+  const tech = ["All", "Feature", "HTML", "CSS", "React JS"];
   return (
     <div className={`subheading ${joseFont} fs-600`}>
       {tech.map((techTag) => {

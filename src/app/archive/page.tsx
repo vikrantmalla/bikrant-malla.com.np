@@ -28,6 +28,7 @@ export async function generateMetadata() {
 
 const Archive = async () => {
   const projectData = await fetchProjectData();
+  console.log(projectData)
   return (
     <>
       <section className="container">

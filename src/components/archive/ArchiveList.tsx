@@ -10,27 +10,26 @@ const Card = ({ project }: ArchiveList) => {
   const dispatch = useDispatch<AppDispatch>();
   const filterKeyword = useSelector((state: RootState) => state.project.filterKeyword);
   const projectList = useSelector((state: RootState) => state.project.projectList);
-
-  useEffect(() => {
-    const FilteredData = () => {
-      if (filterKeyword) {
-        const filter = project.filter(
-          (tag: ArchiveDetailsData) => {
-            return filterKeyword.every((key: string) => {
-              return tag.build.includes(key);
-            });
-          }
-        );
-        dispatch(setProjectList(filter));
-      } else {
-        dispatch(setProjectList(project));
-      }
-    };
-    FilteredData();
-  }, [project, filterKeyword, dispatch]);
+  // useEffect(() => {
+  //   const FilteredData = () => {
+  //     if (filterKeyword) {
+  //       const filter = project.filter(
+  //         (tag: ArchiveDetailsData) => {
+  //           return filterKeyword.every((key: string) => {
+  //             return tag.build.includes(key);
+  //           });
+  //         }
+  //       );
+  //       dispatch(setProjectList(filter));
+  //     } else {
+  //       dispatch(setProjectList(project));
+  //     }
+  //   };
+  //   FilteredData();
+  // }, [project, filterKeyword, dispatch]);
   return (
     <>
-      {projectList.map((data: any, id: number) => {
+      {...projectList.map((data: any, id: number) => {
         return <ArchiveDetails key={id} {...data} isNew={data.isnew} />;
       })}
     </>
