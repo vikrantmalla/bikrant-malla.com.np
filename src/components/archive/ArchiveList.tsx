@@ -1,35 +1,15 @@
 "use client";
-import React, { useState, useEffect, useContext } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store";
+import React from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 import ArchiveDetails from "./ArchiveCard";
-import { ArchiveDetailsData, ArchiveList } from "../../types/data";
-import {setProjectList} from "../../redux/feature/projectSlice"
+import Data from "../../types/data";
 
-const Card = ({ project }: ArchiveList) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const filterKeyword = useSelector((state: RootState) => state.project.filterKeyword);
+const Card = () => {
   const projectList = useSelector((state: RootState) => state.project.projectList);
-  // useEffect(() => {
-  //   const FilteredData = () => {
-  //     if (filterKeyword) {
-  //       const filter = project.filter(
-  //         (tag: ArchiveDetailsData) => {
-  //           return filterKeyword.every((key: string) => {
-  //             return tag.build.includes(key);
-  //           });
-  //         }
-  //       );
-  //       dispatch(setProjectList(filter));
-  //     } else {
-  //       dispatch(setProjectList(project));
-  //     }
-  //   };
-  //   FilteredData();
-  // }, [project, filterKeyword, dispatch]);
   return (
     <>
-      {...projectList.map((data: any, id: number) => {
+      {...projectList.map((data: Data.ArchiveDetailsData, id: number) => {
         return <ArchiveDetails key={id} {...data} isNew={data.isnew} />;
       })}
     </>

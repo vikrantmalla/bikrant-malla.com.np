@@ -32,8 +32,6 @@ export const project = createSlice({
       state.selectedTag = action.payload;
     },
     setProjectList: (state, action) => {
-      console.log(state.projectList.length)
-      console.log(state.projectList)
       state.projectList = action.payload;
     },
   },
