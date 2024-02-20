@@ -1,9 +1,6 @@
 import { ArchiveDetailsData } from "../../types/data";
 import { joseFont } from "@/helpers/lib/font";
 import { FaGithub, FaLink } from "react-icons/fa";
-import { addKeyword } from "@/redux/feature/projectSlice";
-import * as gtag from "../../helpers/lib/gtag"
-import { store } from "@/redux/store";
 
 const ArchiveDetails = ({
   id,
@@ -14,19 +11,6 @@ const ArchiveDetails = ({
   projectview,
   viewcode,
 }: ArchiveDetailsData) => {
-  const AddKeyword = (keyword: string) => {
-    const newKeyword= keyword.toLowerCase().replace(/\s+/g, '_');
-    store.dispatch(addKeyword(keyword));
-    gtag.event({
-      action: `${newKeyword}`,
-      category: "keyword_filtering",
-      label: "keyword_list_update",
-    });
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
   const tags = [...build];
   return (
     <>
@@ -54,7 +38,6 @@ const ArchiveDetails = ({
               <span
                 className={`${joseFont} fs-300`}
                 key={id}
-                onClick={() => AddKeyword(tag)}
               >
                 {tag}{" "}
               </span>
