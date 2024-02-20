@@ -1,5 +1,4 @@
 import ArchiveFilterMenu from '@/components/archive/ArchiveFilterMenu';
-import ArchiveHeader from '@/components/archive/ArchiveHeader';
 import ArchiveList from '@/components/archive/ArchiveList';
 import { joseFont, tekoFont } from '@/helpers/lib/font';
 import { fetchProjectData } from '@/service/apiService';
@@ -28,11 +27,9 @@ export async function generateMetadata() {
 
 const Archive = async () => {
   const projectData = await fetchProjectData();
-  console.log(projectData)
   return (
     <>
       <section className="container">
-        <ArchiveHeader />
         <div className="archive">
           <h1 className={`heading ${tekoFont} fs-700`}>Archive</h1>
           <p className={`subheading ${joseFont} fs-600`}>
