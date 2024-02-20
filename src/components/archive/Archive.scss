@@ -66,6 +66,24 @@
       }
     }
   }
+
+  .filter-links {
+    ul {
+      list-style: none;
+      padding: 0;
+      @include flex(row, flex-start);
+      align-items: flex-start;
+      gap: 1rem;
+      flex-wrap: wrap;
+      li {
+        border: 1px solid red;
+        padding: .5rem 1rem;
+        a {
+          text-decoration: none;
+        }
+      }
+    };
+  }
 }
 
 @include sm {
