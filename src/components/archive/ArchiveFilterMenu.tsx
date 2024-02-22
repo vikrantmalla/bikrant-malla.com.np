@@ -18,12 +18,20 @@ const ArchiveFilterMenu = ({ project }: ArchiveList) => {
 
   const filterProjects = useCallback(
     (tag: string) => {
-      const filteredProjects =
-        tag === "All"
-          ? project
-          : project.filter((p: Data.ArchiveDetailsData) =>
-              p.build.includes(tag)
-            );
+      let filteredProjects;
+      if (tag === "All") {
+        filteredProjects = project;
+      } else if (tag === "Feature") {
+        // Filter based on isNew property for "Feature" tag
+        filteredProjects = project.filter(
+          (p: Data.ArchiveDetailsData) => p.isnew
+        );
+      } else {
+        // Filter based on tag props
+        filteredProjects = project.filter((p: Data.ArchiveDetailsData) =>
+          p.build.includes(tag)
+        );
+      }
       dispatch(setProjectList(filteredProjects));
       const newKeyword = tag.toLowerCase().replace(/\s+/g, "_");
       gtag.event({
