@@ -6,6 +6,7 @@ import { AppDispatch, RootState } from "@/redux/store";
 import Link from "next/link";
 import { joseFont } from "@/helpers/lib/font";
 import Data, { ArchiveList } from "../../types/data";
+import * as gtag from "../../helpers/lib/gtag";
 import { setProjectList, setSelectedTag } from "@/redux/feature/projectSlice";
 
 const ArchiveFilterMenu = ({ project }: ArchiveList) => {
@@ -24,6 +25,12 @@ const ArchiveFilterMenu = ({ project }: ArchiveList) => {
               p.build.includes(tag)
             );
       dispatch(setProjectList(filteredProjects));
+      const newKeyword = tag.toLowerCase().replace(/\s+/g, "_");
+      gtag.event({
+        action: `${newKeyword}`,
+        category: "keyword_filtering",
+        label: "keyword_list_update",
+      });
     },
     [project, dispatch]
   );
