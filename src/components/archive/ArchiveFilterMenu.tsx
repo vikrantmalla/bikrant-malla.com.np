@@ -27,9 +27,11 @@ const ArchiveFilterMenu = ({ project }: ArchiveList) => {
           (p: Data.ArchiveDetailsData) => p.isnew
         );
       } else {
+        // Replace underscores with spaces in the tag
+        const formattedTag = tag.replace(/_/g, " ");
         // Filter based on tag props
         filteredProjects = project.filter((p: Data.ArchiveDetailsData) =>
-          p.build.includes(tag)
+          p.build.includes(formattedTag)
         );
       }
       dispatch(setProjectList(filteredProjects));
@@ -56,13 +58,16 @@ const ArchiveFilterMenu = ({ project }: ArchiveList) => {
 
   const tech = ["All", "Feature", "HTML", "CSS", "React JS"];
 
+  // Replace spaces with underscore in the URL
+  const formattedTech = tech.map((tag) => tag.replace(/\s/g, "_"));
+
   return (
     <div className={`subheading ${joseFont} fs-300 filter-links`}>
       <ul>
-        {tech.map((techTag) => (
+        {tech.map((techTag, index) => (
           <li key={techTag}>
             <Link
-              href={`?tag=${techTag}`}
+              href={`?tag=${formattedTech[index]}`}
               onClick={() => handleTagSelect(techTag)}
               className="tags"
             >
