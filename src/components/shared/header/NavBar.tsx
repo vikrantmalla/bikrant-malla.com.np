@@ -60,7 +60,6 @@ const NavBar = ({ contactData }: ContactPageData) => {
       dispatch(setNavColor(window.scrollY >= 50));
     };
 
-
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("scroll", changeNavbarColor);
 
@@ -105,6 +104,17 @@ const NavBar = ({ contactData }: ContactPageData) => {
                       className={
                         activeLink === tabId.replace("#", "")
                           ? "activeLink"
+                          : "unActiveLink"
+                      }
+                      rel={
+                        [
+                          "aboutme",
+                          "skill",
+                          "project",
+                          "concept",
+                          "contact",
+                        ].includes(tabId)
+                          ? "nofollow"
                           : ""
                       }
                     >
@@ -146,6 +156,17 @@ const NavBar = ({ contactData }: ContactPageData) => {
                           className={
                             activeLink === tabId.replace("#", "")
                               ? "activeLink"
+                              : "unActiveLink"
+                          }
+                          rel={
+                            [
+                              "aboutme",
+                              "skill",
+                              "project",
+                              "concept",
+                              "contact",
+                            ].includes(tabId)
+                              ? "nofollow"
                               : ""
                           }
                         >
