@@ -12,20 +12,20 @@ export async function generateMetadata() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
   const googleSiteID = process.env.NEXT_PUBLIC_GOOGLE_SITE_ID;
   return {
-    metadataBase: new URL(`${appUrl}`),
+    metadataBase: new URL(`${appUrl}/`),
     title: "Bikrant Malla - Frontend Web Developer",
     description:
       "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
     keywords:
       "bikrant malla, vikrant malla, ui/ux, portfolio, web, web developer, frontend, developer, frontend enginner, project, design, bikrantmalla.com.np, reactjs",
-    authors: [{ name: "Bikrant Malla", url: `${appUrl}` }],
+    authors: [{ name: "Bikrant Malla", url: `${appUrl}/` }],
     referrer: "origin-when-cross-origin",
     category: "portfolio",
     openGraph: {
       title: "Bikrant Malla - Frontend Web Developer",
       description:
         "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
-      authors: [{ name: "Bikrant Malla", url: `${appUrl}` }],
+      authors: [{ name: "Bikrant Malla", url: `${appUrl}/` }],
       url: `${appUrl}`,
       siteName: "Bikrant Malla",
       images: [
@@ -77,8 +77,7 @@ export function generateViewport(): Viewport {
     colorScheme: "dark light",
     width: "device-width",
     initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
+    maximumScale: 1
   };
 }
 
