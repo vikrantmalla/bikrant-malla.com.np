@@ -48,7 +48,7 @@ export async function generateMetadata() {
       images: [`${appUrl}/ogimg.png`],
     },
     robots: {
-      index: false,
+      index: true,
       follow: true,
       nocache: true,
       googleBot: {
