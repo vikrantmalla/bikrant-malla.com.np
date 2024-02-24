@@ -1,14 +1,16 @@
 import dbConnect from "@/helpers/lib/dbConnect";
 import Project from "@/helpers/models/Project";
+import TechTag from "@/helpers/models/TechTag";
 import { NextRequest, NextResponse } from "next/server";
 
 dbConnect();
 
 export async function GET() {
   try {
+    const techTags = await TechTag.find();
     const projects = await Project.find().sort({ isnew: -1 });
     return NextResponse.json(
-      { success: true,  project: projects },
+      { success: true,  project: projects, techTag: techTags},
       { status: 200 }
     );
   } catch (error) {
