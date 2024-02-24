@@ -36,3 +36,9 @@ export async function fetchMetaData() {
   const data = await res.json();
   return data;
 }
+
+// export async function fetchTagData() {
+//   const res = await fetch(`${baseUrl}/api/tags`, { cache: 'no-store' });
+//   const data = await res.json();
+//   return data;
+// }
