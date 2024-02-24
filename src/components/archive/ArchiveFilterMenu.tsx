@@ -5,15 +5,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import Link from "next/link";
 import { joseFont } from "@/helpers/lib/font";
-import Data, { ArchiveList } from "../../types/data";
+import Data, { ProjectData } from "../../types/data";
 import * as gtag from "../../helpers/lib/gtag";
 import { setProjectList, setSelectedTag } from "@/redux/feature/projectSlice";
 
-const ArchiveFilterMenu = ({ project }: ArchiveList) => {
+const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
   const dispatch = useDispatch<AppDispatch>();
-  const selectedTag = useSelector(
-    (state: RootState) => state.project.selectedTag
-  );
   const search = useSearchParams();
 
   const filterProjects = useCallback(
@@ -24,13 +21,13 @@ const ArchiveFilterMenu = ({ project }: ArchiveList) => {
       } else if (tag === "Feature") {
         // Filter based on isNew property for "Feature" tag
         filteredProjects = project.filter(
-          (p: Data.ArchiveDetailsData) => p.isnew
+          (p: Data.Project) => p.isnew
         );
       } else {
         // Replace underscores with spaces in the tag
         const formattedTag = tag.replace(/_/g, " ");
         // Filter based on tag props
-        filteredProjects = project.filter((p: Data.ArchiveDetailsData) =>
+        filteredProjects = project.filter((p: Data.Project) =>
           p.build.includes(formattedTag)
         );
       }
@@ -56,7 +53,7 @@ const ArchiveFilterMenu = ({ project }: ArchiveList) => {
     filterProjects(techTag);
   };
 
-  const tech = ["All", "Feature", "HTML", "CSS", "React JS"];
+  const tech = techTag.map((techTag) => techTag.tag)
 
   // Replace spaces with underscore in the URL
   const formattedTech = tech.map((tag) => tag.replace(/\s/g, "_"));

@@ -1,23 +1,6 @@
 import { ReactNode } from "react";
 
 declare namespace Data {
-  declare namespace Contexts {
-    interface MouseContext {
-      cursorType: string;
-      cursorChangeHandler: React.Dispatch<React.SetStateAction<string>>;
-    }
-    interface ThemeContext {
-      dark: boolean;
-      toggle: any;
-    }
-    interface ProjectContext {
-      filterKeyword: any;
-      AddKeyword: any;
-      RemoveKeyword: any;
-      ClearKeywords: any;
-    }
-  }
-
   declare namespace PageData {
     interface ProjectPageData {
       aboutMeData: AboutMeData;
@@ -133,29 +116,17 @@ declare namespace Data {
 
   interface ProjectData {
     success: boolean;
-    project: Project;
+    project: Project[];
+    techTag: TechTag[];
   }
 
-  interface ArchiveList {
-    project: any;
-  }
-
-  interface ArchiveDetailsData {
+  interface TechTag {
     _id: string;
-    __v: number;
-    id: number;
-    isNew: boolean;
-    build: string[];
-    isnew: boolean;
-    projectview: string;
-    title: string;
-    viewcode: string;
-    year: number;
+    tag: string;
   }
 
   interface Project {
-    filter: any;
-    _id: string;
+    id: string;
     __v: number;
     build: string[];
     isnew: boolean;
