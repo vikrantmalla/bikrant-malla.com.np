@@ -99,27 +99,16 @@ const NavBar = ({ contactData }: ContactPageData) => {
                   style={{ textTransform: "capitalize" }}
                 >
                   {pathname === "/" ? (
-                    <a
+                    <p
                       onClick={() => _handleTabClick(tabId)}
                       className={
                         activeLink === tabId.replace("#", "")
                           ? "activeLink"
                           : "unActiveLink"
                       }
-                      rel={
-                        [
-                          "aboutme",
-                          "skill",
-                          "project",
-                          "concept",
-                          "contact",
-                        ].includes(tabId)
-                          ? "nofollow"
-                          : ""
-                      }
                     >
                       {tabId.replace("#", "")}
-                    </a>
+                    </p>
                   ) : (
                     <Link href="/" passHref>
                       {tabId.replace("#", "")}
@@ -151,27 +140,16 @@ const NavBar = ({ contactData }: ContactPageData) => {
                       style={{ textTransform: "capitalize" }}
                     >
                       {pathname === "/" ? (
-                        <a
+                        <p
                           onClick={() => _handleTabClick(tabId)}
                           className={
                             activeLink === tabId.replace("#", "")
                               ? "activeLink"
                               : "unActiveLink"
                           }
-                          rel={
-                            [
-                              "aboutme",
-                              "skill",
-                              "project",
-                              "concept",
-                              "contact",
-                            ].includes(tabId)
-                              ? "nofollow"
-                              : ""
-                          }
                         >
                           {tabId.replace("#", "")}
-                        </a>
+                        </p>
                       ) : (
                         <Link href="/" passHref>
                           {tabId.replace("#", "")}
