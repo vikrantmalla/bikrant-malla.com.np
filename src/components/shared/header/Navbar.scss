@@ -37,6 +37,9 @@
             text-decoration: none;
             color: var(--navActiveLink);
           }
+          p {
+            color: var(--navActiveLink);
+          }
         }
         .activeLink {
           color: var(--text) !important;
@@ -72,7 +75,7 @@
   }
   .header {
     height: 4rem;
-    padding: 0 2rem;
+    padding: 0 25px;
     .nav-container {
       position: relative;
       z-index: 10;
@@ -109,6 +112,9 @@
               background-color: transparent;
             }
             a {
+              color: var(--text);
+            }
+            p {
               color: var(--text);
             }
           }
