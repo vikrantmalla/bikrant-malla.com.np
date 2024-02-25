@@ -36,7 +36,7 @@
     @include flex(row, space-between);
     padding: 1rem 1.2rem;
     .card-head {
-      h1 {
+      h2 {
         color: var(--text);
       }
       p {
