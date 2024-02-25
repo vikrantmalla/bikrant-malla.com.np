@@ -7,7 +7,7 @@ const Contact = ({ contactData }: ContactPageData) => {
   return (
     <>
       <section className="contact" id="contact">
-        <h1 className={`heading ${tekoFont} fs-700`}>Get In Touch</h1>
+        <h2 className={`heading ${tekoFont} fs-700`}>Get In Touch</h2>
         {contactData.contact.map((details, index) => (
           <div key={index}>
             <p className={`${joseFont} fs-400`}>{details.message}</p>

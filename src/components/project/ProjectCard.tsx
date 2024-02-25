@@ -44,7 +44,7 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
       </div>
       <div className="card-details">
         <div className="card-head">
-          <h1 className={`${joseFont} fs-400`}>{title}</h1>
+          <h2 className={`${joseFont} fs-400`}>{title}</h2>
           <p className={`${joseFont} fs-300`}>{build}</p>
         </div>
         <div className="card-body">

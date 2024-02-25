@@ -13,14 +13,14 @@ const AboutMe = ({ aboutMeData }: AboutMePageData) => {
               <br />
               <span className={`hover ${tekoFont} fs-700`}>{intro.title}</span>
             </h1>
-            <h1 className={`profession ${tekoFont} fs-700`}>
+            <h2 className={`profession ${tekoFont} fs-700`}>
               {intro.jobTitle}
-            </h1>
+            </h2>
           </div>
         ))}
       </section>
       <section id="aboutme">
-        <h1 className={`headingleft ${joseFont} fs-600`}>About me</h1>
+        <h2 className={`headingleft ${joseFont} fs-600`}>About me</h2>
         {aboutMeData.aboutme.map((about, index) => (
           <div className="aboutme" key={index}>
             <p className={`${joseFont} fs-400`}>{about.aboutDescription1}</p>
@@ -29,7 +29,7 @@ const AboutMe = ({ aboutMeData }: AboutMePageData) => {
         ))}
       </section>
       <section id="skill">
-        <h1 className={`headingright ${joseFont} fs-600`}>Skillsets</h1>
+        <h2 className={`headingright ${joseFont} fs-600`}>Skillsets</h2>
         <div>
           {aboutMeData.aboutme.map((skill, index) => (
             <div className="techstack" key={index}>

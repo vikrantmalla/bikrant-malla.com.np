@@ -7,7 +7,7 @@ const Behance = ({ behanceData }: BehancePageData) => {
   return (
     <>
       <section className="concept" id="concept">
-        <h1 className={`headingright ${joseFont} fs-600`}>UI/UX Concept</h1>
+        <h2 className={`headingright ${joseFont} fs-600`}>UI/UX Concept</h2>
         <div className="behanceitems">
           {behanceData.behanceProject.map(
             (project: BehanceProject, index: number) => {
