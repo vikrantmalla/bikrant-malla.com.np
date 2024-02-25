@@ -44,9 +44,9 @@ const BehanceCard = ({ project }: BehanceCard) => {
       </div>
       <div className="card-details">
         <div className="card-head">
-          <h1 className={`${joseFont} fs-400`}>
+          <h2 className={`${joseFont} fs-400`}>
             {title} <span className={`${joseFont} fs-300`}>{subTitle}</span>
-          </h1>
+          </h2>
           <p className={`${joseFont} fs-300`}>{tools}</p>
         </div>
         <div className="card-body">

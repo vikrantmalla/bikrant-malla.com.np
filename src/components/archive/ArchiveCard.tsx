@@ -29,7 +29,7 @@ const ArchiveDetails = ({
         <div className="project-head">
           <div className="details">
             <div className="title">
-              <h1 className={`${joseFont} fs-400`}>{title}</h1>
+              <h2 className={`${joseFont} fs-400`}>{title}</h2>
               {isnew && initialTagFromUrl === "All" ? <span className={`new ${joseFont}`}>{`NEW!`}</span> : ""}
             </div>
             <p className={`${joseFont} fs-300`}>{year}</p>

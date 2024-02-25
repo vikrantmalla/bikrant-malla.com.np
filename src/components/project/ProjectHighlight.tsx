@@ -10,7 +10,7 @@ const ProjectHighlight = ({
   return (
     <>
       <section className="project" id="project">
-        <h1 className={`headingleft ${joseFont} fs-600`}>Projects</h1>
+        <h2 className={`headingleft ${joseFont} fs-600`}>Projects</h2>
         <div className="projectItem">
           {projectHighlightData.projectHighlights.map(
             (project: ProjectHighlights, index: number) => {
