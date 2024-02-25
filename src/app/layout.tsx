@@ -50,11 +50,8 @@ export async function generateMetadata() {
     robots: {
       index: true,
       follow: true,
-      nocache: true,
       googleBot: {
         index: true,
-        follow: false,
-        noimageindex: true,
         "max-video-preview": -1,
         "max-image-preview": "large",
         "max-snippet": -1,
@@ -78,7 +75,8 @@ export function generateViewport(): Viewport {
     colorScheme: "dark light",
     width: "device-width",
     initialScale: 1,
-    maximumScale: 1,
+    maximumScale: 5,
+    userScalable: true,
   };
 }
 
