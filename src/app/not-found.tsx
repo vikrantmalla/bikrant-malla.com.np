@@ -1,6 +1,24 @@
 import Link from "next/link";
 import { joseFont, tekoFont } from '@/helpers/lib/font';
 
+export async function generateMetadata() {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  return {
+    metadataBase: new URL(`${appUrl}`),
+    title: "404: This page could not be found",
+    openGraph: {
+      title: "404: This page could not be found",
+    },
+    twitter: {
+      title: "404: This page could not be found",
+    },
+    robots: {},
+    alternates: {
+      canonical: "",
+    }
+  };
+}
+
 export default function NotFound() {
   return (
     <>
