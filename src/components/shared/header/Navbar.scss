@@ -60,10 +60,36 @@
   box-shadow: var(--cardBackgroundShadow);
 }
 
-@media screen and (max-width: 720px) {
+.nav-option {
+  @include md {
+    @include flex(row, space-between);
+    gap: 1rem;
+  }
+  @include lg {
+    @include flex(row, space-between);
+    gap: 1.5rem;
+  }
+  .resume-link {
+    display: none;
+    @include md {
+      display: block;
+      text-decoration: none;
+      color: var(--navActiveLink);
+      border: 0.1rem solid var(--link);
+      padding: 0.3rem 1.5rem;
+      border-radius: 0.5rem;
+      &:hover {
+        background-color: var(--toggle);
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
   .active-modal {
     overflow-y: hidden;
   }
+
   .backdrop {
     position: fixed;
     top: 0;
@@ -127,5 +153,14 @@
         z-index: 20;
       }
     }
+  }
+
+  .resume-link {
+    text-decoration: none;
+    color: var(--navActiveLink);
+    border: 0.1rem solid var(--link);
+    padding: 0.3rem 1.5rem;
+    border-radius: 0.5rem;
+    margin-top: 1.5rem;
   }
 }
