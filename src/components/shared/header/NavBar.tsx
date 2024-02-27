@@ -35,6 +35,14 @@ const NavBar = ({ contactData }: ContactPageData) => {
     });
   };
 
+  if (typeof window !== 'undefined') {
+    if (toggleMenu) {
+      document.body.classList.add("active-modal");
+    } else {
+      document.body.classList.remove("active-modal");
+    }
+  }
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.pageYOffset;
@@ -158,6 +166,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                     </li>
                   )
                 )}
+                <Link className={`resume-link ${joseFont} fs-400`} href="/resume.pdf">Resume</Link>
                 <li className="social-media" style={{ margin: "1rem 0" }}>
                   <SocialMedia contactData={contactData} visibleCount={2} />
                 </li>
@@ -166,7 +175,10 @@ const NavBar = ({ contactData }: ContactPageData) => {
             <Backdrop onClose={handleClick} />
           </>
         )}
-        <ThemeSwitch />
+       <div className="nav-option">
+       <ThemeSwitch />
+        <Link className={`resume-link ${joseFont} fs-400`} href="/resume.pdf">Resume</Link>
+       </div>
       </div>
     </header>
   );
