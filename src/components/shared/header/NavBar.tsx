@@ -166,7 +166,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
                     </li>
                   )
                 )}
-                <Link className={`resume-link ${joseFont} fs-400`} href="/resume.pdf">Resume</Link>
+                <Link className={`resume-link ${joseFont} fs-400`} href="/resume.pdf" target="_blank" rel="noreferrer">Resume</Link>
                 <li className="social-media" style={{ margin: "1rem 0" }}>
                   <SocialMedia contactData={contactData} visibleCount={2} />
                 </li>
@@ -177,7 +177,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
         )}
        <div className="nav-option">
        <ThemeSwitch />
-        <Link className={`resume-link ${joseFont} fs-400`} href="/resume.pdf">Resume</Link>
+        <Link className={`resume-link ${joseFont} fs-400`} href="/resume.pdf" target="_blank" rel="noreferrer">Resume</Link>
        </div>
       </div>
     </header>
