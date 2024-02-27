@@ -10,5 +10,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${process.env.NEXT_PUBLIC_APP_URL}/archive`,
       lastModified: new Date(),
     },
+    {
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/resume.pdf`,
+      lastModified: new Date(),
+    },
   ];
 }
