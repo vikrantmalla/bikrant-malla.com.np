@@ -6,6 +6,7 @@ import { AppDispatch, RootState } from "@/redux/store";
 import { FaTimes, FaBars } from "react-icons/fa";
 import Link from "next/link";
 import ThemeSwitch from "./ThemeSwitch";
+import ResumeLink from "./ResumeLink";
 import Backdrop from "./Backdrop";
 import SocialMedia from "../footer/SocialMedia";
 import * as gtag from "../../../helpers/lib/gtag";
@@ -35,7 +36,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
     });
   };
 
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     if (toggleMenu) {
       document.body.classList.add("active-modal");
     } else {
@@ -166,8 +167,11 @@ const NavBar = ({ contactData }: ContactPageData) => {
                     </li>
                   )
                 )}
-                <Link className={`resume-link ${joseFont} fs-400`} href="/resume.pdf" target="_blank" rel="noreferrer">Resume</Link>
-                <li className="social-media" style={{ margin: "1rem 0" }}>
+                <ResumeLink />
+                <li
+                  className="social-media mobile-nav-social-media"
+                  style={{ margin: "1rem 0" }}
+                >
                   <SocialMedia contactData={contactData} visibleCount={2} />
                 </li>
               </ul>
@@ -175,10 +179,10 @@ const NavBar = ({ contactData }: ContactPageData) => {
             <Backdrop onClose={handleClick} />
           </>
         )}
-       <div className="nav-option">
-       <ThemeSwitch />
-        <Link className={`resume-link ${joseFont} fs-400`} href="/resume.pdf" target="_blank" rel="noreferrer">Resume</Link>
-       </div>
+        <div className="nav-option">
+          <ThemeSwitch />
+          <ResumeLink />
+        </div>
       </div>
     </header>
   );
