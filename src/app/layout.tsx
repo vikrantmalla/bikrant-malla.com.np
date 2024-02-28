@@ -1,13 +1,12 @@
 import type { Viewport } from "next";
 import { ReduxProvider } from "@/redux/Provider";
 import { fetchContactData } from "@/service/apiService";
+import CustomScript from "@/helpers/customScript/customScript";
 import NavBar from "@/components/shared/header/NavBar";
 import Footer from "@/components/shared/footer/Footer";
 import ScrollArrow from "@/components/shared/scrollup/ScrollArrow";
 import DotRing from "@/components/shared/cursor/DotRing";
-import Gtag from "@/components/shared/gtag";
 import "../styles/globals.scss";
-import Script from "next/script";
 
 export async function generateMetadata() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
@@ -88,18 +87,9 @@ export default async function RootLayout({
   const contactData = await fetchContactData();
   return (
     <html lang="en">
-      <Script strategy="lazyOnload" id="clarity-script">
-        {`
-          (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-          })(window, document, "clarity", "script", "l6dex549t7");
-        `}
-      </Script>
       <ReduxProvider>
         <body>
-          <Gtag />
+          <CustomScript />
           <NavBar contactData={contactData} />
           {children}
           <DotRing />
