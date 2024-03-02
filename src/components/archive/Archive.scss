@@ -57,14 +57,19 @@
         gap: 1rem;
         flex-wrap: wrap;
         span {
-          background-color: var(--span);
+          background-color: var(--background);
           padding: 0.5rem;
           border-radius: 0.5rem;
-          color: var(--background);
+          color: var(--navActiveLink);
           box-shadow: rgba(41, 44, 46, 0.3) 0px 1px 2px 0px,
             rgba(27, 29, 31, 0.15) 0px 2px 6px 2px;
         }
-              }
+        .tag-selected {
+          background-color: var(--span);
+          border: 0.1rem solid var(--link);
+          color: var(--background);
+        }
+      }
     }
     .message-placeholder {
       height: 50vh;
@@ -81,11 +86,20 @@
       gap: 1rem;
       flex-wrap: wrap;
       li {
-        border: 1px solid red;
+        border: 0.1rem solid var(--link);
         padding: .5rem 1rem;
-                a {
+        border-radius: .5rem;
+        a {
           text-decoration: none;
-                  }
+          color: var(--navActiveLink);
+        }
+      }
+      .tag-selected {
+        background-color: var(--span);
+        a {
+          text-decoration: none;
+          color: var(--background);
+        }
       }
     };
   }

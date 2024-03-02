@@ -15,7 +15,10 @@ import {
 
 const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
   const dispatch = useDispatch<AppDispatch>();
-    const search = useSearchParams();
+  const selectedTag = useSelector(
+    (state: RootState) => state.project.selectedTag
+  );
+  const search = useSearchParams();
 
   const filterProjects = useCallback(
     (tag: string) => {
@@ -24,9 +27,7 @@ const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
         filteredProjects = project;
       } else if (tag === "Feature") {
         // Filter based on isNew property for "Feature" tag
-        filteredProjects = project.filter(
-          (p: Data.Project) => p.isnew
-        );
+        filteredProjects = project.filter((p: Data.Project) => p.isnew);
       } else {
         // Replace underscores with spaces in the tag
         const formattedTag = tag.replace(/_/g, " ");
@@ -61,7 +62,7 @@ const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
     }, 2000);
   };
 
-  const tech = techTag.map((techTag) => techTag.tag)
+  const tech = techTag.map((techTag) => techTag.tag);
 
   // Replace spaces with underscore in the URL
   const formattedTech = tech.map((tag) => tag.replace(/\s/g, "_"));
@@ -70,14 +71,14 @@ const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
     <div className={`subheading ${joseFont} fs-300 filter-links`}>
       <ul>
         {tech.map((techTag, index) => (
-          <li key={techTag}>
-            <Link
-              href={`?tag=${formattedTech[index]}`}
+          <li
+            key={techTag}
             onClick={() => handleTagSelect(techTag)}
-            className="tags"
+            className={
+              selectedTag === techTag ? "tag-selected" : "tag-not-selected"
+            }
           >
-            {techTag}
-            </Link>
+            <Link href={`?tag=${formattedTech[index]}`}>{techTag}</Link>
           </li>
         ))}
       </ul>

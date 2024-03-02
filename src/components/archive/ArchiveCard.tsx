@@ -1,3 +1,4 @@
+"use client"
 import { RootState } from "@/redux/store";
 import { Project } from "../../types/data";
 import { joseFont } from "@/helpers/lib/font";
@@ -23,11 +24,14 @@ const ArchiveDetails = ({
   const initialTagFromUrl = search.get("tag") || "All";
   // Replace underscores with spaces in the tag
   const formattedTag = initialTagFromUrl.replace(/_/g, " ");
-  const reorderedTags = formattedTag !== "All"
-  ? (formattedTag !== "Feature"
-  ? [formattedTag, ...tags.filter(tag => tag !== formattedTag)]
-  : tags.filter(tag => tag !== "Feature"))
-  : tags;
+  /*
+   * Reorder the tag according to the formattedTag
+   */
+  // const reorderedTags = formattedTag !== "All"
+  // ? (formattedTag !== "Feature"
+  //     ? [formattedTag, ...tags.filter(tag => tag !== formattedTag)]
+  //     : tags.filter(tag => tag !== "Feature"))
+  // : tags;
 
   return (
     <>
@@ -37,7 +41,11 @@ const ArchiveDetails = ({
             <div className="details">
               <div className="title">
                 <h2 className={`${joseFont} fs-400`}>{title}</h2>
-                {isnew && initialTagFromUrl === "All" ? <span className={`new ${joseFont}`}>{`NEW!`}</span> : ""}
+                {isnew && initialTagFromUrl === "All" ? (
+                  <span className={`new ${joseFont}`}>{`NEW!`}</span>
+                ) : (
+                  ""
+                )}
               </div>
               <p className={`${joseFont} fs-300`}>{year}</p>
             </div>
@@ -51,10 +59,12 @@ const ArchiveDetails = ({
             </div>
           </div>
           <div className="tag">
-            {reorderedTags.map((tag, id) => {
+            {tags.map((tag, id) => {
               return (
                 <span
-                  className={`${joseFont} fs-300`}
+                  className={`${joseFont} ${
+                    formattedTag === tag ? "tag-selected" : "tag-not-selected"
+                  }  fs-300`}
                   key={id}
                 >
                   {tag}
