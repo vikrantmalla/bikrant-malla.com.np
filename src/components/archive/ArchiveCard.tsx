@@ -1,7 +1,10 @@
+import { RootState } from "@/redux/store";
 import { Project } from "../../types/data";
 import { joseFont } from "@/helpers/lib/font";
 import { useSearchParams } from "next/navigation";
 import { FaGithub, FaLink } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import Skeleton from "../shared/skeleton";
 
 const ArchiveDetails = ({
   id,
@@ -12,6 +15,9 @@ const ArchiveDetails = ({
   projectview,
   viewcode,
 }: Project) => {
+  const showSkeletonLoading = useSelector(
+    (state: RootState) => state.project.showSkeletonLoading
+  );
   const tags = [...build];
   const search = useSearchParams();
   const initialTagFromUrl = search.get("tag") || "All";
@@ -19,43 +25,47 @@ const ArchiveDetails = ({
   const formattedTag = initialTagFromUrl.replace(/_/g, " ");
   const reorderedTags = formattedTag !== "All"
   ? (formattedTag !== "Feature"
-      ? [formattedTag, ...tags.filter(tag => tag !== formattedTag)]
-      : tags.filter(tag => tag !== "Feature"))
+  ? [formattedTag, ...tags.filter(tag => tag !== formattedTag)]
+  : tags.filter(tag => tag !== "Feature"))
   : tags;
 
   return (
     <>
-      <div className={`${isnew ? "project active" : "project"}`} key={id}>
-        <div className="project-head">
-          <div className="details">
-            <div className="title">
-              <h2 className={`${joseFont} fs-400`}>{title}</h2>
-              {isnew && initialTagFromUrl === "All" ? <span className={`new ${joseFont}`}>{`NEW!`}</span> : ""}
+      {!showSkeletonLoading ? (
+        <div className={`${isnew ? "project active" : "project"}`} key={id}>
+          <div className="project-head">
+            <div className="details">
+              <div className="title">
+                <h2 className={`${joseFont} fs-400`}>{title}</h2>
+                {isnew && initialTagFromUrl === "All" ? <span className={`new ${joseFont}`}>{`NEW!`}</span> : ""}
+              </div>
+              <p className={`${joseFont} fs-300`}>{year}</p>
             </div>
-            <p className={`${joseFont} fs-300`}>{year}</p>
+            <div className="links">
+              <a href={viewcode}>
+                <FaGithub />
+              </a>
+              <a href={projectview}>
+                <FaLink />
+              </a>
+            </div>
           </div>
-          <div className="links">
-            <a href={viewcode}>
-              <FaGithub />
-            </a>
-            <a href={projectview}>
-              <FaLink />
-            </a>
+          <div className="tag">
+            {reorderedTags.map((tag, id) => {
+              return (
+                <span
+                  className={`${joseFont} fs-300`}
+                  key={id}
+                >
+                  {tag}
+                </span>
+              );
+            })}
           </div>
         </div>
-        <div className="tag">
-          {reorderedTags.map((tag, id) => {
-            return (
-              <span
-                className={`${joseFont} fs-300`}
-                key={id}
-              >
-                {tag}
-              </span>
-            );
-          })}
-        </div>
-      </div>
+      ) : (
+        <Skeleton />
+      )}
     </>
   );
 };
