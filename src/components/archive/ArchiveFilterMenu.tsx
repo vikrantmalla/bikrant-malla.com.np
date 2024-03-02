@@ -7,11 +7,15 @@ import Link from "next/link";
 import { joseFont } from "@/helpers/lib/font";
 import Data, { ProjectData } from "../../types/data";
 import * as gtag from "../../helpers/lib/gtag";
-import { setProjectList, setSelectedTag } from "@/redux/feature/projectSlice";
+import {
+  setProjectList,
+  setSelectedTag,
+  setSkeletonLoading,
+} from "@/redux/feature/projectSlice";
 
 const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
   const dispatch = useDispatch<AppDispatch>();
-  const search = useSearchParams();
+    const search = useSearchParams();
 
   const filterProjects = useCallback(
     (tag: string) => {
@@ -50,7 +54,11 @@ const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
 
   const handleTagSelect = (techTag: string) => {
     dispatch(setSelectedTag(techTag));
+    dispatch(setSkeletonLoading(true));
     filterProjects(techTag);
+    setTimeout(() => {
+      dispatch(setSkeletonLoading(false));
+    }, 2000);
   };
 
   const tech = techTag.map((techTag) => techTag.tag)
@@ -65,10 +73,10 @@ const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
           <li key={techTag}>
             <Link
               href={`?tag=${formattedTech[index]}`}
-              onClick={() => handleTagSelect(techTag)}
-              className="tags"
-            >
-              {techTag}
+            onClick={() => handleTagSelect(techTag)}
+            className="tags"
+          >
+            {techTag}
             </Link>
           </li>
         ))}

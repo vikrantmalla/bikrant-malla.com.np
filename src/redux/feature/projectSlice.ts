@@ -2,9 +2,9 @@ import { ProviderContext } from "@/types/data";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 const initialState: ProviderContext.ProjectSlice = {
-  filterKeyword: [],
   selectedTag: 'All',
-  projectList: []
+  projectList: [],
+  showSkeletonLoading: false
 };
 
 export const project = createSlice({
@@ -17,8 +17,11 @@ export const project = createSlice({
     setProjectList: (state, action) => {
       state.projectList = action.payload;
     },
+    setSkeletonLoading: (state, action) => {
+      state.showSkeletonLoading = action.payload;
+    }
   },
 });
 
-export const { setSelectedTag, setProjectList } = project.actions;
+export const { setSelectedTag, setProjectList, setSkeletonLoading } = project.actions;
 export default project.reducer;

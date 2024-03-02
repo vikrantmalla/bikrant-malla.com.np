@@ -192,9 +192,9 @@ declare namespace Data {
     }
 
     interface ProjectSlice {
-      filterKeyword: string[];
       projectList: ArchiveDetailsData[];
-      selectedTag: string,
+      selectedTag: string;
+      showSkeletonLoading: boolean;
     }
 
     interface MouseSlice {
