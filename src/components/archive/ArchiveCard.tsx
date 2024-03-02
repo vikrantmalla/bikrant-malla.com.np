@@ -1,4 +1,3 @@
-"use client"
 import { RootState } from "@/redux/store";
 import { Project } from "../../types/data";
 import { joseFont } from "@/helpers/lib/font";

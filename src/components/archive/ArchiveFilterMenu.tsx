@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
@@ -70,17 +70,20 @@ const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
   return (
     <div className={`subheading ${joseFont} fs-300 filter-links`}>
       <ul>
-        {tech.map((techTag, index) => (
-          <li
-            key={techTag}
-            onClick={() => handleTagSelect(techTag)}
-            className={
-              selectedTag === techTag ? "tag-selected" : "tag-not-selected"
-            }
-          >
-            <Link href={`?tag=${formattedTech[index]}`}>{techTag}</Link>
-          </li>
-        ))}
+        <li>
+          {tech.map((techTag, index) => (
+            <Link
+              key={techTag}
+              onClick={() => handleTagSelect(techTag)}
+              className={
+                selectedTag === techTag ? "tag-selected" : "tag-not-selected"
+              }
+              href={`?tag=${formattedTech[index]}`}
+            >
+              {techTag}
+            </Link>
+          ))}
+        </li>
       </ul>
     </div>
   );
