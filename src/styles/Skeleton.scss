@@ -1,0 +1,64 @@
+.skeleton-container {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    padding: 20px;
+  }
+  
+  .title-style {
+    width: 200px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    animation: pulsate-animation 1.5s infinite ease-in-out;
+  }
+  
+  .paragraph-style {
+    width: 100px;
+    height: 14px;
+    background-color: #ccc;
+    border-radius: 4px;
+    animation: pulsate-animation 1.5s infinite ease-in-out;
+  }
+
+  .skeleton-links {
+    display: flex;
+    gap: .8rem;
+    margin-top: 2rem;
+  }
+  
+  .link-style {
+    width: 20px;
+    height: 20px;
+    background-color: #ccc;
+    animation: pulsate-animation 1.5s infinite ease-in-out;
+  }
+  
+  .tag-style {
+    @include flex(row, flex-start);
+    @include md {
+      @include flex(row, flex-end);
+    }
+  }
+  
+  .tag-item {
+    display: inline-block;
+    width: 50px;
+    height: 30px;
+    background-color: #ccc;
+    border-radius: 4px;
+    margin-right: 5px;
+    animation: pulsate-animation 1.5s infinite ease-in-out;
+  }
+  
+  @keyframes pulsate-animation {
+    0% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.5;
+    }
+  }
