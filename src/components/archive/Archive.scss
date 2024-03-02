@@ -64,7 +64,11 @@
           box-shadow: rgba(41, 44, 46, 0.3) 0px 1px 2px 0px,
             rgba(27, 29, 31, 0.15) 0px 2px 6px 2px;
         }
-      }
+              }
+    }
+    .message-placeholder {
+      height: 50vh;
+      @include flex(row, center);
     }
   }
 
@@ -79,9 +83,9 @@
       li {
         border: 1px solid red;
         padding: .5rem 1rem;
-        a {
+                a {
           text-decoration: none;
-        }
+                  }
       }
     };
   }
