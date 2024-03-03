@@ -18,6 +18,35 @@ import {
   setToggleMenu,
 } from "@/redux/feature/appSlice";
 
+export function MenuIcon() {
+  const dispatch = useDispatch<AppDispatch>();
+  const toggleMenu = useSelector((state: RootState) => state.app.toggleMenu);
+
+  const handleClick = () => {
+    dispatch(setToggleMenu(!toggleMenu));
+    const mobileNav = !toggleMenu ? "mobile_nav_open" : "mobile_nav_close";
+    gtag.event({
+      action: `${mobileNav}`,
+      category: "mobile_navigation",
+      label: "hamburger_menu_click",
+    });
+  };
+  const arialMessage = !toggleMenu
+    ? "Open mobile navigation menu"
+    : "Close mobile navigation menu";
+    
+  return (
+    <button
+      role="button"
+      className="menu-icon"
+      onClick={handleClick}
+      aria-label={arialMessage}
+    >
+      {toggleMenu ? <FaTimes aria-label={`${arialMessage} icon`} /> : <FaBars aria-label={`${arialMessage} icon`} />}
+    </button>
+  );
+}
+
 const NavBar = ({ contactData }: ContactPageData) => {
   const dispatch = useDispatch<AppDispatch>();
   const toggleMenu = useSelector((state: RootState) => state.app.toggleMenu);
@@ -28,12 +57,6 @@ const NavBar = ({ contactData }: ContactPageData) => {
 
   const handleClick = () => {
     dispatch(setToggleMenu(!toggleMenu));
-    const mobileNav = !toggleMenu ? "mobile_nav_open" : "mobile_nav_close";
-    gtag.event({
-      action: `${mobileNav}`,
-      category: "mobile_navigation",
-      label: "hamburger_menu_click",
-    });
   };
 
   if (typeof window !== "undefined") {
@@ -128,16 +151,10 @@ const NavBar = ({ contactData }: ContactPageData) => {
             )}
           </ul>
         </nav>
-        {!toggleMenu && (
-          <div className="menu-icon" onClick={handleClick}>
-            {toggleMenu ? <FaTimes /> : <FaBars />}
-          </div>
-        )}
+        {!toggleMenu && <MenuIcon />}
         {toggleMenu && (
           <>
-            <div className="menu-icon" onClick={handleClick}>
-              {toggleMenu ? <FaTimes /> : <FaBars />}
-            </div>
+            <MenuIcon />
             <nav className="nav">
               <ul className={toggleMenu ? "nav-menu active" : "nav-menu"}>
                 {["aboutme", "skill", "project", "concept", "contact"].map(

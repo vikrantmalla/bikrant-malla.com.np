@@ -26,9 +26,9 @@ export default function ScrollArrow() {
   return (
     <div>
       {showButton && (
-        <div className="back-to-top">
-          <FaChevronUp onClick={scrollToTop} className="topArrow" />
-        </div>
+        <button role="button" className="back-to-top" aria-label="Scroll the window to the top">
+          <FaChevronUp onClick={scrollToTop} className="topArrow" aria-label="Scroll the window to the top icon" />
+        </button>
       )}
     </div>
   );
