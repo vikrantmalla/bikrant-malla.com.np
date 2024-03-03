@@ -13,6 +13,9 @@ const Footer = () => {
             href="https://github.com/vikrantmalla/bikrant-malla.com.np.git"
             className={`${joseFont} fs-300`}
             passHref
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View source code on GitHub (opens in a new tab)"
           >
             {`Design & Built by Bikrant Malla`}
           </Link>
