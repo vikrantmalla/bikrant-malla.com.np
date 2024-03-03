@@ -137,7 +137,7 @@ declare namespace Data {
   }
 
   interface ContactPageData {
-    contactData: ContactData;
+    contactData?: ContactData;
   }
 
   interface ContactData {
@@ -176,6 +176,14 @@ declare namespace Data {
     category: string;
     label: string;
   }
+
+  interface NavItemProps  {
+    tabId: string;
+    pathname: string;
+    activeLink: string;
+    onTabClick: (tabId: string) => void;
+    onMenuClick: () => void;
+  };
 
 
 
