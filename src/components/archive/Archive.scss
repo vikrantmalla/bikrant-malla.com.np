@@ -60,7 +60,7 @@
           background-color: var(--background);
           padding: 0.5rem;
           border-radius: 0.5rem;
-          color: var(--navActiveLink);
+          color: var(--text);
           box-shadow: rgba(41, 44, 46, 0.3) 0px 1px 2px 0px,
             rgba(27, 29, 31, 0.15) 0px 2px 6px 2px;
         }
@@ -91,7 +91,7 @@
           padding: .5rem 1rem;
           border-radius: .5rem;
           text-decoration: none;
-          color: var(--navActiveLink);
+          color: var(--text);
         }
       }
       .tag-selected {
