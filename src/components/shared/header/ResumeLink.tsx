@@ -1,21 +1,23 @@
 "use client";
-import React from 'react';
-import Link from 'next/link';
-import { joseFont } from '@/helpers/lib/font';
-import * as gtag from "../../../helpers/lib/gtag";
+import React from "react";
+import { joseFont } from "@/helpers/lib/font";
+import ExternalLink from "../externalLink";
 
 const ResumeLink = () => {
-const handleClick = () => {    
-    gtag.event({
-    action: `#resume_link`,
-    category: "ui_interaction",
-    label: "resume_link_click",
-  });};
   return (
-   <>
-    <Link className={`resume-link ${joseFont} fs-400`} href="/resume.pdf" target="_blank" rel="noreferrer" onClick={() => handleClick()}>Resume</Link>
-   </>
-  )
-}
+    <>
+      <ExternalLink
+        className={`resume-link ${joseFont} fs-400`}
+        href="/resume.pdf"
+        label="View Résumé (opens in a new tab)"
+        gtagAction="#resume_link"
+        gtagCategory="document_interaction"
+        gtagLabel="resume_view"
+      >
+        Resume
+      </ExternalLink>
+    </>
+  );
+};
 
-export default ResumeLink
+export default ResumeLink;

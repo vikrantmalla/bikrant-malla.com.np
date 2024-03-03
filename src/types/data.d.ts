@@ -159,8 +159,12 @@ declare namespace Data {
 
   interface Links {
     children: ReactNode;
+    className?: string;
     href: string;
     label: string;
+    gtagAction?: string;
+    gtagCategory?: string;
+    gtagLabel?: string;
   }
 
   interface Props {
