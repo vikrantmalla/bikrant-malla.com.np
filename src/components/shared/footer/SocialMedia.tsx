@@ -1,32 +1,12 @@
 import React from "react";
-import Data, { ContactData, ContactPageData, Links } from "../../../types/data";
-import * as gtag from "../../../helpers/lib/gtag";
 import { FaGithub, FaBehance, FaLinkedinIn, FaTwitter } from "react-icons/fa";
+import { ContactData } from "../../../types/data";
+import ExternalLink from "../externalLink";
 
 interface SocialMediaProps {
   contactData: ContactData;
   visibleCount: number;
 }
-
-const handleClick = () => {
-  gtag.event({
-    action: "social_media_clicked",
-    category: "engagement",
-    label: "method",
-  });
-};
-
-const ExternalLink = ({ href, children, label }: Links) => (
-  <a
-    target="_blank"
-    rel="noopener noreferrer"
-    href={href}
-    aria-label={label}
-    onClick={handleClick}
-  >
-    {children}
-  </a>
-);
 
 const SocialMedia = ({ contactData, visibleCount }: SocialMediaProps) => {
   const socialMediaIcons = [
@@ -61,8 +41,11 @@ const SocialMedia = ({ contactData, visibleCount }: SocialMediaProps) => {
             key={socialMedia.key}
             href={socialMedia.url}
             label={
-              socialMedia.key.charAt(0).toUpperCase() + socialMedia.key.slice(1)
+              `${socialMedia.key.charAt(0).toUpperCase() + socialMedia.key.slice(1)} (opens in a new tab)`
             }
+            gtagAction="social_media_clicked"
+            gtagCategory="engagement"
+            gtagLabel="method"
           >
             {socialMedia.icon}
           </ExternalLink>

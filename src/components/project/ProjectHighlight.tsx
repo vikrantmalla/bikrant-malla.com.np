@@ -18,7 +18,7 @@ const ProjectHighlight = ({
             }
           )}
         </div>
-        <Link href="/archive" passHref>
+        <Link href="/archive" passHref aria-label="View Full Project Archive">
           <h1 className={`link ${joseFont} fs-400`}>View the Archive</h1>
         </Link>
       </section>

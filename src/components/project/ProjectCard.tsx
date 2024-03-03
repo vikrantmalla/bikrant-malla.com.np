@@ -7,18 +7,11 @@ import { FaChevronRight } from "react-icons/fa";
 import { joseFont } from "@/helpers/lib/font";
 import { ProjectHighlightsCard } from "../../types/data";
 import { setCursorType } from "@/redux/feature/mouseSlice";
-import * as gtag from "../../helpers/lib/gtag";
+import ExternalLink from "../shared/externalLink";
 
 const ProjectCard = ({ project }: ProjectHighlightsCard) => {
   const { images, alt, title, build, projectview } = project;
   const dispatch = useDispatch<AppDispatch>();
-  const handleClick = () => {
-    gtag.event({
-      action: "project_highlight_clicked",
-      category: "engagement",
-      label: "method",
-    });
-  };
 
   const cursorChangeHandler = (cursorType: React.SetStateAction<string>) => {
     dispatch(setCursorType(cursorType));
@@ -32,14 +25,20 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
           onMouseEnter={() => cursorChangeHandler("hovered")}
           onMouseLeave={() => cursorChangeHandler("")}
         >
-          <Link href={projectview} passHref>
+          <ExternalLink
+            href={projectview}
+            label={`${title} project (opens in a new tab)`}
+            gtagAction="project_highlight_image_clicked"
+            gtagCategory="image_interaction"
+            gtagLabel="click_through_link"
+          >
             <img
               loading="lazy"
               src={images}
               alt={alt}
               className="responsive-image"
             />
-          </Link>
+          </ExternalLink>
         </div>
       </div>
       <div className="card-details">
@@ -52,9 +51,15 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
             onMouseEnter={() => cursorChangeHandler("hovered")}
             onMouseLeave={() => cursorChangeHandler("")}
           >
-            <a href={projectview} onClick={handleClick} aria-label="arrow">
+            <ExternalLink
+              href={projectview}
+              label={`${title} project (opens in a new tab)`}
+              gtagAction="project_highlight_clicked"
+              gtagCategory="project_interaction"
+              gtagLabel="click_through_button"
+            >
               <FaChevronRight size={20} />
-            </a>
+            </ExternalLink>
           </div>
         </div>
       </div>
