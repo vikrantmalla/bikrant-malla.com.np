@@ -79,6 +79,7 @@ const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
                 selectedTag === techTag ? "tag-selected" : "tag-not-selected"
               }
               href={`?tag=${formattedTech[index]}`}
+              aria-label={`Filter by ${techTag} projects`}
             >
               {techTag}
             </Link>
