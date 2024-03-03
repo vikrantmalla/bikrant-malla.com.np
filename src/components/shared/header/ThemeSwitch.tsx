@@ -44,13 +44,15 @@ export default function Switch() {
     });
   };
 
+  const arialMessage = `Switch to ${isDarkTheme ? 'light theme' : 'dark theme'}`
   return (
     <button
+      role="button"
       className="switch"
       onClick={() => toggle(currentTheme)}
-      aria-label="theme-switch"
+      aria-label={arialMessage}
     >
-      {!isDarkTheme ? <FaMoon style={{ color: "#000" }} /> : <FaSun size={15} style={{ color: "fff" }} />}
+      {!isDarkTheme ? <FaMoon style={{ color: "#000" }} aria-label={`${arialMessage} icon`} /> : <FaSun size={15} style={{ color: "fff" }} aria-label={`${arialMessage} icon`}  />}
     </button>
   );
 }
