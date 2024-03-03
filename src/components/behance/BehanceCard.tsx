@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
@@ -32,10 +31,11 @@ const BehanceCard = ({ project }: BehanceCard) => {
             gtagCategory="image_interaction"
             gtagLabel="click_through_link"
           >
-            <img
-              loading="lazy"
-              src={images}
+            <Image
+              src={`/${images}`}
               alt={alt}
+              width={500}
+              height={500}
               className="responsive-image"
             />
           </ExternalLink>
