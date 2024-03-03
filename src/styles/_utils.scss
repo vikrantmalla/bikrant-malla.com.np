@@ -81,11 +81,6 @@
     width: 2.5rem;
     transition: 0.5s;
     box-shadow: 0 3px 8px rgb(0 0 0 / 24%);
-    &:hover {
-      margin-top: -10px;
-      background-color: var(--text);
-      color: var(--textRev);
-    }
   }
 }
 
@@ -102,6 +97,11 @@
       height: 3rem;
       width: 3rem;
       font-size: 1.5rem;
+      &:hover {
+        margin-top: -10px;
+        background-color: var(--text);
+        color: var(--textRev);
+      }
     }
   }
 }
