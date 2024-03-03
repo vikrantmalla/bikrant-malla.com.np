@@ -3,6 +3,8 @@ import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
+import { joseFont } from "@/helpers/lib/font";
+import { ContactPageData, NavItemProps } from "../../../types/data";
 import { FaTimes, FaBars } from "react-icons/fa";
 import Link from "next/link";
 import ThemeSwitch from "./ThemeSwitch";
@@ -10,14 +12,13 @@ import ResumeLink from "./ResumeLink";
 import Backdrop from "./Backdrop";
 import SocialMedia from "../footer/SocialMedia";
 import * as gtag from "../../../helpers/lib/gtag";
-import { joseFont } from "@/helpers/lib/font";
-import { ContactPageData } from "../../../types/data";
 import {
   setActiveLink,
   setNavColor,
   setToggleMenu,
 } from "@/redux/feature/appSlice";
 
+// MenuIcon component
 export function MenuIcon() {
   const dispatch = useDispatch<AppDispatch>();
   const toggleMenu = useSelector((state: RootState) => state.app.toggleMenu);
@@ -34,7 +35,7 @@ export function MenuIcon() {
   const arialMessage = !toggleMenu
     ? "Open mobile navigation menu"
     : "Close mobile navigation menu";
-    
+
   return (
     <button
       role="button"
@@ -42,18 +43,115 @@ export function MenuIcon() {
       onClick={handleClick}
       aria-label={arialMessage}
     >
-      {toggleMenu ? <FaTimes aria-label={`${arialMessage} icon`} /> : <FaBars aria-label={`${arialMessage} icon`} />}
+      {toggleMenu ? (
+        <FaTimes aria-label={`${arialMessage} icon`} />
+      ) : (
+        <FaBars aria-label={`${arialMessage} icon`} />
+      )}
     </button>
   );
 }
 
+// Navigation component
+export function Navigation({ contactData }: ContactPageData) {
+  const dispatch = useDispatch<AppDispatch>();
+  const pathname = usePathname();
+  const isMenuOpen = useSelector((state: RootState) => state.app.toggleMenu);
+  const toggleMenu = useSelector((state: RootState) => state.app.toggleMenu);
+  const activeLink = useSelector((state: RootState) => state.app.activeLink);
+
+  const handleToggleMenu = () => {
+    dispatch(setToggleMenu(!isMenuOpen));
+  };
+
+  const handleTabClick = (tabId: string) => {
+    const checkWidth = window.matchMedia("(min-width: 677px)");
+
+    gtag.event({
+      action: `#${tabId}`,
+      category: "ui_interaction",
+      label: "tab_id_click",
+    });
+
+    const element = document.getElementById(tabId);
+    element?.scrollIntoView({ behavior: "smooth" });
+
+    if (checkWidth.matches) {
+      setToggleMenu(!toggleMenu);
+    }
+  };
+  return (
+    <nav className="nav">
+      <ul className={isMenuOpen ? "nav-menu active" : "nav-menu"}>
+        {["aboutme", "skill", "project", "concept", "contact"].map((tabId) => (
+          <NavItem
+            key={tabId}
+            tabId={tabId}
+            pathname={pathname}
+            activeLink={activeLink}
+            onTabClick={handleTabClick}
+            onMenuClick={handleToggleMenu}
+          />
+        ))}
+        <li
+          className="social-media mobile-nav-social-media"
+          style={{ margin: "1rem 0" }}
+        >
+          {contactData && (
+            <SocialMedia contactData={contactData} visibleCount={2} />
+          )}
+        </li>
+      </ul>
+    </nav>
+  );
+}
+
+// Individual navigation item component
+const NavItem = ({
+  tabId,
+  pathname,
+  activeLink,
+  onTabClick,
+  onMenuClick,
+}: NavItemProps) => {
+  const handleClick = () => {
+    if (window.innerWidth < 768) {
+      onMenuClick();
+    }
+  };
+
+  return (
+    <li
+      onClick={() => handleClick()}
+      className={`nav-item ${joseFont} fs-400`}
+      style={{ textTransform: "capitalize" }}
+    >
+      {pathname === "/" ? (
+        <p
+          onClick={() => onTabClick(tabId)}
+          className={
+            activeLink === tabId.replace("#", "")
+              ? "activeLink"
+              : "unActiveLink"
+          }
+        >
+          {tabId.replace("#", "")}
+        </p>
+      ) : (
+        <Link href="/" passHref>
+          {tabId.replace("#", "")}
+        </Link>
+      )}
+    </li>
+  );
+};
+
+// NavBar component
 const NavBar = ({ contactData }: ContactPageData) => {
   const dispatch = useDispatch<AppDispatch>();
   const toggleMenu = useSelector((state: RootState) => state.app.toggleMenu);
   const navColor = useSelector((state: RootState) => state.app.navColor);
   const activeLink = useSelector((state: RootState) => state.app.activeLink);
-
-  const pathname = usePathname();
 
   const handleClick = () => {
     dispatch(setToggleMenu(!toggleMenu));
@@ -68,6 +166,8 @@ const NavBar = ({ contactData }: ContactPageData) => {
   }
 
   useEffect(() => {
+    dispatch(setNavColor(window.scrollY >= 50));
+
     const handleScroll = () => {
       const scrollTop = window.pageYOffset;
       const sections = [
@@ -86,6 +186,8 @@ const NavBar = ({ contactData }: ContactPageData) => {
       if (activeSection && activeSection.id !== activeLink) {
         dispatch(setActiveLink(activeSection.id));
       }
+
+      dispatch(setNavColor(scrollTop >= 50));
     };
 
     const changeNavbarColor = () => {
@@ -101,98 +203,15 @@ const NavBar = ({ contactData }: ContactPageData) => {
     };
   }, [activeLink, dispatch]);
 
-  const _handleTabClick = (tabId: string) => {
-    const checkWidth = window.matchMedia("(min-width: 677px)");
-
-    gtag.event({
-      action: `#${tabId}`,
-      category: "ui_interaction",
-      label: "tab_id_click",
-    });
-
-    const element = document.getElementById(tabId);
-    element?.scrollIntoView({ behavior: "smooth" });
-
-    if (checkWidth.matches) {
-      setToggleMenu(!toggleMenu);
-    }
-  };
-
   return (
     <header className={`header ${navColor ? "colorChange" : ""}`}>
       <div className="nav-container">
-        <nav className="nav">
-          <ul className={"nav-menu"}>
-            {["aboutme", "skill", "project", "concept", "contact"].map(
-              (tabId) => (
-                <li
-                  key={tabId}
-                  className={`nav-item ${joseFont} fs-400 `}
-                  style={{ textTransform: "capitalize" }}
-                >
-                  {pathname === "/" ? (
-                    <p
-                      onClick={() => _handleTabClick(tabId)}
-                      className={
-                        activeLink === tabId.replace("#", "")
-                          ? "activeLink"
-                          : "unActiveLink"
-                      }
-                    >
-                      {tabId.replace("#", "")}
-                    </p>
-                  ) : (
-                    <Link href="/" passHref>
-                      {tabId.replace("#", "")}
-                    </Link>
-                  )}
-                </li>
-              )
-            )}
-          </ul>
-        </nav>
+        <Navigation />
         {!toggleMenu && <MenuIcon />}
         {toggleMenu && (
           <>
             <MenuIcon />
-            <nav className="nav">
-              <ul className={toggleMenu ? "nav-menu active" : "nav-menu"}>
-                {["aboutme", "skill", "project", "concept", "contact"].map(
-                  (tabId) => (
-                    <li
-                      key={tabId}
-                      className={`nav-item ${joseFont} fs-400`}
-                      onClick={handleClick}
-                      style={{ textTransform: "capitalize" }}
-                    >
-                      {pathname === "/" ? (
-                        <p
-                          onClick={() => _handleTabClick(tabId)}
-                          className={
-                            activeLink === tabId.replace("#", "")
-                              ? "activeLink"
-                              : "unActiveLink"
-                          }
-                        >
-                          {tabId.replace("#", "")}
-                        </p>
-                      ) : (
-                        <Link href="/" passHref>
-                          {tabId.replace("#", "")}
-                        </Link>
-                      )}
-                    </li>
-                  )
-                )}
-                <ResumeLink />
-                <li
-                  className="social-media mobile-nav-social-media"
-                  style={{ margin: "1rem 0" }}
-                >
-                  <SocialMedia contactData={contactData} visibleCount={2} />
-                </li>
-              </ul>
-            </nav>
+            <Navigation contactData={contactData} />
             <Backdrop onClose={handleClick} />
           </>
         )}
