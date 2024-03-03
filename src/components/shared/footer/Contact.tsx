@@ -2,6 +2,7 @@
 import { joseFont, tekoFont } from "@/helpers/lib/font";
 import { ContactPageData } from "../../../types/data";
 import SocialMedia from "./SocialMedia";
+import ExternalLink from "../externalLink";
 
 const Contact = ({ contactData }: ContactPageData) => {
   return (
@@ -11,10 +12,16 @@ const Contact = ({ contactData }: ContactPageData) => {
         {contactData.contact.map((details, index) => (
           <div key={index}>
             <p className={`${joseFont} fs-400`}>{details.message}</p>
-
-            <a href={details.emailUrl} className={`button ${joseFont} fs-500`}>
+            <ExternalLink
+              className={`button ${joseFont} fs-500`}
+              href={details.emailUrl}
+              label={`Email (opens in a new tab)`}
+              gtagAction={`email_clicked`}
+              gtagCategory="contact_interaction"
+              gtagLabel="click_through_link"
+            >
               {details.ctaMessage}
-            </a>
+            </ExternalLink>
           </div>
         ))}
         <SocialMedia contactData={contactData} visibleCount={4} />
