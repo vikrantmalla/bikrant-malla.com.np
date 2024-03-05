@@ -1,6 +1,6 @@
 import type { Viewport } from "next";
 import { ReduxProvider } from "@/redux/Provider";
-import { fetchContactData } from "@/service/apiService";
+import { fetchContactData, fetchMetaData } from "@/service/apiService";
 import CustomScript from "@/helpers/customScript/customScript";
 import NavBar from "@/components/shared/header/NavBar";
 import Footer from "@/components/shared/footer/Footer";
@@ -9,25 +9,24 @@ import DotRing from "@/components/shared/cursor/DotRing";
 import "../styles/globals.scss";
 
 export async function generateMetadata() {
+  const metaData = await fetchMetaData();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
   const googleSiteID = process.env.NEXT_PUBLIC_GOOGLE_SITE_ID;
+  const appTitle = "Bikrant Malla - Frontend Web Developer";
   return {
     metadataBase: new URL(`${appUrl}/`),
-    title: "Bikrant Malla - Frontend Web Developer",
-    description:
-      "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
-    keywords:
-      "bikrant malla, vikrant malla, ui/ux, portfolio, web, web developer, frontend, developer, frontend enginner, project, design, bikrantmalla.com.np, reactjs",
-    authors: [{ name: "Bikrant Malla", url: `${appUrl}/` }],
+    title: appTitle,
+    description: `${metaData.metaTag[0].description}`,
+    keywords:`${metaData.metaTag[0].keyword}`,
+    authors: [{ name: `${metaData.metaTag[0].author}`, url: `${appUrl}/` }],
     referrer: "origin-when-cross-origin",
     category: "portfolio",
     openGraph: {
-      title: "Bikrant Malla - Frontend Web Developer",
-      description:
-        "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
-      authors: [{ name: "Bikrant Malla", url: `${appUrl}/` }],
+      title: appTitle,
+      description: `${metaData.metaTag[0].description}`,
+      authors: [{ name: `${metaData.metaTag[0].author}`, url: `${appUrl}/` }],
       url: `${appUrl}`,
-      siteName: "Bikrant Malla",
+      siteName: `${metaData.metaTag[0].author}`,
       images: [
         {
           url: `${appUrl}/ogimg.png`,
@@ -39,11 +38,10 @@ export async function generateMetadata() {
     },
     twitter: {
       card: "summary_large_image",
-      title: "Bikrant Malla - Frontend Web Developer",
-      description:
-        "Bikrant Malla - Experienced Front-End Web Developer specializing in JavaScript and cutting-edge web technologies, delivering creative solutions. Explore a portfolio showcasing expertise in building dynamic and user-friendly web applications.",
-      creator: "@Vikrantmalla09",
-      creatorId: "@Vikrantmalla09",
+      title: appTitle,
+      description: `${metaData.metaTag[0].description}`,
+      creator: `${metaData.metaTag[0].twitterID}`,
+      creatorId: `${metaData.metaTag[0].twitterID}`,
       images: [`${appUrl}/ogimg.png`],
     },
     robots: {
