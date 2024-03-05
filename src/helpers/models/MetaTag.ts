@@ -5,10 +5,6 @@ const MetatagSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  pageTitle: {
-    type: String,
-    required: true,
-  },
   description: {
     type: String,
     required: true,
@@ -28,11 +24,7 @@ const MetatagSchema = new mongoose.Schema({
   twitterID: {
     type: String,
     required: true,
-  },
-  googleSiteID: {
-    type: String,
-    required: true,
-  },
+  }
 });
 
 export default mongoose.models.Metatag ||
