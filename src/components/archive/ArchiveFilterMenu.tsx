@@ -12,28 +12,43 @@ import {
   setSelectedTag,
   setSkeletonLoading,
 } from "@/redux/feature/projectSlice";
+import TagsCategory from "@/types/enum";
 
 const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
   const dispatch = useDispatch<AppDispatch>();
   const selectedTag = useSelector(
     (state: RootState) => state.project.selectedTag
   );
+
+  let formattedSelectedTag: string;
+
+  if (
+    selectedTag.toUpperCase() === TagsCategory.HTML ||
+    selectedTag.toUpperCase() === TagsCategory.CSS ||
+    selectedTag.toUpperCase() === TagsCategory.SCSS
+  ) {
+    formattedSelectedTag = selectedTag.toUpperCase();
+  } else {
+    const words = selectedTag.split("_"); // Split the tag by underscore if it contains any
+    formattedSelectedTag = words
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
   const search = useSearchParams();
 
   const filterProjects = useCallback(
     (tag: string) => {
       let filteredProjects;
-      if (tag === "All") {
+      if (tag === TagsCategory.ALL || tag === TagsCategory.ALL.toLowerCase()) {
         filteredProjects = project;
-      } else if (tag === "Feature") {
+      } else if (tag === TagsCategory.FEATURE.toLowerCase()) {
         // Filter based on isNew property for "Feature" tag
         filteredProjects = project.filter((p: Data.Project) => p.isnew);
       } else {
-        // Replace underscores with spaces in the tag
-        const formattedTag = tag.replace(/_/g, " ");
         // Filter based on tag props
         filteredProjects = project.filter((p: Data.Project) =>
-          p.build.includes(formattedTag)
+          p.build.includes(formattedSelectedTag)
         );
       }
       dispatch(setProjectList(filteredProjects));
@@ -44,11 +59,11 @@ const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
         label: "keyword_list_update",
       });
     },
-    [project, dispatch]
+    [dispatch, project, formattedSelectedTag]
   );
 
   useEffect(() => {
-    const initialTagFromUrl = search.get("tag") || "All";
+    const initialTagFromUrl = search.get("tag") || TagsCategory.ALL;
     dispatch(setSelectedTag(initialTagFromUrl));
     filterProjects(initialTagFromUrl);
   }, [search, filterProjects, dispatch]);
@@ -63,9 +78,10 @@ const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
   };
 
   const tech = techTag.map((techTag) => techTag.tag);
-
   // Replace spaces with underscore in the URL
-  const formattedTech = tech.map((tag) => tag.replace(/\s/g, "_"));
+  const formattedTech = tech.map((tag) =>
+    tag.toLowerCase().replace(/\s/g, "_")
+  );
 
   return (
     <div className={`subheading ${joseFont} fs-300 filter-links`}>
@@ -76,9 +92,15 @@ const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
               key={techTag}
               onClick={() => handleTagSelect(techTag)}
               className={
-                selectedTag === techTag ? "tag-selected" : "tag-not-selected"
+                formattedSelectedTag === techTag
+                  ? "tag-selected"
+                  : "tag-not-selected"
               }
-              href={`?tag=${formattedTech[index]}`}
+              href={
+                formattedTech[index] === TagsCategory.ALL.toLowerCase()
+                  ? "/archive"
+                  : `?tag=${formattedTech[index]}`
+              }
               aria-label={`Filter by ${techTag} projects`}
             >
               {techTag}
