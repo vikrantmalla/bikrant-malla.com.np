@@ -17,6 +17,7 @@ import {
   setNavColor,
   setToggleMenu,
 } from "@/redux/feature/appSlice";
+import { motion, useScroll, useSpring } from "framer-motion";
 
 // MenuIcon component
 export function MenuIcon() {
@@ -202,25 +203,38 @@ const NavBar = ({ contactData }: ContactPageData) => {
       window.removeEventListener("scroll", changeNavbarColor);
     };
   }, [activeLink, dispatch]);
-
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 200,
+    damping: 50,
+  });
   return (
-    <header className={`header ${navColor ? "colorChange" : ""}`}>
-      <div className="nav-container">
-        <Navigation />
-        {!toggleMenu && <MenuIcon />}
-        {toggleMenu && (
-          <>
-            <MenuIcon />
-            <Navigation contactData={contactData} />
-            <Backdrop onClose={handleClick} />
-          </>
-        )}
-        <div className="nav-option">
-          <ThemeSwitch />
-          <ResumeLink />
+    <>
+      <header className={`header ${navColor ? "colorChange" : ""}`}>
+        <div className="nav-container">
+          <Navigation />
+          {!toggleMenu && <MenuIcon />}
+          {toggleMenu && (
+            <>
+              <MenuIcon />
+              <Navigation contactData={contactData} />
+              <Backdrop onClose={handleClick} />
+            </>
+          )}
+          <div className="nav-option">
+            <ThemeSwitch />
+            <ResumeLink />
+          </div>
         </div>
-      </div>
-    </header>
+        <motion.div
+          className="progress-bar"
+          style={{
+            scaleX,
+            transformOrigin: "left",
+          }}
+        />
+      </header>
+    </>
   );
 };
 
