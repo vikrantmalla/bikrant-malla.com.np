@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { joseFont, tekoFont } from "@/helpers/lib/font";
 import { AboutMePageData } from "@/types/data";
