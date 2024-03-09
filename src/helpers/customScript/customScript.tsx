@@ -22,6 +22,11 @@ const CustomScript = () => {
       },
     ],
   };
+
+  if (typeof window !== 'undefined' && isProduction) {
+    window.console.log = () => {};
+  }
+
   return (
     <>
       {isProduction && (
@@ -36,8 +41,8 @@ const CustomScript = () => {
         `}
           </Script>
           <Script
+            defer
             src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
-            strategy="afterInteractive"
           />
           <Script
             id="gtag-init"
