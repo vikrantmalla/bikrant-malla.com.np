@@ -9,7 +9,7 @@ const Contact = ({ contactData }: ContactPageData) => {
     <>
       <section className="contact" id="contact">
         <h2 className={`heading ${tekoFont} fs-700`}>Get In Touch</h2>
-        {contactData.contact.map((details, index) => (
+        {contactData?.contact.map((details, index) => (
           <div key={index}>
             <p className={`${joseFont} fs-400`}>{details.message}</p>
             <ExternalLink
