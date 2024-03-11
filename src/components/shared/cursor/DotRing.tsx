@@ -3,6 +3,7 @@ import React from "react";
 import { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
 import useMousePosition from "../../../app/hooks/useMousePosition";
+import { joseFont } from "@/helpers/lib/font";
 
 const DotRing = () => {
   const cursorType = useSelector(
@@ -14,13 +15,13 @@ const DotRing = () => {
       {/* ring */}
       <div
         style={{ left: `${x}px`, top: `${y}px` }}
-        className={"ring " + cursorType}
+        className={`${joseFont} fs-400 ring  + ${cursorType}`}
       >
         {" "}
       </div>
       {/* dot */}
       <div
-        className={"dot " + cursorType}
+        className={`${joseFont} fs-400 dot  + ${cursorType}`}
         style={{ left: `${x}px`, top: `${y}px` }}
       ></div>
     </>
