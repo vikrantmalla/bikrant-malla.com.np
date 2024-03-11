@@ -32,7 +32,6 @@ declare namespace Data {
   interface AboutMePageData {
     aboutMeData: AboutMeData;
   }
-
   interface AboutMeData {
     success: boolean;
     aboutme: Aboutme[];
@@ -217,3 +216,73 @@ declare namespace Data {
 }
 
 export = Data;
+
+
+export interface PortfolioDetails {
+  success: boolean;
+  aboutme: AboutMe[];
+  behance: BehanceProject[];
+  contact: ContactInfo[];
+  metaData: MetaData[];
+  project: Project[];
+}
+
+export interface AboutMeData {
+  aboutme: Aboutme[];
+}
+
+export interface AboutMe {
+  _id: string;
+  title: string;
+  jobTitle: string;
+  subTitle: string;
+  aboutDescription1: string;
+  aboutDescription2: string;
+  skill1: string[];
+  skill2: string[];
+  __v: number;
+}
+
+export interface BehanceProject {
+  _id: string;
+  title: string;
+  subTitle: string;
+  images: string;
+  alt: string;
+  tools: string[];
+  projectview: string;
+  __v: number;
+}
+
+export interface ContactInfo {
+  _id: string;
+  message: string;
+  ctaMessage: string;
+  emailUrl: string;
+  githubUrl: string;
+  behanceUrl: string;
+  linkedinUrl: string;
+  twitterUrl: string;
+  __v: number;
+}
+
+export interface MetaData {
+  _id: string;
+  title: string;
+  description: string;
+  keyword: string;
+  author: string;
+  fbID: string;
+  twitterID: string;
+  __v: number;
+}
+
+export interface Project {
+  _id: string;
+  title: string;
+  images: string;
+  alt: string;
+  projectview: string;
+  build: string[];
+  __v: number;
+}
