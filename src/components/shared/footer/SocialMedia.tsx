@@ -4,7 +4,7 @@ import { ContactData } from "../../../types/data";
 import ExternalLink from "../externalLink";
 
 interface SocialMediaProps {
-  contactData: ContactData;
+  contactData?: ContactData;
   visibleCount: number;
 }
 
@@ -13,22 +13,22 @@ const SocialMedia = ({ contactData, visibleCount }: SocialMediaProps) => {
     {
       key: "github",
       icon: <FaGithub size={20} />,
-      url: contactData.contact[0].githubUrl,
+      url: contactData?.contact[0].githubUrl ?? "",
     },
     {
       key: "linkedin",
       icon: <FaLinkedinIn size={20} />,
-      url: contactData.contact[0].linkedinUrl,
+      url: contactData?.contact[0].linkedinUrl ?? "",
     },
     {
       key: "behance",
       icon: <FaBehance size={20} />,
-      url: contactData.contact[0].behanceUrl,
+      url: contactData?.contact[0].behanceUrl ?? "",
     },
     {
       key: "twitter",
       icon: <FaTwitter size={20} />,
-      url: contactData.contact[0].twitterUrl,
+      url: contactData?.contact[0].twitterUrl ?? "",
     },
   ];
 
