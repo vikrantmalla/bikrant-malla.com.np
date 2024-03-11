@@ -38,10 +38,10 @@ const Archive = async () => {
             A list of things I’ve worked on
           </p>
           <div>
-            <ArchiveFilterMenu project={projectData} {...projectData}/>
+            <ArchiveFilterMenu {...projectData}/>
           </div>
           <div className="archive-lists">
-            <ArchiveList project={projectData} {...projectData} />
+            <ArchiveList />
           </div>
         </div>
       </section>
