@@ -4,7 +4,7 @@
     grid-template-columns: 1fr;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
     margin: 2.5rem 0;
     .card {
       .card-img {
@@ -22,7 +22,7 @@
     .behanceitems {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
+      gap: 1.5rem;
     }
   }
 }
@@ -32,7 +32,7 @@
     .behanceitems {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
+      gap: 2rem;
     }
   }
 }
