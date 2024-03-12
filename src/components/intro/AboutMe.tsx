@@ -1,13 +1,18 @@
 "use client";
 import React from "react";
 import { joseFont, tekoFont } from "@/helpers/lib/font";
-import { AboutMePageData } from "@/types/data";
+import { AboutMeData } from "@/types/data";
 
-const AboutMe = ({ aboutMeData }: AboutMePageData) => {
+interface Props {
+  tech: string;
+  index: number;
+}
+
+const AboutMe = ({ aboutme }: AboutMeData) => {
   return (
     <>
       <section>
-        {aboutMeData.aboutme.map((intro, index) => (
+        {aboutme.map((intro, index) => (
           <div className="intro" key={index}>
             <h1 className={`name ${joseFont} fs-600`}>
               {intro.subTitle}
@@ -22,40 +27,50 @@ const AboutMe = ({ aboutMeData }: AboutMePageData) => {
       </section>
       <section id="aboutme">
         <h2 className={`headingleft ${joseFont} fs-600`}>About me</h2>
-        {aboutMeData.aboutme.map((about, index) => (
-          <div className="aboutme" key={index}>
-            <p className={`${joseFont} fs-400`}>{about.aboutDescription1}</p>
-            <p className={`${joseFont} fs-400`}>{about.aboutDescription2}</p>
-          </div>
-        ))}
+        {aboutme.map((about, index) => {
+          const { aboutDescription1, aboutDescription2 } = about;
+          return (
+            <div className="aboutme" key={index}>
+              <p className={`${joseFont} fs-400`}>{aboutDescription1}</p>
+              <p className={`${joseFont} fs-400`}>{aboutDescription2}</p>
+            </div>
+          );
+        })}
       </section>
       <section id="skill">
         <h2 className={`headingright ${joseFont} fs-600`}>Skillsets</h2>
         <div>
-          {aboutMeData.aboutme.map((skill, index) => (
-            <div className="techstack" key={index}>
-              <div className="list">
-                <h2 className={`${joseFont} fs-500`}>
-                  {`I'm`} <span>Comfortable</span> With
-                </h2>
-                {skill.skill1.map((tech, index) => (
-                  <p className={`${joseFont} fs-400`} key={index}>
-                    {tech}
-                  </p>
-                ))}
+          {aboutme.map((skill, index) => {
+            const { skill1, skill2 } = skill;
+            return (
+              <div className="techstack" key={index}>
+                <div className="list">
+                  <h2 className={`${joseFont} fs-500`}>
+                    {`I'm`} <span>Comfortable</span> With
+                  </h2>
+                  {skill1.map(({ tech, index }: Props) => {
+                    return (
+                      <span className={`${joseFont} fs-400`} key={index}>
+                        {tech}
+                      </span>
+                    );
+                  })}
+                </div>
+                <div className="list" key={index}>
+                  <h2 className={`${joseFont} fs-500`}>
+                    I Also <span>Can Work</span> With
+                  </h2>
+                  {skill2.map(({ tech, index }: Props) => {
+                    return (
+                      <p className={`${joseFont} fs-400`} key={index}>
+                        {tech}
+                      </p>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="list" key={index}>
-                <h2 className={`${joseFont} fs-500`}>
-                  I Also <span>Can Work</span> With
-                </h2>
-                {skill.skill2.map((tech, index) => (
-                  <p className={`${joseFont} fs-400`} key={index}>
-                    {tech}
-                  </p>
-                ))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </>
