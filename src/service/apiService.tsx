@@ -1,11 +1,15 @@
 import baseUrl from "@/helpers/lib/baseUrl";
-import Data from "@/types/data";
+import Data, { PortfolioDetails } from "@/types/data";
 import { ApiEndpoint } from "@/types/enum";
 
 async function fetchData<T>(endpoint: string): Promise<T> {
   const res = await fetch(`${baseUrl}/${endpoint}`, { cache: "no-store" });
   const data: T = await res.json();
   return data;
+}
+
+export async function fetchPortfolioDetailsData(): Promise<PortfolioDetails> {
+  return fetchData<PortfolioDetails>(ApiEndpoint.PortfolioDetails);
 }
 
 export async function fetchAboutMeData(): Promise<Data.AboutMeData> {
