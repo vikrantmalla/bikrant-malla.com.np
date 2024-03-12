@@ -32,10 +32,10 @@ declare namespace Data {
   interface AboutMePageData {
     aboutMeData: AboutMeData;
   }
-  interface AboutMeData {
-    success: boolean;
-    aboutme: Aboutme[];
-  }
+  // interface AboutMeData {
+  //   success: boolean;
+  //   aboutme: Aboutme[];
+  // }
 
   interface Aboutme {
     _id: string;
