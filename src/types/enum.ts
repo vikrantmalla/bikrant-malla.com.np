@@ -1,4 +1,5 @@
 export enum ApiEndpoint {
+  PortfolioDetails = "api/portfoliodetails",
   AboutMe = "api/aboutme",
   ProjectHighlights = "api/projecthighlight",
   Behance = "api/behance",
@@ -15,5 +16,3 @@ export enum TagsCategory {
   CSS = "CSS",
   SCSS = "SCSS",
 }
-
-
