@@ -29,49 +29,44 @@ declare namespace Data {
     googleSiteID: string;
   }
 
-  interface AboutMePageData {
-    aboutMeData: AboutMeData;
-  }
+  // interface AboutMePageData {
+  //   aboutMeData: AboutMeData;
+  // }
   // interface AboutMeData {
   //   success: boolean;
   //   aboutme: Aboutme[];
   // }
 
-  interface Aboutme {
-    _id: string;
-    __v: number;
-    title: string;
-    jobTitle: string;
-    subTitle: string;
-    aboutDescription1: string;
-    aboutDescription2: string;
-    skill1: string[];
-    skill2: string[];
-  }
+  // interface Aboutme {
+  //   _id: string;
+  //   __v: number;
+  //   title: string;
+  //   jobTitle: string;
+  //   subTitle: string;
+  //   aboutDescription1: string;
+  //   aboutDescription2: string;
+  //   skill1: string[];
+  //   skill2: string[];
+  // }
 
-  interface ProjectHighlightPageData {
-    projectHighlightData: ProjectHighlightData;
-  }
+  // interface ProjectHighlightPageData {
+  //   projectHighlightData: ProjectHighlightData;
+  // }
 
-  interface ProjectHighlightData {
-    success: boolean;
-    projectHighlights: ProjectHighlights[];
-  }
+  // interface ProjectHighlightData {
+  //   success: boolean;
+  //   projectHighlights: ProjectHighlights[];
+  // }
 
-  interface ProjectHighlights {
-    _id: string;
-    __v: number;
-    alt: string;
-    build: string[];
-    images: string;
-    projectview: string;
-    title: string;
-  }
-
-  interface ProjectHighlightsCard {
-    key: number;
-    project: ProjectHighlights;
-  }
+  // interface ProjectHighlights {
+  //   _id: string;
+  //   __v: number;
+  //   alt: string;
+  //   build: string[];
+  //   images: string;
+  //   projectview: string;
+  //   title: string;
+  // }
 
   interface BehancePageData {
     behanceData: BehanceData;
@@ -99,15 +94,15 @@ declare namespace Data {
     project: BehanceProject;
   }
 
-  interface projectHighlights {
-    _id: string;
-    title: string;
-    projectview: string;
-    build: string[];
-    __v: number;
-    alt: string;
-    images: string;
-  }
+  // interface projectHighlights {
+  //   _id: string;
+  //   title: string;
+  //   projectview: string;
+  //   build: string[];
+  //   __v: number;
+  //   alt: string;
+  //   images: string;
+  // }
 
   interface ProjectPageData {
     projectData: ProjectData;
