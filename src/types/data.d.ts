@@ -68,31 +68,26 @@ declare namespace Data {
   //   title: string;
   // }
 
-  interface BehancePageData {
-    behanceData: BehanceData;
-  }
+  // interface BehancePageData {
+  //   behanceData: BehanceData;
+  // }
 
-  interface BehanceData {
-    success: boolean;
-    behanceProject: BehanceProject[];
-  }
+  // interface BehanceData {
+  //   success: boolean;
+  //   behanceProject: BehanceProject[];
+  // }
 
-  interface BehanceProject {
-    _id: string;
-    __v: number;
-    id: string;
-    alt: string;
-    images: string;
-    projectview: string;
-    subTitle: string;
-    title: string;
-    tools: string[];
-  }
-
-  interface BehanceCard {
-    key: number;
-    project: BehanceProject;
-  }
+  // interface BehanceProject {
+  //   _id: string;
+  //   __v: number;
+  //   id: string;
+  //   alt: string;
+  //   images: string;
+  //   projectview: string;
+  //   subTitle: string;
+  //   title: string;
+  //   tools: string[];
+  // }
 
   // interface projectHighlights {
   //   _id: string;
@@ -104,15 +99,15 @@ declare namespace Data {
   //   images: string;
   // }
 
-  interface ProjectPageData {
-    projectData: ProjectData;
-  }
+  // interface ProjectPageData {
+  //   projectData: ProjectData;
+  // }
 
-  interface ProjectData {
-    success: boolean;
-    project: Project[];
-    techTag: TechTag[];
-  }
+  // interface ProjectData {
+  //   success: boolean;
+  //   project: Project[];
+  //   techTag: TechTag[];
+  // }
 
   interface TechTag {
     _id: string;
@@ -130,26 +125,18 @@ declare namespace Data {
     year: number;
   }
 
-  interface ContactPageData {
-    contactData?: ContactData;
-  }
 
-  interface ContactData {
-    success: boolean;
-    contact: Contact[];
-  }
-
-  interface Contact {
-    _id: string;
-    __v: number;
-    message: string;
-    ctaMessage: string;
-    emailUrl: string;
-    githubUrl: string;
-    behanceUrl: string;
-    linkedinUrl: string;
-    twitterUrl: string;
-  }
+  // interface Contact {
+  //   _id: string;
+  //   __v: number;
+  //   message: string;
+  //   ctaMessage: string;
+  //   emailUrl: string;
+  //   githubUrl: string;
+  //   behanceUrl: string;
+  //   linkedinUrl: string;
+  //   twitterUrl: string;
+  // }
 
   interface Links {
     children: ReactNode;
@@ -238,8 +225,17 @@ export interface AboutMe {
   __v: number;
 }
 
+export interface BehanceData {
+  behance: BehanceProject[];
+}
+
+export interface BehanceCard {
+  key: number;
+  project: BehanceProject;
+}
+
 export interface BehanceProject {
-  _id: string;
+  id: string;
   title: string;
   subTitle: string;
   images: string;
@@ -247,6 +243,10 @@ export interface BehanceProject {
   tools: string[];
   projectview: string;
   __v: number;
+}
+
+export interface Contact {
+  contact: ContactInfo[];
 }
 
 export interface ContactInfo {
@@ -259,6 +259,14 @@ export interface ContactInfo {
   linkedinUrl: string;
   twitterUrl: string;
   __v: number;
+}
+
+export interface SocialMedia {
+  githubUrl: string;
+  behanceUrl: string;
+  linkedinUrl: string;
+  twitterUrl: string;
+  visibleCount: number;
 }
 
 export interface MetaData {
