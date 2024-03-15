@@ -272,6 +272,15 @@ export interface MetaData {
   __v: number;
 }
 
+export interface ProjectHighlightData {
+  project: Project[];
+}
+
+export interface ProjectHighlightsCard {
+  key: number;
+  project: Project;
+}
+
 export interface Project {
   _id: string;
   title: string;
