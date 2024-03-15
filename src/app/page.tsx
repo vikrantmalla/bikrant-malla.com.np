@@ -9,14 +9,14 @@ import {
 
 const Home = async () => {
   const portfolioDetails = await fetchPortfolioDetailsData();
-  const { aboutme } = portfolioDetails;
+  const { aboutme, project } = portfolioDetails;
   return (
     <main>
       <article className="container">
         <AboutMe aboutme={aboutme} />
-        {/* <ProjectHighlight projectHighlightData={projectHighlightData} />
-        <Behance behanceData={behanceData} />
-        <Contact contactData={contactData} /> */}
+        <ProjectHighlight project={project} />
+        {/* <Behance behanceData={behanceData} /> */}
+        {/* <Contact contactData={contactData} /> */}
       </article>
     </main>
   );
