@@ -45,13 +45,13 @@ const AboutMe = ({ aboutme }: AboutMeData ) => {
                   </h2>
                   {skill1.map((tech: string, index: number) => {
                     return (
-                      <span className={`${joseFont} fs-400`} key={index}>
+                      <p className={`${joseFont} fs-400`} key={index}>
                         {tech}
-                      </span>
+                      </p>
                     );
                   })}
                 </div>
-                <div className="list" key={index}>
+                <div className="list">
                   <h2 className={`${joseFont} fs-500`}>
                     I Also <span>Can Work</span> With
                   </h2>
