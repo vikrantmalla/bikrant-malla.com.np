@@ -2,7 +2,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { Project } from "../../types/data";
+import { ArchiveProject } from "../../types/data";
 import { joseFont } from "@/helpers/lib/font";
 import ArchiveDetails from "./ArchiveCard";
 
@@ -13,9 +13,9 @@ const Card = () => {
   return (
     <>
       {projectList.length > 0 ? (
-        projectList.map((data: Project, id: number) => (
-          <ArchiveDetails key={id} {...data} isnew={data.isnew} />
-        ))
+        projectList.map((data: ArchiveProject, id: number) => {
+          return <ArchiveDetails key={id} {...data} isnew={data.isnew} />;
+        })
       ) : (
         <div className="message-placeholder">
           <p className={`subheading ${joseFont} fs-600`}>
