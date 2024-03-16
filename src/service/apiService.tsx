@@ -27,12 +27,12 @@ export async function fetchProjectData(): Promise<Data.ProjectData> {
   return fetchData<Data.ProjectData>(ApiEndpoint.Projects);
 }
 
-export async function fetchContactData(): Promise<Data.ContactData> {
-  return fetchData<Data.ContactData>(ApiEndpoint.Contact);
+export async function fetchContactData(): Promise<Data.Contact> {
+  return fetchData<Data.Contact>(ApiEndpoint.Contact);
 }
 
-export async function fetchMetaData(): Promise<Data.MetaTagData> {
-  return fetchData<Data.MetaTagData>(ApiEndpoint.MetaData);
+export async function fetchMetaData(): Promise<Data.MetaData > {
+  return fetchData<Data.MetaData >(ApiEndpoint.MetaData);
 }
 
 // export async function fetchTagData()  {
