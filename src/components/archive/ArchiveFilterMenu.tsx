@@ -5,16 +5,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import Link from "next/link";
 import { joseFont } from "@/helpers/lib/font";
-import Data, { ProjectData } from "../../types/data";
+import { ArchiveProps } from "../../types/data";
 import * as gtag from "../../helpers/lib/gtag";
 import {
   setProjectList,
   setSelectedTag,
   setSkeletonLoading,
 } from "@/redux/feature/projectSlice";
-import TagsCategory from "@/types/enum";
+import { TagsCategory } from "@/types/enum";
 
-const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
+const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const selectedTag = useSelector(
     (state: RootState) => state.project.selectedTag
@@ -44,10 +44,10 @@ const ArchiveFilterMenu = ({ project, techTag }: ProjectData) => {
         filteredProjects = project;
       } else if (tag === TagsCategory.FEATURE.toLowerCase()) {
         // Filter based on isNew property for "Feature" tag
-        filteredProjects = project.filter((p: Data.Project) => p.isnew);
+        filteredProjects = project.filter((p) => p.isnew);
       } else {
         // Filter based on tag props
-        filteredProjects = project.filter((p: Data.Project) =>
+        filteredProjects = project.filter((p) =>
           p.build.includes(formattedSelectedTag)
         );
       }

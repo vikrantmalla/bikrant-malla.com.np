@@ -1,20 +1,22 @@
 import ArchiveFilterMenu from '@/components/archive/ArchiveFilterMenu';
 import ArchiveList from '@/components/archive/ArchiveList';
 import { joseFont, tekoFont } from '@/helpers/lib/font';
-import { fetchMetaData, fetchProjectData } from '@/service/apiService';
+import TechTag from '@/helpers/models/TechTag';
+import { fetchProjectData } from '@/service/apiService';
 import React from 'react'
 
 export async function generateMetadata() {
-  const metaData = await fetchMetaData();
+  const projectData = await fetchProjectData();
+  const { metaData } = projectData;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
   const appTitle = "Archive - Bikrant Malla";
   return {
     metadataBase: new URL(`${appUrl}`),
     title: appTitle,
-    authors: [{ name: `${metaData.metaTag[0].author}`, url: `${appUrl}/archive` }],
+    authors: [{ name: `${metaData[0].author}`, url: `${appUrl}/archive` }],
     openGraph: {
       title: appTitle,
-      authors: [{ name: `${metaData.metaTag[0].author}`, url: `${appUrl}/archive` }],
+      authors: [{ name: `${metaData[0].author}`, url: `${appUrl}/archive` }],
     },
     twitter: {
       title: appTitle,
@@ -29,6 +31,7 @@ export async function generateMetadata() {
 
 const Archive = async () => {
   const projectData = await fetchProjectData();
+  const {archiveProject, techTag} = projectData;
   return (
     <>
       <section className="container">
@@ -38,7 +41,7 @@ const Archive = async () => {
             A list of things I’ve worked on
           </p>
           <div>
-            <ArchiveFilterMenu {...projectData}/>
+            <ArchiveFilterMenu project= {archiveProject} techTag={techTag}/>
           </div>
           <div className="archive-lists">
             <ArchiveList />
