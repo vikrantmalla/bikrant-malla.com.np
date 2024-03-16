@@ -1,6 +1,6 @@
 import type { Viewport } from "next";
 import { ReduxProvider } from "@/redux/Provider";
-import { fetchContactData, fetchMetaData } from "@/service/apiService";
+import { fetchPortfolioDetailsData } from "@/service/apiService";
 import CustomScript from "@/helpers/customScript/customScript";
 import NavBar from "@/components/shared/header/NavBar";
 import Footer from "@/components/shared/footer/Footer";
@@ -9,24 +9,25 @@ import DotRing from "@/components/shared/cursor/DotRing";
 import "../styles/globals.scss";
 
 export async function generateMetadata() {
-  const metaData = await fetchMetaData();
+  const portfolioDetails = await fetchPortfolioDetailsData();
+  const { metaData } = portfolioDetails;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
   const googleSiteID = process.env.NEXT_PUBLIC_GOOGLE_SITE_ID;
   const appTitle = "Bikrant Malla - Frontend Web Developer";
   return {
     metadataBase: new URL(`${appUrl}/`),
     title: appTitle,
-    description: `${metaData.metaTag[0].description}`,
-    keywords:`${metaData.metaTag[0].keyword}`,
-    authors: [{ name: `${metaData.metaTag[0].author}`, url: `${appUrl}/` }],
+    description: `${metaData[0].description}`,
+    keywords:`${metaData[0].keyword}`,
+    authors: [{ name: `${metaData[0].author}`, url: `${appUrl}/` }],
     referrer: "origin-when-cross-origin",
     category: "portfolio",
     openGraph: {
       title: appTitle,
-      description: `${metaData.metaTag[0].description}`,
-      authors: [{ name: `${metaData.metaTag[0].author}`, url: `${appUrl}/` }],
+      description: `${metaData[0].description}`,
+      authors: [{ name: `${metaData[0].author}`, url: `${appUrl}/` }],
       url: `${appUrl}`,
-      siteName: `${metaData.metaTag[0].author}`,
+      siteName: `${metaData[0].author}`,
       images: [
         {
           url: `${appUrl}/ogimg.png`,
@@ -39,9 +40,9 @@ export async function generateMetadata() {
     twitter: {
       card: "summary_large_image",
       title: appTitle,
-      description: `${metaData.metaTag[0].description}`,
-      creator: `${metaData.metaTag[0].twitterID}`,
-      creatorId: `${metaData.metaTag[0].twitterID}`,
+      description: `${metaData[0].description}`,
+      creator: `${metaData[0].twitterID}`,
+      creatorId: `${metaData[0].twitterID}`,
       images: [`${appUrl}/ogimg.png`],
     },
     robots: {
@@ -82,13 +83,14 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const contactData = await fetchContactData();
+  const portfolioDetails = await fetchPortfolioDetailsData();
+  const { contact } = portfolioDetails;
   return (
     <html lang="en">
       <ReduxProvider>
         <body>
           <CustomScript />
-          <NavBar contactData={contactData} />
+          <NavBar contact={contact} />
           {children}
           <DotRing />
           <ScrollArrow />
