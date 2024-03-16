@@ -4,7 +4,11 @@ import { usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { joseFont } from "@/helpers/lib/font";
-import { ContactPageData, NavItemProps } from "../../../types/data";
+import {
+  ContactInfo,
+  NavBarProps,
+  NavItemProps,
+} from "../../../types/data";
 import { FaTimes, FaBars } from "react-icons/fa";
 import Link from "next/link";
 import ThemeSwitch from "./ThemeSwitch";
@@ -54,7 +58,7 @@ export function MenuIcon() {
 }
 
 // Navigation component
-export function Navigation({ contactData }: ContactPageData) {
+export function Navigation({ contact }: NavBarProps) {
   const dispatch = useDispatch<AppDispatch>();
   const pathname = usePathname();
   const isMenuOpen = useSelector((state: RootState) => state.app.toggleMenu);
@@ -81,6 +85,8 @@ export function Navigation({ contactData }: ContactPageData) {
       setToggleMenu(!toggleMenu);
     }
   };
+
+  const isContactDefined = contact !== undefined;
   return (
     <nav className="nav">
       <ul className={isMenuOpen ? "nav-menu active" : "nav-menu"}>
@@ -98,9 +104,12 @@ export function Navigation({ contactData }: ContactPageData) {
           className="social-media mobile-nav-social-media"
           style={{ margin: "1rem 0" }}
         >
-          {contactData && (
-            <SocialMedia contactData={contactData} visibleCount={2} />
-          )}
+          {isContactDefined &&
+            contact.map((details: ContactInfo, index: number) => (
+              <div key={index}>
+                <SocialMedia {...details} visibleCount={2} />
+              </div>
+            ))}
         </li>
       </ul>
     </nav>
@@ -148,7 +157,7 @@ const NavItem = ({
 };
 
 // NavBar component
-const NavBar = ({ contactData }: ContactPageData) => {
+const NavBar = ({ contact }: NavBarProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const toggleMenu = useSelector((state: RootState) => state.app.toggleMenu);
   const navColor = useSelector((state: RootState) => state.app.navColor);
@@ -217,7 +226,7 @@ const NavBar = ({ contactData }: ContactPageData) => {
           {toggleMenu && (
             <>
               <MenuIcon />
-              <Navigation contactData={contactData} />
+              <Navigation contact={contact} />
               <Backdrop onClose={handleClick} />
             </>
           )}
