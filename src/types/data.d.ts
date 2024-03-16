@@ -13,21 +13,21 @@ declare namespace Data {
     }
   }
 
-  interface MetaTagData {
-    success: boolean;
-    metaTag: MetaTag[];
-  }
+  // interface MetaTagData {
+  //   success: boolean;
+  //   metaTag: MetaTag[];
+  // }
 
-  interface MetaTag {
-    title: string;
-    pageTitle: string;
-    description: string;
-    keyword: string;
-    author: string;
-    fbID: string;
-    twitterID: string;
-    googleSiteID: string;
-  }
+  // interface MetaTag {
+  //   title: string;
+  //   pageTitle: string;
+  //   description: string;
+  //   keyword: string;
+  //   author: string;
+  //   fbID: string;
+  //   twitterID: string;
+  //   googleSiteID: string;
+  // }
 
   // interface AboutMePageData {
   //   aboutMeData: AboutMeData;
@@ -125,7 +125,6 @@ declare namespace Data {
     year: number;
   }
 
-
   // interface Contact {
   //   _id: string;
   //   __v: number;
@@ -137,36 +136,6 @@ declare namespace Data {
   //   linkedinUrl: string;
   //   twitterUrl: string;
   // }
-
-  interface Links {
-    children: ReactNode;
-    className?: string;
-    href: string;
-    label: string;
-    gtagAction?: string;
-    gtagCategory?: string;
-    gtagLabel?: string;
-  }
-
-  interface Props {
-    children: ReactNode;
-  }
-
-  interface GTagEvent {
-    action: string;
-    category: string;
-    label: string;
-  }
-
-  interface NavItemProps  {
-    tabId: string;
-    pathname: string;
-    activeLink: string;
-    onTabClick: (tabId: string) => void;
-    onMenuClick: () => void;
-  };
-
-
 
   declare namespace ProviderContext {
     interface AppSlice {
@@ -198,7 +167,6 @@ declare namespace Data {
 }
 
 export = Data;
-
 
 export interface PortfolioDetails {
   success: boolean;
@@ -249,6 +217,10 @@ export interface Contact {
   contact: ContactInfo[];
 }
 
+export interface NavBarProps {
+  contact?: ContactInfo[];
+}
+
 export interface ContactInfo {
   _id: string;
   message: string;
@@ -297,4 +269,32 @@ export interface Project {
   projectview: string;
   build: string[];
   __v: number;
+}
+
+export interface Links {
+  children: ReactNode;
+  className?: string;
+  href: string;
+  label: string;
+  gtagAction?: string;
+  gtagCategory?: string;
+  gtagLabel?: string;
+}
+
+export interface Props {
+  children: ReactNode;
+}
+
+export interface GTagEvent {
+  action: string;
+  category: string;
+  label: string;
+}
+
+export interface NavItemProps {
+  tabId: string;
+  pathname: string;
+  activeLink: string;
+  onTabClick: (tabId: string) => void;
+  onMenuClick: () => void;
 }
