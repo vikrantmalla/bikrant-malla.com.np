@@ -4,7 +4,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState: ProviderContext.AppSlice = {
   toggleMenu: false,
   navColor: false,
-  activeLink: ""
+  activeLink: "",
+  showModal: false,
 };
 
 export const app = createSlice({
@@ -20,8 +21,11 @@ export const app = createSlice({
     setActiveLink: (state, action) => {
       state.activeLink = action.payload;
     },
+    setShowModal: (state, action) => {
+      state.showModal = action.payload;
+    },
   },
 });
 
-export const { setToggleMenu, setNavColor, setActiveLink } = app.actions;
+export const { setToggleMenu, setNavColor, setActiveLink, setShowModal } = app.actions;
 export default app.reducer;
