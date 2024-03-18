@@ -16,3 +16,8 @@ export enum TagsCategory {
   CSS = "CSS",
   SCSS = "SCSS",
 }
+
+export enum TabType {
+  logIn = 1,
+  signUp = 2,
+}
