@@ -6,6 +6,7 @@ declare namespace Data {
       toggleMenu: boolean;
       navColor: boolean;
       activeLink: string;
+      showModal: boolean;
     }
 
     interface ThemeSlice {
