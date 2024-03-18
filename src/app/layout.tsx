@@ -1,11 +1,7 @@
 import type { Viewport } from "next";
 import { ReduxProvider } from "@/redux/Provider";
 import { fetchPortfolioDetailsData } from "@/service/apiService";
-import CustomScript from "@/helpers/customScript/customScript";
-import NavBar from "@/components/shared/header/NavBar";
-import Footer from "@/components/shared/footer/Footer";
-import ScrollArrow from "@/components/shared/scrollup/ScrollArrow";
-import DotRing from "@/components/shared/cursor/DotRing";
+import SharedComponent from "@/components/shared/layoutComponent";
 import "../styles/globals.scss";
 
 export async function generateMetadata() {
@@ -89,12 +85,8 @@ export default async function RootLayout({
     <html lang="en">
       <ReduxProvider>
         <body>
-          <CustomScript />
-          <NavBar contact={contact} />
           {children}
-          <DotRing />
-          <ScrollArrow />
-          <Footer />
+          <SharedComponent contact={contact}/>
         </body>
       </ReduxProvider>
     </html>
