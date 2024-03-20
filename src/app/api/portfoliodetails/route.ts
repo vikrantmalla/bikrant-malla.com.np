@@ -4,6 +4,7 @@ import Behance from "@/helpers/models/Behance";
 import Contact from "@/helpers/models/Contact";
 import MetaTag from "@/helpers/models/MetaTag";
 import Project from "@/helpers/models/ProjectHighlight";
+import Config from "@/helpers/models/Config";
 import { NextResponse } from "next/server";
 
 dbConnect();
@@ -15,6 +16,7 @@ export async function GET() {
       contact: await Contact.find({}),
       metaData: await MetaTag.find({}),
       project: await Project.find({}),
+      config: await Config.find({})
     };
     return NextResponse.json(
       {
