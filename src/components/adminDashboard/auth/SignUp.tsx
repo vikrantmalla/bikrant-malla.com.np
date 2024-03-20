@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { SignUpSubmitForm } from "@/types/form";
@@ -8,9 +8,16 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { setShowModal } from "@/redux/feature/appSlice";
 import baseUrl from "@/helpers/lib/baseUrl";
-import { toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 const SignUp = () => {
   const {
@@ -18,7 +25,7 @@ const SignUp = () => {
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-    reset
+    reset,
   } = useForm({
     defaultValues: {
       signupEmail: "",
@@ -28,7 +35,7 @@ const SignUp = () => {
   });
   // const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const [submitError, setSubmitError] = useState<string>("")
+  const [submitError, setSubmitError] = useState<string>("");
 
   const submit = async (formData: SignUpSubmitForm) => {
     try {
@@ -38,7 +45,8 @@ const SignUp = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: formData.signupEmail, password: formData.signupPassword
+          email: formData.signupEmail,
+          password: formData.signupPassword,
         }),
       });
       const responseData = await response.json();
@@ -53,10 +61,6 @@ const SignUp = () => {
           setSubmitError(loginRes.error || "");
         } else {
           // router.push("/");
-          toast('Registration is successful. 🎉', {
-            toastId: 1
-          })
-          dispatch(setShowModal(false));
         }
         reset();
       }
@@ -88,87 +92,72 @@ const SignUp = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)}>
-      <div className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor="email"
-        >
-          Email
-        </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="email"
-          type="email"
-          placeholder="Enter Email"
-          {...register("signupEmail", {
-            required: "Please enter your email",
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-              message: "Please enter a valid email",
-            },
-          })}
-        />
-        {errors.signupEmail != null && (
-          <small className="error-message block text-red-600 mt-2">
-            {errors.signupEmail.message}
-          </small>
-        )}
-      </div>
-      <div className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor="password"
-        >
-          Password
-        </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-          id="password"
-          type="password"
-          placeholder="Enter Password"
-          {...register("signupPassword", {
-            validate: validatePassword,
-          })}
-        />
-        {errors.signupPassword != null && (
-          <small className="error-message block text-red-600 mt-2">
-            {errors.signupPassword.message}
-          </small>
-        )}
-      </div>
-      <div className="mb-6">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-2"
-          htmlFor="password"
-        >
-          Confirm Password
-        </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-          id="password"
-          type="password"
-          placeholder="Confirm Password"
-          {...register("signupConfirmPassword", {
-            validate: validateConfirmPassword,
-          })}
-        />
-        {errors.signupConfirmPassword != null && (
-          <small className="error-message block text-red-600 mt-2">
-            {errors.signupConfirmPassword.message}
-          </small>
-        )}
-      </div>
-      <div className="my-auto">
-        <button
-          className={`w-full font-bold py-2 px-4 rounded ${isSubmitting ? 'bg-gray-100 text-black border border-black' : 'bg-blue-500 hover:bg-blue-700 text-white focus:outline-none focus:shadow-outline'}`}
-          type="submit"
-          disabled={isSubmitting}
-        >
-          Sign In
-        </button>
-      </div>
-    </form>
+    <Card>
+      <CardHeader>
+        <CardTitle>SignUp</CardTitle>
+      </CardHeader>
+      <form onSubmit={handleSubmit(submit)}>
+        <CardContent className="space-y-2">
+          <div className="space-y-1">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter Email"
+              {...register("signupEmail", {
+                required: "Please enter your email",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                  message: "Please enter a valid email",
+                },
+              })}
+            />
+            {errors.signupEmail != null && (
+              <small className="error-message block text-red-600 mt-2">
+                {errors.signupEmail.message}
+              </small>
+            )}
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="password">New password</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Enter Password"
+              {...register("signupPassword", {
+                validate: validatePassword,
+              })}
+            />
+          </div>
+          {errors.signupPassword != null && (
+            <small className="error-message block text-red-600 mt-2">
+              {errors.signupPassword.message}
+            </small>
+          )}
+          <div className="space-y-1">
+            <Label htmlFor="confirm-password">Confirm Password</Label>
+            <Input
+              id="confirm-password"
+              type="password"
+              placeholder="Confirm Password"
+              {...register("signupConfirmPassword", {
+                validate: validateConfirmPassword,
+              })}
+            />
+          </div>
+          {errors.signupConfirmPassword != null && (
+            <small className="error-message block text-red-600 mt-2">
+              {errors.signupConfirmPassword.message}
+            </small>
+          )}
+        </CardContent>
+        <CardFooter>
+          <Button type="submit" disabled={isSubmitting}>
+            Sign Up
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
   );
 };
 

@@ -1,78 +1,52 @@
 "use client";
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import TabsRender from "../../shared/Tabs";
+// import { signIn } from "next-auth/react";
+import SignIn from "./SignIn";
+import { ConfigData } from "@/types/data";
+import SignUp from "./SignUp";
 // import { useDispatch } from "react-redux";
 // import { AppDispatch } from "@/redux/store";
 // import { setShowModal } from "@/redux/feature/appSlice";
 
-const AuthModal = () => {
+const AuthModal = ({ config }: ConfigData) => {
   // const dispatch = useDispatch<AppDispatch>();
   const [showForgetPasswordModal, setShowForgetPasswordModal] = useState(false);
+  const allowSignUp = config.some((c) => c.allowSignUp);
+  const renderTabsTrigger = (value: string) => {
+    if (allowSignUp) {
+      return <TabsTrigger value={value}>{value}</TabsTrigger>;
+    }
+    if (value === "SignIn") {
+      return (
+        <TabsTrigger
+          value={value}
+          className={`${allowSignUp ? "" : " w-full"}`}
+        >
+          {value}
+        </TabsTrigger>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="flex items-center justify-center h-screen">
-      <Tabs defaultValue="account" className="w-[400px]">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="password">Password</TabsTrigger>
+      <Tabs defaultValue="SignIn" className="w-[400px]">
+        <TabsList
+          className={allowSignUp ? "grid w-full grid-cols-2" : "w-full"}
+        >
+          {renderTabsTrigger("SignIn")}
+          {renderTabsTrigger("SignUp")}
         </TabsList>
-        <TabsContent value="account">
-          <Card>
-            <CardHeader>
-              <CardTitle>Account</CardTitle>
-              <CardDescription>
-                Make changes to your account here. Click save when done.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="space-y-1">
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" defaultValue="Pedro Duarte" />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="username">Username</Label>
-                <Input id="username" defaultValue="@peduarte" />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button>Save changes</Button>
-            </CardFooter>
-          </Card>
+        <TabsContent value="SignIn">
+          <SignIn />
         </TabsContent>
-        <TabsContent value="password">
-          <Card>
-            <CardHeader>
-              <CardTitle>Password</CardTitle>
-              <CardDescription>
-                Change your password here. After saving, logged out.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="space-y-1">
-                <Label htmlFor="current">Current password</Label>
-                <Input id="current" type="password" />
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="new">New password</Label>
-                <Input id="new" type="password" />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button>Save password</Button>
-            </CardFooter>
-          </Card>
-        </TabsContent>
+        {allowSignUp && (
+          <TabsContent value="SignUp">
+            <SignUp />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
