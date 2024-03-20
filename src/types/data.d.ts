@@ -40,6 +40,7 @@ export interface PortfolioDetails {
   contact: ContactInfo[];
   metaData: MetaData[];
   project: Project[];
+  config: Config[];
 }
 
 export interface AboutMeData {
@@ -195,3 +196,13 @@ export interface ArchiveProject {
   viewcode: string;
   year: number;
 }
+
+export interface ConfigData {
+  config: Config[]
+}
+
+export interface Config {
+  _id: string;
+  allowSignUp: boolean;
+}
+
