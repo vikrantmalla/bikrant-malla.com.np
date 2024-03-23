@@ -5,19 +5,28 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SignIn from "./SignIn";
 import { ConfigData } from "@/types/data";
 import SignUp from "./SignUp";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import ResetPassword from "./ResetPassword";
 // import { useDispatch } from "react-redux";
 // import { AppDispatch } from "@/redux/store";
 // import { setShowModal } from "@/redux/feature/appSlice";
 
 const AuthModal = ({ config }: ConfigData) => {
   // const dispatch = useDispatch<AppDispatch>();
-  const [showForgetPasswordModal, setShowForgetPasswordModal] = useState(false);
+  const showForgetPasswordModal = useSelector(
+    (state: RootState) => state.app.showForgetPasswordModal
+  );
+
   const allowSignUp = config.some((c) => c.allowSignUp);
   const renderTabsTrigger = (value: string) => {
-    if (allowSignUp) {
+    if (value === "SignIn") {
       return <TabsTrigger value={value}>{value}</TabsTrigger>;
     }
-    if (value === "SignIn") {
+    if (value === "SignUp") {
+      return <TabsTrigger value={value}>{value}</TabsTrigger>;
+    }
+    if (value === "ForgetPassword") {
       return (
         <TabsTrigger
           value={value}
@@ -32,19 +41,31 @@ const AuthModal = ({ config }: ConfigData) => {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <Tabs defaultValue="SignIn" className="w-[400px]">
-        <TabsList
-          className={allowSignUp ? "grid w-full grid-cols-2" : "w-full"}
-        >
-          {renderTabsTrigger("SignIn")}
-          {renderTabsTrigger("SignUp")}
-        </TabsList>
-        <TabsContent value="SignIn">
-          <SignIn />
-        </TabsContent>
-        {allowSignUp && (
-          <TabsContent value="SignUp">
-            <SignUp />
+      <Tabs defaultValue="SignIn">
+        {!showForgetPasswordModal ? (
+          <TabsList>
+            {renderTabsTrigger("SignIn")}
+            {renderTabsTrigger("SignUp")}
+          </TabsList>
+        ) : (
+          <TabsList
+            className={allowSignUp ? "grid w-full grid-cols-2" : "w-full"}
+          >
+            {renderTabsTrigger("ForgetPassword")}
+          </TabsList>
+        )}
+        {!showForgetPasswordModal ? (
+          <>
+            <TabsContent value="SignIn">
+              <SignIn />
+            </TabsContent>
+            <TabsContent value="SignUp">
+              <SignUp config={config} />
+            </TabsContent>
+          </>
+        ) : (
+          <TabsContent value="ForgetPassword">
+            <ResetPassword />
           </TabsContent>
         )}
       </Tabs>

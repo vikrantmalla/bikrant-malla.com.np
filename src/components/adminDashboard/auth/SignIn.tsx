@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react";
 import ResetPassword from "./ResetPassword";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
-import { setShowModal } from "@/redux/feature/appSlice";
+import { setShowForgetPasswordModal } from "@/redux/feature/appSlice";
 import {
   Card,
   CardContent,
@@ -24,6 +24,7 @@ interface Props {
 }
 
 const SignIn = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const {
     register,
     handleSubmit,
@@ -42,6 +43,10 @@ const SignIn = () => {
       email,
       password,
     });
+  };
+
+  const handleClick = () => {
+    dispatch(setShowForgetPasswordModal(true));
   };
 
   return (
@@ -83,9 +88,16 @@ const SignIn = () => {
                 })}
               />
             </div>
+            <Button
+              type="button"
+              onClick={() => handleClick()}
+              className="bg-transparent border-none text-black w-[350px]"
+            >
+              Forget Password
+            </Button>
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting} className="w-[350px]">
               Sign In
             </Button>
           </CardFooter>
