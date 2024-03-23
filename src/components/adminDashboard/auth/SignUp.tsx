@@ -4,9 +4,8 @@ import { useForm } from "react-hook-form";
 import { SignUpSubmitForm } from "@/types/form";
 import { loginUser } from "@/helpers/login";
 // import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
-import { setShowModal } from "@/redux/feature/appSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
 import baseUrl from "@/helpers/lib/baseUrl";
 import {
   Card,
@@ -18,8 +17,30 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { ConfigData } from "@/types/data";
 
-const SignUp = () => {
+const SignUp = ({ config }: ConfigData) => {
+  const showForgetPasswordModal = useSelector(
+    (state: RootState) => state.app.showForgetPasswordModal
+  );
+
+  const allowSignUp = config.some((c) => c.allowSignUp);
+  return allowSignUp ? (
+    <SignUpComponent />
+  ) : (
+    <Card>
+      <CardContent className="space-y-2  w-96 h-60">
+        <div className="space-y-1 flex items-center justify-center h-60">
+          Signup Disable
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default SignUp;
+
+export const SignUpComponent = () => {
   const {
     register,
     handleSubmit,
@@ -90,7 +111,6 @@ const SignUp = () => {
       return "Passwords do not match";
     }
   };
-
   return (
     <Card>
       <CardHeader>
@@ -160,5 +180,3 @@ const SignUp = () => {
     </Card>
   );
 };
-
-export default SignUp;
