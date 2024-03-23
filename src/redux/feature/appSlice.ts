@@ -5,7 +5,7 @@ const initialState: ProviderContext.AppSlice = {
   toggleMenu: false,
   navColor: false,
   activeLink: "",
-  showModal: false,
+  showForgetPasswordModal: false
 };
 
 export const app = createSlice({
@@ -21,11 +21,11 @@ export const app = createSlice({
     setActiveLink: (state, action) => {
       state.activeLink = action.payload;
     },
-    setShowModal: (state, action) => {
-      state.showModal = action.payload;
-    },
+    setShowForgetPasswordModal: (state, action) => {
+      state.showForgetPasswordModal = action.payload;
+    }
   },
 });
 
-export const { setToggleMenu, setNavColor, setActiveLink, setShowModal } = app.actions;
+export const { setToggleMenu, setNavColor, setActiveLink, setShowForgetPasswordModal } = app.actions;
 export default app.reducer;
