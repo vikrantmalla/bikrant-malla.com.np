@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ConfigData } from "@/types/data";
+import { joseFont } from "@/helpers/lib/font";
 
 const SignUp = ({ config }: ConfigData) => {
   const showForgetPasswordModal = useSelector(
@@ -30,8 +31,10 @@ const SignUp = ({ config }: ConfigData) => {
   ) : (
     <Card>
       <CardContent className="space-y-2  w-96 h-60">
-        <div className="space-y-1 flex items-center justify-center h-60">
-          Signup Disable
+        <div
+          className={`${joseFont} fs-400 space-y-1 flex items-center justify-center h-60`}
+        >
+          Sign up Disable
         </div>
       </CardContent>
     </Card>
@@ -114,12 +117,14 @@ export const SignUpComponent = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>SignUp</CardTitle>
+        <CardTitle className={`${joseFont} fs-400`}>SignUp</CardTitle>
       </CardHeader>
       <form onSubmit={handleSubmit(submit)}>
         <CardContent className="space-y-2">
           <div className="space-y-1">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className={`${joseFont} fs-400`}>
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
@@ -133,46 +138,62 @@ export const SignUpComponent = () => {
               })}
             />
             {errors.signupEmail != null && (
-              <small className="error-message block text-red-600 mt-2">
+              <small
+                className={`${joseFont} fs-300 error-message block text-red-600 mt-2`}
+              >
                 {errors.signupEmail.message}
               </small>
             )}
           </div>
           <div className="space-y-1">
-            <Label htmlFor="password">New password</Label>
+            <Label htmlFor="password" className={`${joseFont} fs-400`}>
+              New password
+            </Label>
             <Input
               id="password"
               type="password"
               placeholder="Enter Password"
+              className={`${joseFont} fs-400`}
               {...register("signupPassword", {
                 validate: validatePassword,
               })}
             />
           </div>
           {errors.signupPassword != null && (
-            <small className="error-message block text-red-600 mt-2">
+            <small
+              className={`${joseFont} fs-300 error-message block text-red-600 mt-2`}
+            >
               {errors.signupPassword.message}
             </small>
           )}
           <div className="space-y-1">
-            <Label htmlFor="confirm-password">Confirm Password</Label>
+            <Label htmlFor="confirm-password" className={`${joseFont} fs-400`}>
+              Confirm Password
+            </Label>
             <Input
               id="confirm-password"
               type="password"
               placeholder="Confirm Password"
+              className={`${joseFont} fs-400`}
               {...register("signupConfirmPassword", {
                 validate: validateConfirmPassword,
               })}
             />
           </div>
           {errors.signupConfirmPassword != null && (
-            <small className="error-message block text-red-600 mt-2">
+            <small
+              className={`${joseFont} fs-300 error-message block text-red-600 mt-2`}
+            >
               {errors.signupConfirmPassword.message}
             </small>
           )}
         </CardContent>
         <CardFooter>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className={`${joseFont} fs-400 w-[350px]`}
+          >
             Sign Up
           </Button>
         </CardFooter>
