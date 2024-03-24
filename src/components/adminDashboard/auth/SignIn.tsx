@@ -1,11 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
-import { LogInSubmitForm } from "@/types/form";
 import { signIn } from "next-auth/react";
-import ResetPassword from "./ResetPassword";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
+import { LogInSubmitForm } from "@/types/form";
 import { setShowForgetPasswordModal } from "@/redux/feature/appSlice";
 import {
   Card,
@@ -17,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { joseFont } from "@/helpers/lib/font";
 
 interface Props {
   showForgetPasswordModal: boolean;
@@ -53,16 +53,19 @@ const SignIn = () => {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>SignIn</CardTitle>
+          <CardTitle className={`${joseFont} fs-400`}>Sign In</CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit(submit)}>
           <CardContent className="space-y-2">
             <div className="space-y-1">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className={`${joseFont} fs-400`}>
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="Enter Email"
+                className={`${joseFont} fs-400`}
                 {...register("loginEmail", {
                   required: "Please enter your email",
                   pattern: {
@@ -72,32 +75,48 @@ const SignIn = () => {
                 })}
               />
               {errors.loginEmail != null && (
-                <small className="error-message block text-red-600 mt-2">
+                <small
+                  className={`${joseFont} fs-300 error-message block text-red-600 mt-2`}
+                >
                   {errors.loginEmail.message}
                 </small>
               )}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className={`${joseFont} fs-400`}>
+                Password
+              </Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="Enter Password"
+                className={`${joseFont} fs-400`}
                 {...register("loginPassword", {
                   required: "Please enter your password",
                 })}
               />
+              {errors.loginPassword != null && (
+                <small
+                  className={`${joseFont} fs-300 error-message block text-red-600 mt-2`}
+                >
+                  {errors.loginPassword.message}
+                </small>
+              )}
             </div>
             <Button
               type="button"
               onClick={() => handleClick()}
-              className="bg-transparent border-none text-black w-[350px]"
+              className={`${joseFont} fs-400 bg-transparent border-none text-black w-[350px] shadow-none hover:bg-transparent`}
             >
               Forget Password
             </Button>
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={isSubmitting} className="w-[350px]">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className={`${joseFont} fs-400 w-[350px]`}
+            >
               Sign In
             </Button>
           </CardFooter>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import { signIn } from "next-auth/react";
 import SignIn from "./SignIn";
@@ -8,30 +8,24 @@ import SignUp from "./SignUp";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import ResetPassword from "./ResetPassword";
-// import { useDispatch } from "react-redux";
-// import { AppDispatch } from "@/redux/store";
-// import { setShowModal } from "@/redux/feature/appSlice";
+import { joseFont } from "@/helpers/lib/font";
 
 const AuthModal = ({ config }: ConfigData) => {
-  // const dispatch = useDispatch<AppDispatch>();
   const showForgetPasswordModal = useSelector(
     (state: RootState) => state.app.showForgetPasswordModal
   );
 
-  const allowSignUp = config.some((c) => c.allowSignUp);
   const renderTabsTrigger = (value: string) => {
-    if (value === "SignIn") {
-      return <TabsTrigger value={value}>{value}</TabsTrigger>;
-    }
-    if (value === "SignUp") {
-      return <TabsTrigger value={value}>{value}</TabsTrigger>;
-    }
-    if (value === "ForgetPassword") {
+    if (value === "Sign In") {
       return (
-        <TabsTrigger
-          value={value}
-          className={`${allowSignUp ? "" : " w-full"}`}
-        >
+        <TabsTrigger value={value} className={`${joseFont} fs-400`}>
+          {value}
+        </TabsTrigger>
+      );
+    }
+    if (value === "Sign Up") {
+      return (
+        <TabsTrigger value={value} className={`${joseFont} fs-400`}>
           {value}
         </TabsTrigger>
       );
@@ -41,32 +35,24 @@ const AuthModal = ({ config }: ConfigData) => {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <Tabs defaultValue="SignIn">
-        {!showForgetPasswordModal ? (
-          <TabsList>
-            {renderTabsTrigger("SignIn")}
-            {renderTabsTrigger("SignUp")}
+      <Tabs defaultValue="Sign In" className="w-[400px]">
+        {showForgetPasswordModal === false ? (
+          <TabsList className="grid w-full grid-cols-2 h-10">
+            {renderTabsTrigger("Sign In")}
+            {renderTabsTrigger("Sign Up")}
           </TabsList>
-        ) : (
-          <TabsList
-            className={allowSignUp ? "grid w-full grid-cols-2" : "w-full"}
-          >
-            {renderTabsTrigger("ForgetPassword")}
-          </TabsList>
-        )}
-        {!showForgetPasswordModal ? (
+        ) : null}
+        {showForgetPasswordModal === false ? (
           <>
-            <TabsContent value="SignIn">
+            <TabsContent value="Sign In">
               <SignIn />
             </TabsContent>
-            <TabsContent value="SignUp">
+            <TabsContent value="Sign Up">
               <SignUp config={config} />
             </TabsContent>
           </>
         ) : (
-          <TabsContent value="ForgetPassword">
-            <ResetPassword />
-          </TabsContent>
+          <ResetPassword />
         )}
       </Tabs>
     </div>
