@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { SignUpSubmitForm } from "@/types/form";
 import { loginUser } from "@/helpers/login";
-// import { useRouter } from "next/router";
+import {useRouter} from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import baseUrl from "@/helpers/lib/baseUrl";
@@ -57,13 +57,13 @@ export const SignUpComponent = () => {
       signupConfirmPassword: "",
     },
   });
-  // const router = useRouter();
+  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const [submitError, setSubmitError] = useState<string>("");
 
   const submit = async (formData: SignUpSubmitForm) => {
     try {
-      const response = await fetch(`${baseUrl}/api/auth/signup`, {
+      const response = await fetch(`/api/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,7 +84,7 @@ export const SignUpComponent = () => {
         if (loginRes && !loginRes.ok) {
           setSubmitError(loginRes.error || "");
         } else {
-          // router.push("/");
+          router.push("/");
         }
         reset();
       }
@@ -129,6 +129,7 @@ export const SignUpComponent = () => {
               id="email"
               type="email"
               placeholder="Enter Email"
+              className={`${joseFont} fs-400`}
               {...register("signupEmail", {
                 required: "Please enter your email",
                 pattern: {
