@@ -13,7 +13,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please enter your password'],
         trim: true
-    }
+    },
+    isVerfied: {
+        type: Boolean,
+        default: false,
+    },
+    forgotPasswordToken: String,
+    forgotPasswordTokenExpiry: Date,
+    verifyToken: String,
+    verifyTokenExpiry: Date,
 });
 
 userSchema.pre("save", async function (next) {
