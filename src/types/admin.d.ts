@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { EmailType } from "./enum";
 
 declare namespace Data {
   declare namespace PageData {
@@ -135,6 +136,12 @@ declare namespace Data {
     behanceUrl: string;
     linkedinUrl: string;
     twitterUrl: string;
+  }
+
+  interface SendMail {
+    email: string;
+    emailType: EmailType;
+    userId: string;
   }
 
   declare namespace ProviderContext {
