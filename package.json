@@ -36,7 +36,8 @@
     "shadcn-ui": "^0.8.0",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "5.1.6"
+    "typescript": "5.1.6",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
