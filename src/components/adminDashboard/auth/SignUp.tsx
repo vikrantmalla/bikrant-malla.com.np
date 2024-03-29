@@ -84,7 +84,7 @@ export const SignUpComponent = () => {
         if (loginRes && !loginRes.ok) {
           setSubmitError(loginRes.error || "");
         } else {
-          router.push("/");
+          router.push("/admin");
         }
         reset();
       }
