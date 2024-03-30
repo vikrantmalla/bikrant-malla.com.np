@@ -2,11 +2,8 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { SignUpSubmitForm } from "@/types/form";
-import { loginUser } from "@/helpers/login";
-import {useRouter} from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store";
-import baseUrl from "@/helpers/lib/baseUrl";
+// import { loginUser } from "@/helpers/login";
+// import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -19,12 +16,14 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ConfigData } from "@/types/data";
 import { joseFont } from "@/helpers/lib/font";
+import { toast } from "react-toastify";
+import { FaTimes } from "react-icons/fa";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AUTH_SIGN_UP_ENDPOINT } from "@/service/endpoints";
+import { signUpSchema } from "@/helpers/schemas";
+import { Message } from "@/types/enum";
 
 const SignUp = ({ config }: ConfigData) => {
-  const showForgetPasswordModal = useSelector(
-    (state: RootState) => state.app.showForgetPasswordModal
-  );
-
   const allowSignUp = config.some((c) => c.allowSignUp);
   return allowSignUp ? (
     <SignUpComponent />
@@ -48,22 +47,20 @@ export const SignUpComponent = () => {
     register,
     handleSubmit,
     watch,
+    setError,
     formState: { errors, isSubmitting },
     reset,
   } = useForm({
     defaultValues: {
       signupEmail: "",
       signupPassword: "",
-      signupConfirmPassword: "",
     },
+    resolver: zodResolver(signUpSchema),
   });
-  const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
-  const [submitError, setSubmitError] = useState<string>("");
-
+  // const router = useRouter();
   const submit = async (formData: SignUpSubmitForm) => {
     try {
-      const response = await fetch(`/api/auth/signup`, {
+      const response = await fetch(AUTH_SIGN_UP_ENDPOINT, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -74,46 +71,26 @@ export const SignUpComponent = () => {
         }),
       });
       const responseData = await response.json();
-
       if (responseData?.success) {
-        const loginRes = await loginUser({
-          email: formData.signupEmail,
-          password: formData.signupPassword,
-        });
+        // TODO Verify Email functionality
 
-        if (loginRes && !loginRes.ok) {
-          setSubmitError(loginRes.error || "");
-        } else {
-          router.push("/admin");
-        }
+        // const loginRes = await loginUser({
+        //   email: formData.signupEmail,
+        //   password: formData.signupPassword,
+        // });
+        toast.success(Message.USER_CREATED_SUCCESSFULLY);
         reset();
+      } else if (responseData?.error === Message.USER_ALREADY_EXISTS) {
+        setError("root", { message: Message.USER_ALREADY_EXISTS });
+        toast.error(Message.USER_ALREADY_EXISTS);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        const errorMsg = error.message;
-        setSubmitError(errorMsg);
+        toast.error(error.message);
       }
     }
   };
 
-  const validatePassword = (value: string) => {
-    if (!value) {
-      return "Please enter your password";
-    }
-    if (value.length < 4) {
-      return "Password must be at least 4 characters long";
-    }
-  };
-
-  const validateConfirmPassword = (value: string) => {
-    const password = watch("signupPassword");
-    if (!value) {
-      return "Please enter your confirm password";
-    }
-    if (value !== password) {
-      return "Passwords do not match";
-    }
-  };
   return (
     <Card>
       <CardHeader>
@@ -129,14 +106,12 @@ export const SignUpComponent = () => {
               id="email"
               type="email"
               placeholder="Enter Email"
-              className={`${joseFont} fs-400`}
-              {...register("signupEmail", {
-                required: "Please enter your email",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                  message: "Please enter a valid email",
-                },
-              })}
+              className={`${
+                errors.signupEmail
+                  ? "border-red-500 focus-visible:ring-transparent"
+                  : ""
+              } ${joseFont} fs-400`}
+              {...register("signupEmail")}
             />
             {errors.signupEmail != null && (
               <small
@@ -154,10 +129,12 @@ export const SignUpComponent = () => {
               id="password"
               type="password"
               placeholder="Enter Password"
-              className={`${joseFont} fs-400`}
-              {...register("signupPassword", {
-                validate: validatePassword,
-              })}
+              className={`${
+                errors.signupPassword
+                  ? "border-red-500 focus-visible:ring-transparent"
+                  : ""
+              } ${joseFont} fs-400`}
+              {...register("signupPassword")}
             />
           </div>
           {errors.signupPassword != null && (
@@ -167,25 +144,18 @@ export const SignUpComponent = () => {
               {errors.signupPassword.message}
             </small>
           )}
-          <div className="space-y-1">
-            <Label htmlFor="confirm-password" className={`${joseFont} fs-400`}>
-              Confirm Password
-            </Label>
-            <Input
-              id="confirm-password"
-              type="password"
-              placeholder="Confirm Password"
-              className={`${joseFont} fs-400`}
-              {...register("signupConfirmPassword", {
-                validate: validateConfirmPassword,
-              })}
-            />
-          </div>
-          {errors.signupConfirmPassword != null && (
+          {errors.root != null && (
             <small
-              className={`${joseFont} fs-300 error-message block text-red-600 mt-2`}
+              className={`${joseFont} fs-300 error-message text-white mt-3 borderborder-red-600 text-center 
+              px-4 py-2 rounded bg-red-400 flex justify-between content-center`}
             >
-              {errors.signupConfirmPassword.message}
+              {errors.root.message}
+              <FaTimes
+                onClick={() => {
+                  reset({ signupEmail: "" });
+                }}
+                className="mt-1"
+              />
             </small>
           )}
         </CardContent>
@@ -195,7 +165,7 @@ export const SignUpComponent = () => {
             disabled={isSubmitting}
             className={`${joseFont} fs-400 w-[350px]`}
           >
-            Sign Up
+            {isSubmitting ? "Loading..." : "Sign Up"}
           </Button>
         </CardFooter>
       </form>
