@@ -7,7 +7,6 @@ declare namespace Forms {
   interface SignUpSubmitForm {
     signupEmail: string
     signupPassword: string
-    signupConfirmPassword: string
   }
 }
 
