@@ -1,6 +1,14 @@
 import baseUrl from "@/helpers/lib/baseUrl";
 import Data, { ArchiveDetailsData, PortfolioDetails } from "@/types/data";
-import { ApiEndpoint } from "@/types/enum";
+import {
+  ABOUT_ME_ENDPOINT,
+  BEHANCE_ENDPOINT,
+  CONTACT_ENDPOINT,
+  META_DATA_ENDPOINT,
+  PORTFOLIO_DETAILS_ENDPOINT,
+  PROJECTS_ENDPOINT,
+  PROJECT_HIGHLIGHTS_ENDPOINT,
+} from "./endpoints";
 
 async function fetchData<T>(endpoint: string): Promise<T> {
   const res = await fetch(`${baseUrl}/${endpoint}`, { cache: "no-store" });
@@ -10,34 +18,33 @@ async function fetchData<T>(endpoint: string): Promise<T> {
 
 // GET METHOD
 export async function fetchPortfolioDetailsData(): Promise<PortfolioDetails> {
-  return fetchData<PortfolioDetails>(ApiEndpoint.PortfolioDetails);
+  return fetchData<PortfolioDetails>(PORTFOLIO_DETAILS_ENDPOINT);
 }
 
 export async function fetchProjectData(): Promise<ArchiveDetailsData> {
-  return fetchData<ArchiveDetailsData>(ApiEndpoint.Projects);
+  return fetchData<ArchiveDetailsData>(PROJECTS_ENDPOINT);
 }
-
 
 // GET, POST, PUT, DELETE METHOD
 export async function fetchAboutMeData(): Promise<Data.AboutMeData> {
-  return fetchData<Data.AboutMeData>(ApiEndpoint.AboutMe);
+  return fetchData<Data.AboutMeData>(ABOUT_ME_ENDPOINT);
 }
 export async function fetchProjectHighlights(): Promise<Data.ProjectHighlightData> {
-  return fetchData<Data.ProjectHighlightData>(ApiEndpoint.ProjectHighlights);
+  return fetchData<Data.ProjectHighlightData>(PROJECT_HIGHLIGHTS_ENDPOINT);
 }
 
 export async function fetchBehanceData(): Promise<Data.BehanceData> {
-  return fetchData<Data.BehanceData>(ApiEndpoint.Behance);
+  return fetchData<Data.BehanceData>(BEHANCE_ENDPOINT);
 }
 
 export async function fetchContactData(): Promise<Data.Contact> {
-  return fetchData<Data.Contact>(ApiEndpoint.Contact);
+  return fetchData<Data.Contact>(CONTACT_ENDPOINT);
 }
 
-export async function fetchMetaData(): Promise<Data.MetaData > {
-  return fetchData<Data.MetaData >(ApiEndpoint.MetaData);
+export async function fetchMetaData(): Promise<Data.MetaData> {
+  return fetchData<Data.MetaData>(META_DATA_ENDPOINT);
 }
 
 // export async function fetchTagData()  {
-// fetchData(ApisEndpoint.Tags)
+// fetchData(TAGS_ENDPOINT)
 // // }

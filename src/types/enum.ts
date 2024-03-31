@@ -1,12 +1,15 @@
+// ENDPOINT
 export enum ApiEndpoint {
-  PortfolioDetails = "api/portfoliodetails",
-  AboutMe = "api/aboutme",
-  ProjectHighlights = "api/projecthighlight",
-  Behance = "api/behance",
-  Projects = "api/projects",
-  Contact = "api/contact",
-  MetaData = "api/metadata",
-  Tags = "api/tags",
+  ABOUT_ME_ENDPOINT = "api/aboutme",
+  AUTH_SIGN_UP_ENDPOINT = "/api/auth/signup",
+  AUTH_SIGN_IN_ENDPOINT = "/api/auth/signin",
+  BEHANCE_ENDPOINT = "api/behance",
+  CONTACT_ENDPOINT = "api/contact",
+  META_DATA_ENDPOINT = "api/metadata",
+  PORTFOLIO_DETAILS_ENDPOINT = "api/portfoliodetails",
+  PROJECTS_ENDPOINT = "api/projects",
+  PROJECT_HIGHLIGHTS_ENDPOINT = "api/projecthighlight",
+  TAGS_ENDPOINT = "api/tags",
 }
 
 export enum TagsCategory {
@@ -20,12 +23,6 @@ export enum TagsCategory {
 export enum EmailType {
   VERIFY = "VERIFY",
   RESET = "RESET",
-}
-
-// ENDPOINT
-export enum Endpoint {
-  AUTH_SIGN_UP_ENDPOINT = "/api/auth/signup",
-  AUTH_SIGN_IN_ENDPOINT = "/api/auth/signin",
 }
 
 // MESSAGE
