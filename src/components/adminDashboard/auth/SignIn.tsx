@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { signIn } from "next-auth/react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { LogInSubmitForm } from "@/types/form";
@@ -17,11 +16,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { joseFont } from "@/helpers/lib/font";
-
-interface Props {
-  showForgetPasswordModal: boolean;
-  setShowForgetPasswordModal: React.Dispatch<React.SetStateAction<boolean>>;
-}
+import { signInSchema } from "@/helpers/schemas";
+import { Message } from "@/types/enum";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AUTH_SIGN_IN_ENDPOINT } from "@/service/endpoints";
+import { toast } from "react-toastify";
 
 const SignIn = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -34,15 +33,29 @@ const SignIn = () => {
       loginEmail: "",
       loginPassword: "",
     },
+    resolver: zodResolver(signInSchema),
   });
-  const submit = (data: LogInSubmitForm) => {
+  const submit = async (data: LogInSubmitForm) => {
     const { loginEmail, loginPassword } = data;
-    const email = loginEmail;
-    const password = loginPassword;
-    signIn("credentials", {
-      email,
-      password,
-    });
+    console.log(loginEmail, loginPassword)
+    try {
+      const response = await fetch(AUTH_SIGN_IN_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: loginEmail,
+          password: loginPassword,
+        }),
+      });
+      const responseData = await response.json();
+      console.log(responseData);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+    }
   };
 
   const handleClick = () => {
@@ -66,13 +79,7 @@ const SignIn = () => {
                 type="email"
                 placeholder="Enter Email"
                 className={`${joseFont} fs-400`}
-                {...register("loginEmail", {
-                  required: "Please enter your email",
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                    message: "Please enter a valid email",
-                  },
-                })}
+                {...register("loginEmail")}
               />
               {errors.loginEmail != null && (
                 <small
@@ -91,9 +98,7 @@ const SignIn = () => {
                 type="password"
                 placeholder="Enter Password"
                 className={`${joseFont} fs-400`}
-                {...register("loginPassword", {
-                  required: "Please enter your password",
-                })}
+                {...register("loginPassword")}
               />
               {errors.loginPassword != null && (
                 <small
@@ -117,7 +122,7 @@ const SignIn = () => {
               disabled={isSubmitting}
               className={`${joseFont} fs-400 w-[350px]`}
             >
-              Sign In
+              {isSubmitting ? "Loading..." : "Sign In"}
             </Button>
           </CardFooter>
         </form>
