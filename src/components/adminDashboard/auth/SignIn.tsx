@@ -19,8 +19,8 @@ import { joseFont } from "@/helpers/lib/font";
 import { signInSchema } from "@/helpers/schemas";
 import { Message } from "@/types/enum";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AUTH_SIGN_IN_ENDPOINT } from "@/service/endpoints";
 import { toast } from "react-toastify";
+import { signIn } from "next-auth/react";
 
 const SignIn = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -38,24 +38,14 @@ const SignIn = () => {
   const submit = async (data: LogInSubmitForm) => {
     const { loginEmail, loginPassword } = data;
     console.log(loginEmail, loginPassword)
-    try {
-      const response = await fetch(AUTH_SIGN_IN_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: loginEmail,
-          password: loginPassword,
-        }),
-      });
-      const responseData = await response.json();
-      console.log(responseData);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      }
-    }
+    const email = loginEmail;
+    const password = loginPassword;
+    signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+    toast.success(Message.LOGIN_SUCCESSFUL)
   };
 
   const handleClick = () => {
