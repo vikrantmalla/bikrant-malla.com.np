@@ -3,7 +3,7 @@ import User from "@/helpers/models/User";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { sendEmail } from "@/helpers/lib/mailer";
-import { EmailType } from "@/types/enum";
+import { EmailType, Message } from "@/types/enum";
 
 dbConnect();
 
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     const user = await User.findOne({email})
 
     if(user){
-        return NextResponse.json({error: "User already exists"}, {status: 400})
+        return NextResponse.json({error: Message.USER_ALREADY_EXISTS}, {status: 400})
     }
 
     //hash password
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         savedUser,
-        message: "User created successfully",
+        message: Message.USER_CREATED_SUCCESSFULLY,
       },
       { status: 201 }
     );
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        message: "Internal server error",
+        message: Message.INTERNAL_SERVER_ERROR,
       },
       { status: 500 }
     );
