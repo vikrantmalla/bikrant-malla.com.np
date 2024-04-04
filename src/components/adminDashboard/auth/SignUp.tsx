@@ -82,7 +82,6 @@ export const SignUpComponent = () => {
         reset();
       } else if (responseData?.error === Message.USER_ALREADY_EXISTS) {
         setError("root", { message: Message.USER_ALREADY_EXISTS });
-        toast.error(Message.USER_ALREADY_EXISTS);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
