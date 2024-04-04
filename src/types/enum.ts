@@ -29,8 +29,12 @@ export enum EmailType {
 export enum Message {
   USER_ALREADY_EXISTS = "User already exists",
   USER_CREATED_SUCCESSFULLY = " User created successfully!",
+  USER_DOES_NOT_EXIST = "User does not exist",
   INVALID_EMAIL = "Please enter a valid email",
   EMAIL_REQUIRED = "Please enter your email",
   PASSWORD_REQUIRED = "Please enter your password",
   PASSWORD_MIN_LENGTH = "Password must be at least 4 characters long",
+  LOGIN_SUCCESSFUL = "Login is successful. 🎉",
+  INVALID_PASSWORD = "Invalid password",
+  INTERNAL_SERVER_ERROR = "Internal server error"
 }
