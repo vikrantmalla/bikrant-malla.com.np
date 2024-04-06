@@ -1,10 +1,8 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
 import { LogInSubmitForm } from "@/types/form";
-import { setShowForgetPasswordModal } from "@/redux/feature/appSlice";
 import {
   Card,
   CardContent,
@@ -23,7 +21,7 @@ import { toast } from "react-toastify";
 import { signIn } from "next-auth/react";
 
 const SignIn = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -49,7 +47,7 @@ const SignIn = () => {
   };
 
   const handleClick = () => {
-    dispatch(setShowForgetPasswordModal(true));
+    router.push("/resetpassword")
   };
 
   return (
