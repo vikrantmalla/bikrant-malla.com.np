@@ -12,7 +12,10 @@ import "react-toastify/dist/ReactToastify.css";
 
 const SharedComponent = ({ contact }: Contact) => {
   const pathname = usePathname();
-  const isNavigationEnabled = pathname !== "/admin";
+  const isNavigationEnabled =
+    pathname !== "/signin" &&
+    pathname !== "/signup" &&
+    pathname !== "/resetpassword";
   return (
     <>
       <ToastContainer
