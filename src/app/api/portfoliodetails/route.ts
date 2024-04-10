@@ -1,5 +1,5 @@
 import dbConnect from "@/helpers/lib/dbConnect";
-import Aboutme from "@/helpers/models/Aboutme";
+import Aboutme from "@/helpers/models/AboutMe";
 import Behance from "@/helpers/models/Behance";
 import Contact from "@/helpers/models/Contact";
 import MetaTag from "@/helpers/models/MetaTag";
