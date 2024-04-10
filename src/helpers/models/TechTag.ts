@@ -1,6 +1,10 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
-const TechTagSchema = new mongoose.Schema({
+export interface TechTag extends Document {
+  tag: string;
+}
+
+const TechTagSchema: Schema<TechTag>  = new mongoose.Schema({
   tag: {
     type: String,
     required: true,
