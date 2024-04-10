@@ -1,6 +1,10 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
-const ConfigSchema = new mongoose.Schema({
+export interface Config extends Document {
+  allowSignUp: boolean;
+}
+
+const ConfigSchema: Schema<Config> = new Schema({
   allowSignUp: {
     type: Boolean,
     required: true,
