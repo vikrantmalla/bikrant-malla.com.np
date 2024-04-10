@@ -38,3 +38,13 @@ export enum Message {
   INVALID_PASSWORD = "Invalid password",
   INTERNAL_SERVER_ERROR = "Internal server error"
 }
+
+// MODAL REQUIRED MESSAGE
+export enum SchemaMessage {
+  // AboutmeDetails schema
+  TITLE_IS_REQUIRED = "Title is required",
+  SUB_TITLE_IS_REQUIRED = "Sub title is required",
+  JOB_TITLE_IS_REQUIRED = "Job title is required",
+  ABOUT_DESCRIPTION_IS_REQUIRED = "About description is required",
+  SKILL_REQUIRED = "At least one skill is required.",
+}
