@@ -36,15 +36,21 @@ export enum Message {
   PASSWORD_MIN_LENGTH = "Password must be at least 4 characters long",
   LOGIN_SUCCESSFUL = "Login is successful. 🎉",
   INVALID_PASSWORD = "Invalid password",
-  INTERNAL_SERVER_ERROR = "Internal server error"
+  INTERNAL_SERVER_ERROR = "Internal server error",
 }
 
 // MODAL REQUIRED MESSAGE
 export enum SchemaMessage {
-  // AboutmeDetails schema
-  TITLE_IS_REQUIRED = "Title is required",
-  SUB_TITLE_IS_REQUIRED = "Sub title is required",
-  JOB_TITLE_IS_REQUIRED = "Job title is required",
   ABOUT_DESCRIPTION_IS_REQUIRED = "About description is required",
+  ALT_IS_REQUIRED = "Alt text is required",
+  IMAGE_IS_REQUIRED = "Images path is required",
+  ISNEW_IS_REQUIRED = "isNew field is required",
+  JOB_TITLE_IS_REQUIRED = "Job title is required",
+  PROJECTVIEW_IS_REQUIRED = "Project url is required",
   SKILL_REQUIRED = "At least one skill is required.",
+  SUB_TITLE_IS_REQUIRED = "Sub title is required",
+  TITLE_IS_REQUIRED = "Title is required",
+  TOOLS_ARE_REQUIRED = "At least one tool is required",
+  VIEWCODE_IS_REQUIRED = "View code url is required",
+  YEAR_IS_REQUIRED = "Year is required",
 }
