@@ -1,29 +1,39 @@
-import mongoose, { model } from "mongoose";
+import { SchemaMessage } from "@/types/enum";
+import mongoose, { Schema, Document } from "mongoose";
 
-const ProjectSchema = new mongoose.Schema({
+export interface ProjectHighlight extends Document {
+  title: string;
+  subTitle: string;
+  images: string;
+  alt: string;
+  projectview: string;
+  build: string[];
+}
+
+const ProjectSchema = new Schema({
   title: {
     type: String,
-    required: true,
+    required: [true, SchemaMessage.TITLE_IS_REQUIRED],
   },
   year: {
     type: Number,
-    required: true,
+    required: [true, SchemaMessage.YEAR_IS_REQUIRED],
   },
   isnew: {
     type: Boolean,
-    required: true,
+    required: [true, SchemaMessage.ISNEW_IS_REQUIRED],
   },
   projectview: {
     type: String,
-    required: true,
+    required: [true, SchemaMessage.PROJECTVIEW_IS_REQUIRED],
   },
   viewcode: {
     type: String,
-    required: true,
+    required: [true, SchemaMessage.VIEWCODE_IS_REQUIRED],
   },
   build: {
     type: [String],
-    required: true,
+    required: [true, SchemaMessage.TOOLS_ARE_REQUIRED],
   },
 });
 
