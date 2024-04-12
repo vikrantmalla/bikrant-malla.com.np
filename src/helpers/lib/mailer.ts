@@ -3,7 +3,7 @@ import User from "../models/User";
 import bcryptjs from "bcryptjs";
 import { EmailType } from "@/types/enum";
 import { SendMail } from "@/types/admin";
-import baseUrl from "./baseUrl";
+import { baseUrl } from "./baseUrl";
 
 export const sendEmail = async ({ email, emailType, userId }: SendMail) => {
   console.log(email, emailType, userId);
@@ -27,7 +27,7 @@ export const sendEmail = async ({ email, emailType, userId }: SendMail) => {
       host: process.env.TRANSPORT_HOST,
       port: 2525,
       auth: {
-        user: process.env.TRANSPORT_USER ,
+        user: process.env.TRANSPORT_USER,
         pass: process.env.TRANSPORT_PASS,
       },
     });

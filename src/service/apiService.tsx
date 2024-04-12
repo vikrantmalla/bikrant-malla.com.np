@@ -1,4 +1,4 @@
-import baseUrl from "@/helpers/lib/baseUrl";
+import { baseUrl } from "@/helpers/lib/baseUrl";
 import Data, { ArchiveDetailsData, PortfolioDetails } from "@/types/data";
 import {
   ABOUT_ME_ENDPOINT,
