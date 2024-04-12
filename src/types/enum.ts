@@ -37,6 +37,7 @@ export enum Message {
   LOGIN_SUCCESSFUL = "Login is successful. 🎉",
   INVALID_PASSWORD = "Invalid password",
   INTERNAL_SERVER_ERROR = "Internal server error",
+  DATABASE_CONNECTION_ERROR = "Error connecting to database",
 }
 
 // MODAL REQUIRED MESSAGE
