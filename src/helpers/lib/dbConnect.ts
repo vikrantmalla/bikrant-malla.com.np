@@ -1,18 +1,29 @@
-// @ts-nocheck
-import mongoose from "mongoose";
+import mongoose, { ConnectOptions } from "mongoose";
+import * as Sentry from "@sentry/nextjs";
+import { dataBaseUrl } from "./baseUrl";
+import { Message } from "@/types/enum";
 
-const connection = {};
+interface Connection {
+  isConnected?: number;
+}
+const connection: Connection = { isConnected: 0 };
 
-async function dbConnect() {
+async function dbConnect(): Promise<void> {
   if (connection.isConnected) {
     return;
   }
 
-  const db = await mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  connection.isConnected = db.connections[0].readyState;
+  try {
+    const db = await mongoose.connect(dataBaseUrl || "", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    } as ConnectOptions);
+    connection.isConnected = db.connections[0].readyState;
+  } catch (error) {
+    console.error(Message.DATABASE_CONNECTION_ERROR, error);
+    Sentry.captureException(error);
+    process.exit(1);
+  }
 }
 
 export default dbConnect;
