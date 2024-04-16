@@ -1,3 +1,4 @@
+
 // ENDPOINT
 export enum ApiEndpoint {
   ABOUT_ME_ENDPOINT = "api/aboutme",
@@ -38,6 +39,8 @@ export enum Message {
   INVALID_PASSWORD = "Invalid password",
   INTERNAL_SERVER_ERROR = "Internal server error",
   DATABASE_CONNECTION_ERROR = "Error connecting to database",
+  NO_USER_FOUND = "No user found with this email.",
+  VERIFY_EMAIL = "Please verify your account before logging in.",
 }
 
 // MODAL REQUIRED MESSAGE
@@ -54,4 +57,7 @@ export enum SchemaMessage {
   TOOLS_ARE_REQUIRED = "At least one tool is required",
   VIEWCODE_IS_REQUIRED = "View code url is required",
   YEAR_IS_REQUIRED = "Year is required",
+  EMAIL_IS_REQUIRED = "Email is required",
+  PASSWORD_REQUIRED = "Password is required",
+  INVALID_EMAIL = "Invalid email address",
 }
