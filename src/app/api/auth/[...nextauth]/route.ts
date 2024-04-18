@@ -44,6 +44,28 @@ const handler = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    async signIn({ user, account, profile, email, credentials }) {
+      return true;
+    },
+    async jwt({ token, user }) {
+      if(user) {
+        token._id = user._id?.toString();
+        token.isVerifed = user.isVerified;
+      }
+      return token;
+    },
+    async session({ session, user, token }) {
+      if(user) {
+        session.user._id = token.id;
+        session.user.isVerifed = token.isVerified;
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/signin",
+  },
   session: {
     strategy: "jwt",
   },
