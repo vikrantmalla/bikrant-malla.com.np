@@ -1,9 +1,11 @@
 import React from "react";
 import Script from "next/script";
 import * as gtag from "../lib/gtag";
+import { Enviroment } from "@/types/enum";
+import { baseUrl } from "../lib/baseUrl";
 
 const CustomScript = () => {
-  const isProduction = process.env.NODE_ENV === "production";
+  const isProduction = process.env.NODE_ENV === Enviroment.PRODUCTION;
   const jsonLd = {
     "@context": "https://schema.org/",
     "@type": "BreadcrumbList",
@@ -12,13 +14,13 @@ const CustomScript = () => {
         "@type": "ListItem",
         position: 1,
         name: "View Full Résumé",
-        item: "https://www.bikrant-malla.com.np/resume.pdf",
+        item: `${baseUrl}/resume.pdf`,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "View Full Project Archive",
-        item: "https://www.bikrant-malla.com.np/archive",
+        item: `${baseUrl}/archive`,
       },
     ],
   };
