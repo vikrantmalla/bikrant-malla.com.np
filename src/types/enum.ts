@@ -1,4 +1,3 @@
-
 // ENDPOINT
 export enum ApiEndpoint {
   ABOUT_ME_ENDPOINT = "api/aboutme",
@@ -60,4 +59,9 @@ export enum SchemaMessage {
   EMAIL_IS_REQUIRED = "Email is required",
   PASSWORD_REQUIRED = "Password is required",
   INVALID_EMAIL = "Invalid email address",
+}
+
+export enum Enviroment {
+  DEVELOPMENT = "development",
+  PRODUCTION = "production",
 }
