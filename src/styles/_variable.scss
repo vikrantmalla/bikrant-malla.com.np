@@ -33,6 +33,10 @@
   font-size: 3rem;
 }
 
+.fs-800 {
+  font-size: 3rem;
+}
+
 @include md {
   .fs-300 {
     font-size: 0.9rem;
@@ -49,6 +53,9 @@
   .fs-700 {
     font-size: 5.5rem;
   }
+  .fs-800 {
+    font-size: 5.5rem;
+  }
 }
 
 @include xl {
@@ -63,5 +70,8 @@
   }
   .fs-700 {
     font-size: 6rem;
+  }
+  .fs-800 {
+    font-size: 7rem;
   }
 }

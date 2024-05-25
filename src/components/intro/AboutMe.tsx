@@ -1,20 +1,20 @@
 "use client";
 import React from "react";
 import { joseFont, tekoFont } from "@/helpers/lib/font";
-import { AboutMe, AboutMeData  } from "@/types/data";
+import { AboutMe as Aboutme, AboutMeData  } from "@/types/data";
 
 const AboutMe = ({ aboutme }: AboutMeData ) => {
   return (
     <>
       <section>
-        {aboutme.map((intro: AboutMe, index: number) => (
+        {aboutme.map((intro: Aboutme, index: number) => (
           <div className="intro" key={index}>
             <h1 className={`name ${joseFont} fs-600`}>
               {intro.subTitle}
               <br />
-              <span className={`hover ${tekoFont} fs-700`}>{intro.title}</span>
+              <span className={`${tekoFont} fs-800`}>{intro.title}</span>
             </h1>
-            <h2 className={`profession ${tekoFont} fs-700`}>
+            <h2 className={`profession ${tekoFont} fs-800`}>
               {intro.jobTitle}
             </h2>
           </div>
@@ -22,7 +22,7 @@ const AboutMe = ({ aboutme }: AboutMeData ) => {
       </section>
       <section id="aboutme">
         <h2 className={`headingleft ${joseFont} fs-600`}>About me</h2>
-        {aboutme.map((about: AboutMe, index: number) => {
+        {aboutme.map((about: Aboutme, index: number) => {
           const { aboutDescription1, aboutDescription2 } = about;
           return (
             <div className="aboutme" key={index}>
@@ -35,7 +35,7 @@ const AboutMe = ({ aboutme }: AboutMeData ) => {
       <section id="skill">
         <h2 className={`headingright ${joseFont} fs-600`}>Skillsets</h2>
         <div>
-          {aboutme.map((skill: AboutMe, index: number) => {
+          {aboutme.map((skill: Aboutme, index: number) => {
             const { skill1, skill2 } = skill;
             return (
               <div className="techstack" key={index}>
