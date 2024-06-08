@@ -65,3 +65,19 @@ export enum Enviroment {
   DEVELOPMENT = "development",
   PRODUCTION = "production",
 }
+
+export enum NavItemId {
+  ABOUTME = "aboutme",
+  CONCEPT = "concept",
+  CONTACT = "contact",
+  PROJECT = "project",
+  SKILL = "skill",
+}
+
+export enum NavItemLabel {
+  ABOUTME = "About Me",
+  CONCEPT = "concepts",
+  CONTACT = "contact",
+  PROJECT = "projects",
+  SKILL = "skills",
+}
