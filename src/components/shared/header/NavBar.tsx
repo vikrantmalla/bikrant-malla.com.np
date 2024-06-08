@@ -4,11 +4,7 @@ import { usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { joseFont } from "@/helpers/lib/font";
-import {
-  ContactInfo,
-  NavBarProps,
-  NavItemProps,
-} from "../../../types/data";
+import { ContactInfo, NavBarProps, NavItemProps } from "../../../types/data";
 import { FaTimes, FaBars } from "react-icons/fa";
 import Link from "next/link";
 import ThemeSwitch from "./ThemeSwitch";
@@ -22,6 +18,7 @@ import {
   setToggleMenu,
 } from "@/redux/feature/appSlice";
 import { motion, useScroll, useSpring } from "framer-motion";
+import { NavItemId, NavItemLabel } from "@/types/enum";
 
 // MenuIcon component
 export function MenuIcon() {
@@ -90,7 +87,13 @@ export function Navigation({ contact }: NavBarProps) {
   return (
     <nav className="nav">
       <ul className={isMenuOpen ? "nav-menu active" : "nav-menu"}>
-        {["aboutme", "skill", "project", "concept", "contact"].map((tabId) => (
+        {[
+          NavItemId.ABOUTME,
+          NavItemId.SKILL,
+          NavItemId.PROJECT,
+          NavItemId.CONCEPT,
+          NavItemId.CONTACT,
+        ].map((tabId) => (
           <NavItem
             key={tabId}
             tabId={tabId}
@@ -181,11 +184,27 @@ const NavBar = ({ contact }: NavBarProps) => {
     const handleScroll = () => {
       const scrollTop = window.pageYOffset;
       const sections = [
-        { id: "aboutme", range: [515, 900], label: "About Me" },
-        { id: "skill", range: [900, 1490], label: "Skills" },
-        { id: "project", range: [1490, 2360], label: "Projects" },
-        { id: "concept", range: [2360, 3200], label: "Concepts" },
-        { id: "contact", range: [3200, 4200], label: "Contact" },
+        {
+          id: NavItemId.ABOUTME,
+          range: [515, 900],
+          label: NavItemLabel.ABOUTME,
+        },
+        { id: NavItemId.SKILL, range: [900, 1490], label: NavItemLabel.SKILL },
+        {
+          id: NavItemId.PROJECT,
+          range: [1490, 2360],
+          label: NavItemLabel.PROJECT,
+        },
+        {
+          id: NavItemId.CONCEPT,
+          range: [2360, 3200],
+          label: NavItemLabel.CONCEPT,
+        },
+        {
+          id: NavItemId.CONTACT,
+          range: [3200, 4200],
+          label: NavItemLabel.CONTACT,
+        },
       ];
 
       const activeSection = sections.find(
