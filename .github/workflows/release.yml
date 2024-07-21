@@ -14,8 +14,9 @@ jobs:
       matrix:
         node-version: [20.x]
     env:
-      MONGODB_URI: ${{ secrets.MONGODB_URI }}
-      
+      DB_PROD_MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      DB_DEV_MONGODB_URI: ${{ secrets.MONGODB_URI }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
