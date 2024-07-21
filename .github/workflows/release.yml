@@ -14,8 +14,8 @@ jobs:
       matrix:
         node-version: [20.x]
     env:
-      DB_PROD_MONGODB_URI: "mongodb+srv://vikrantmalla999:Vikrant629890@cluster0.ahmfomk.mongodb.net/Project?retryWrites=true&w=majority"
-      DB_DEV_MONGODB_URI: "mongodb+srv://vikrantmalla999:Vikrant629890@cluster0.ahmfomk.mongodb.net/Project?retryWrites=true&w=majority"
+      DB_PROD_MONGODB_URI: ${{ secrets.DB_PROD_MONGODB_URI }}
+      NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
 
     steps:
       - name: Checkout code
