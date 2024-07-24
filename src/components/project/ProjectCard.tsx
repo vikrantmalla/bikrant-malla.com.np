@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { FaChevronRight } from "react-icons/fa";
@@ -6,6 +5,7 @@ import { joseFont } from "@/helpers/lib/font";
 import { ProjectHighlightsCard } from "../../types/data";
 import { setCursorType } from "@/redux/feature/mouseSlice";
 import ExternalLink from "../shared/externalLink";
+import { CldImage } from "next-cloudinary";
 
 const ProjectCard = ({ project }: ProjectHighlightsCard) => {
   const { images, alt, title, build, projectview } = project;
@@ -30,13 +30,7 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
             gtagCategory="image_interaction"
             gtagLabel="click_through_link"
           >
-            <Image
-              src={`/${images}`}
-              alt={alt}
-              width={500}
-              height={500}
-              className="responsive-image"
-            />
+            <CldImage width="500" height="800" src={`${images}`} alt={alt} />
           </ExternalLink>
         </div>
       </div>
