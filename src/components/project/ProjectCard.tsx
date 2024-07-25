@@ -30,7 +30,13 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
             gtagCategory="image_interaction"
             gtagLabel="click_through_link"
           >
-            <CldImage width="500" height="800" src={`${images}`} alt={alt} />
+            <CldImage
+              width="500"
+              height="800"
+              src={`${images}`}
+              alt={alt}
+              priority={false}
+            />
           </ExternalLink>
         </div>
       </div>
