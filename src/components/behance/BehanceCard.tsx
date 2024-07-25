@@ -2,13 +2,14 @@
 import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
-import { BehanceCard } from "../../types/data";
+import { BehanceCard as BehanceCardDataType } from "../../types/data";
 import { FaChevronRight } from "react-icons/fa";
 import { joseFont } from "@/helpers/lib/font";
 import { setCursorType } from "@/redux/feature/mouseSlice";
 import ExternalLink from "../shared/externalLink";
+import { CldImage } from "next-cloudinary";
 
-const BehanceCard = ({ project }: BehanceCard) => {
+const BehanceCard = ({ project }: BehanceCardDataType) => {
   const { id, images, alt, title, subTitle, tools, projectview } = project;
   const dispatch = useDispatch<AppDispatch>();
 
@@ -31,12 +32,12 @@ const BehanceCard = ({ project }: BehanceCard) => {
             gtagCategory="image_interaction"
             gtagLabel="click_through_link"
           >
-            <Image
-              src={`/${images}`}
+            <CldImage
+              width="500"
+              height="800"
+              src={`${images}`}
               alt={alt}
-              width={500}
-              height={500}
-              className="responsive-image"
+              priority={false}
             />
           </ExternalLink>
         </div>
