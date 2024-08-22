@@ -2,9 +2,9 @@ import { ProviderContext } from "@/types/data";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 const initialState: ProviderContext.ProjectSlice = {
-  selectedTag: 'All',
+  selectedTag: "All",
   projectList: [],
-  showSkeletonLoading: false
+  showSkeletonLoading: false,
 };
 
 export const project = createSlice({
@@ -15,13 +15,17 @@ export const project = createSlice({
       state.selectedTag = action.payload;
     },
     setProjectList: (state, action) => {
-      state.projectList = action.payload;
+      state.projectList = [...action.payload].sort(
+        (prevProject: { year: number }, nextProject: { year: number }) =>
+          nextProject.year - prevProject.year
+      );
     },
     setSkeletonLoading: (state, action) => {
       state.showSkeletonLoading = action.payload;
-    }
+    },
   },
 });
 
-export const { setSelectedTag, setProjectList, setSkeletonLoading } = project.actions;
+export const { setSelectedTag, setProjectList, setSkeletonLoading } =
+  project.actions;
 export default project.reducer;
