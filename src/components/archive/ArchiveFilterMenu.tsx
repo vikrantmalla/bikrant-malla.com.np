@@ -11,14 +11,18 @@ import {
   setProjectList,
   setSelectedTag,
   setSkeletonLoading,
+  sortProjectList,
 } from "@/redux/feature/projectSlice";
 import { TagsCategory } from "@/types/enum";
-import { FaSort } from "react-icons/fa";
+import { FaSortAmountDownAlt, FaSortAmountUpAlt } from "react-icons/fa";
 
 const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const selectedTag = useSelector(
     (state: RootState) => state.project.selectedTag
+  );
+  const isAscending = useSelector(
+    (state: RootState) => state.project.isAscending
   );
 
   let formattedSelectedTag: string;
@@ -84,6 +88,15 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
     tag.toLowerCase().replace(/\s/g, "_")
   );
 
+  const handleSortClick = () => {
+    dispatch(sortProjectList());
+    gtag.event({
+      action: "sorted",
+      category: "sorting",
+      label: isAscending ? "ascending" : "descending",
+    });
+  };
+
   return (
     <div className={`subheading ${joseFont} fs-300 filter-links`}>
       <ul>
@@ -108,8 +121,8 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
           </li>
         ))}
       </ul>
-      <button role="button" className="sort-btn">
-        <FaSort />
+      <button role="button" className="sort-btn" onClick={handleSortClick}>
+        {isAscending ? <FaSortAmountDownAlt /> : <FaSortAmountUpAlt />}
       </button>
     </div>
   );

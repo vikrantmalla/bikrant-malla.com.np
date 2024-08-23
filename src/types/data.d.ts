@@ -22,6 +22,7 @@ declare namespace Data {
       projectList: ArchiveProject[];
       selectedTag: string;
       showSkeletonLoading: boolean;
+      isAscending: boolean,
     }
 
     interface MouseSlice {
