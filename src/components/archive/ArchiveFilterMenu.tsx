@@ -24,6 +24,9 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
   const isAscending = useSelector(
     (state: RootState) => state.project.isAscending
   );
+  const projectList = useSelector(
+    (state: RootState) => state.project.projectList
+  );
 
   let formattedSelectedTag: string;
 
@@ -117,6 +120,11 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
               aria-label={`Filter by ${techTag} projects`}
             >
               {techTag}
+              <span style={{ fontSize: '0.8em', marginLeft: '5px' }}>
+                {formattedSelectedTag === techTag
+                  ? `(${projectList.length})`
+                  : ""}
+              </span>
             </Link>
           </li>
         ))}
