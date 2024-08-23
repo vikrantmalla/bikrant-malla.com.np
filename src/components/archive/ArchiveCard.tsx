@@ -4,7 +4,7 @@ import { joseFont } from "@/helpers/lib/font";
 import { FaGithub, FaLink } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import Skeleton from "../shared/skeleton";
-import {TagsCategory} from "@/types/enum";
+import { TagsCategory } from "@/types/enum";
 
 const ArchiveDetails = ({
   id,
@@ -73,14 +73,7 @@ const ArchiveDetails = ({
           <div className="tag">
             {tags.map((tag, id) => {
               return (
-                <span
-                  className={`${joseFont} ${
-                    formattedSelectedTag === tag
-                      ? "tag-selected"
-                      : "tag-not-selected"
-                  }  fs-300`}
-                  key={id}
-                >
+                <span className={`${joseFont} fs-300`} key={id}>
                   {tag}
                 </span>
               );

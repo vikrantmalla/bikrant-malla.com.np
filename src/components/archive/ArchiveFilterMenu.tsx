@@ -13,6 +13,7 @@ import {
   setSkeletonLoading,
 } from "@/redux/feature/projectSlice";
 import { TagsCategory } from "@/types/enum";
+import { FaSort } from "react-icons/fa";
 
 const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -86,10 +87,9 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
   return (
     <div className={`subheading ${joseFont} fs-300 filter-links`}>
       <ul>
-        <li>
-          {tech.map((techTag, index) => (
+        {tech.map((techTag, index) => (
+          <li key={techTag}>
             <Link
-              key={techTag}
               onClick={() => handleTagSelect(techTag)}
               className={
                 formattedSelectedTag === techTag
@@ -105,9 +105,12 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
             >
               {techTag}
             </Link>
-          ))}
-        </li>
+          </li>
+        ))}
       </ul>
+      <button role="button" className="sort-btn">
+        <FaSort />
+      </button>
     </div>
   );
 };
