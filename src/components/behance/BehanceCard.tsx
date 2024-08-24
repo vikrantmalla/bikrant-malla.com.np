@@ -9,8 +9,10 @@ import { setCursorType } from "@/redux/feature/mouseSlice";
 import ExternalLink from "../shared/externalLink";
 import { CldImage } from "next-cloudinary";
 
-const BehanceCard = ({ project }: BehanceCardDataType) => {
-  const { id, images, alt, title, subTitle, tools, projectview } = project;
+const BehanceCard = ({ project, config }: BehanceCardDataType) => {
+  const { id, images, imageUrl, alt, title, subTitle, tools, projectview } =
+    project;
+  const { allowBackupImages } = config;
   const dispatch = useDispatch<AppDispatch>();
 
   const cursorChangeHandler = (cursorType: React.SetStateAction<string>) => {
@@ -32,13 +34,23 @@ const BehanceCard = ({ project }: BehanceCardDataType) => {
             gtagCategory="image_interaction"
             gtagLabel="click_through_link"
           >
-            <CldImage
-              width="500"
-              height="800"
-              src={`${images}`}
-              alt={alt}
-              priority={false}
-            />
+            {allowBackupImages ? (
+              <CldImage
+                width="500"
+                height="800"
+                src={`${imageUrl}`}
+                alt={alt}
+                priority={false}
+              />
+            ) : (
+              <Image
+                src={`/${images}`}
+                alt={alt}
+                width={500}
+                height={500}
+                className="responsive-image"
+              />
+            )}
           </ExternalLink>
         </div>
       </div>
