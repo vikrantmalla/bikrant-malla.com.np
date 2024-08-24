@@ -17,7 +17,7 @@ const ProjectHighlight = ({ project, configData }: ProjectHighlightData) => {
           })}
         </div>
         <Link href="/archive" passHref aria-label="View Full Project Archive">
-          <h1 className={`link ${joseFont} fs-400`}>View the Archive</h1>
+          <h2 className={`link ${joseFont} fs-400`}>View the Archive</h2>
         </Link>
       </section>
     </>

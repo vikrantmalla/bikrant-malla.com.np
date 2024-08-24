@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const Footer = () => {
   const pathname = usePathname();
+  let currentYear = new Date().getFullYear();
   return (
     <>
       <footer className={`${pathname === "/404" ? "notfoundFooter" : ""}`}>
@@ -17,7 +18,7 @@ const Footer = () => {
             rel="noopener noreferrer"
             aria-label="View source code on GitHub (opens in a new tab)"
           >
-            {`Design & Built by Bikrant Malla`}
+            {`Design & Built by Bikrant Malla (${currentYear})`}
           </Link>
         </div>
       </footer>
