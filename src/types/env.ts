@@ -9,12 +9,6 @@ const envVariables = z.object({
   NEXT_PUBLIC_GOOGLE_SITE_ID: z.string(),
   NEXT_PUBLIC_MICROSOFT_CLARITY: z.string(),
   NEXT_PUBLIC_SENTRY_DSN: z.string(),
-  NEXT_AUTH_SECRET: z.string(),
-  TOKEN_SECRET: z.string(),
-  TRANSPORT_HOST: z.string(),
-  TRANSPORT_USER: z.string(),
-  TRANSPORT_PASS: z.string(),
-  MAILER: z.string().email(),
 });
 
 const {
@@ -26,12 +20,6 @@ const {
   NEXT_PUBLIC_GOOGLE_SITE_ID,
   NEXT_PUBLIC_MICROSOFT_CLARITY,
   NEXT_PUBLIC_SENTRY_DSN,
-  NEXT_AUTH_SECRET,
-  TOKEN_SECRET,
-  TRANSPORT_HOST,
-  TRANSPORT_USER,
-  TRANSPORT_PASS,
-  MAILER,
 } = process.env;
 
 const parsedResult = envVariables.safeParse({
@@ -43,12 +31,6 @@ const parsedResult = envVariables.safeParse({
   NEXT_PUBLIC_GOOGLE_SITE_ID,
   NEXT_PUBLIC_MICROSOFT_CLARITY,
   NEXT_PUBLIC_SENTRY_DSN,
-  NEXT_AUTH_SECRET,
-  TOKEN_SECRET,
-  TRANSPORT_HOST,
-  TRANSPORT_USER,
-  TRANSPORT_PASS,
-  MAILER,
 });
 
 if (!parsedResult.success) {
@@ -57,7 +39,7 @@ if (!parsedResult.success) {
 
 export const enviromentVariables = parsedResult.data;
 
-type EnvVarSchemaType = z.infer<typeof envVariables>
+type EnvVarSchemaType = z.infer<typeof envVariables>;
 
 declare global {
   namespace NodeJS {
