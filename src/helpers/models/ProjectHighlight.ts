@@ -5,6 +5,7 @@ export interface ProjectHighlight extends Document {
   title: string;
   subTitle: string;
   images: string;
+  imageUrl: string;
   alt: string;
   projectview: string;
   build: string[];
@@ -16,6 +17,10 @@ const ProjectHighlightSchema: Schema<ProjectHighlight> = new Schema({
     required: [true, SchemaMessage.TITLE_IS_REQUIRED],
   },
   images: {
+    type: String,
+    required: [true, SchemaMessage.IMAGE_IS_REQUIRED],
+  },
+  imageUrl: {
     type: String,
     required: [true, SchemaMessage.IMAGE_IS_REQUIRED],
   },

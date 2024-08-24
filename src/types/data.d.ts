@@ -62,11 +62,13 @@ export interface AboutMe {
 
 export interface BehanceData {
   behance: BehanceProject[];
+  configData: Config;
 }
 
 export interface BehanceCard {
   key: number;
   project: BehanceProject;
+  config: Config;
 }
 
 export interface BehanceProject {
@@ -74,6 +76,7 @@ export interface BehanceProject {
   title: string;
   subTitle: string;
   images: string;
+  imageUrl: string;
   alt: string;
   tools: string[];
   projectview: string;
@@ -121,21 +124,29 @@ export interface MetaData {
 
 export interface ProjectHighlightData {
   project: Project[];
+  configData: Config;
 }
 
 export interface ProjectHighlightsCard {
   key: number;
   project: Project;
+  config: Config;
 }
 
 export interface Project {
   _id: string;
   title: string;
   images: string;
+  imageUrl: string;
   alt: string;
   projectview: string;
   build: string[];
   __v: number;
+}
+
+interface Config {
+  _id: number;
+  allowBackupImages: boolean;
 }
 
 export interface Links {
