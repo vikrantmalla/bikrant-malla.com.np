@@ -7,13 +7,14 @@ import { fetchPortfolioDetailsData } from "@/service/apiService";
 
 const Home = async () => {
   const portfolioDetails = await fetchPortfolioDetailsData();
-  const { aboutme, project, behance, contact } = portfolioDetails;
+  const { config, aboutme, project, behance, contact } = portfolioDetails;
+  const configData = config[0];
   return (
     <main>
       <article className="container">
         <AboutMe aboutme={aboutme} />
-        <ProjectHighlight project={project} />
-        <Behance behance={behance} />
+        <ProjectHighlight project={project} configData={configData} />
+        <Behance behance={behance} configData={configData}/>
         <Contact contact={contact} />
       </article>
     </main>

@@ -5,6 +5,7 @@ export interface BehanceHighlight extends Document {
   title: string;
   subTitle: string;
   images: string;
+  imageUrl: string;
   alt: string;
   projectview: string;
   tools: string[];
@@ -20,6 +21,10 @@ const BehanceHighlightSchema: Schema<BehanceHighlight> = new Schema({
     required: [true, SchemaMessage.SUB_TITLE_IS_REQUIRED],
   },
   images: {
+    type: String,
+    required: [true, SchemaMessage.IMAGE_IS_REQUIRED],
+  },
+  imageUrl: {
     type: String,
     required: [true, SchemaMessage.IMAGE_IS_REQUIRED],
   },
