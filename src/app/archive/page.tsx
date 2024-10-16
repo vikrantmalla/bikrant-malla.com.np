@@ -1,7 +1,6 @@
 import ArchiveFilterMenu from '@/components/archive/ArchiveFilterMenu';
 import ArchiveList from '@/components/archive/ArchiveList';
 import { joseFont, tekoFont } from '@/helpers/lib/font';
-import TechTag from '@/helpers/models/TechTag';
 import { fetchProjectData } from '@/service/apiService';
 import React from 'react'
 

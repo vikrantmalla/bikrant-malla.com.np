@@ -1,6 +1,5 @@
 import dbConnect from "@/helpers/lib/dbConnect";
-import Project from "@/helpers/models/Project";
-import TechTag from "@/helpers/models/TechTag";
+import TechTag from "@/models/TechTag";
 import { NextRequest, NextResponse } from "next/server";
 
 dbConnect();

@@ -1,5 +1,5 @@
-import dbConnect from "../../../helpers/lib/dbConnect";
-import Aboutme from "../../../helpers/models/AboutMe";
+import dbConnect from "@/helpers/lib/dbConnect";
+import Aboutme from "@/models/AboutMe";
 import { NextRequest, NextResponse } from "next/server";
 
 dbConnect();

@@ -1,5 +1,5 @@
 import dbConnect from "@/helpers/lib/dbConnect";
-import Behance from "@/helpers/models/Behance";
+import Behance from "@/models/Behance";
 import { NextRequest, NextResponse } from "next/server";
 
 dbConnect();

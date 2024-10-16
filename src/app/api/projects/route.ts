@@ -1,8 +1,8 @@
 import dbConnect from "@/helpers/lib/dbConnect";
-import MetaTag from "@/helpers/models/MetaTag";
-import Project from "@/helpers/models/Project";
-import TechTag from "@/helpers/models/TechTag";
-import { NextRequest, NextResponse } from "next/server";
+import MetaTag from "@/models/MetaTag";
+import Project from "@/models/Project";
+import TechTag from "@/models/TechTag";
+import { NextResponse } from "next/server";
 
 dbConnect();
 
