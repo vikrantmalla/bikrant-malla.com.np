@@ -1,10 +1,10 @@
 import dbConnect from "@/helpers/lib/dbConnect";
-import Aboutme from "@/helpers/models/AboutMe";
-import Behance from "@/helpers/models/Behance";
-import Contact from "@/helpers/models/Contact";
-import MetaTag from "@/helpers/models/MetaTag";
-import Project from "@/helpers/models/ProjectHighlight";
-import Config from "@/helpers/models/Config";
+import Aboutme from "@/models/AboutMe";
+import Behance from "@/models/Behance";
+import Contact from "@/models/Contact";
+import MetaTag from "@/models/MetaTag";
+import Project from "@/models/ProjectHighlight";
+import Config from "@/models/Config";
 import { NextResponse } from "next/server";
 
 dbConnect();

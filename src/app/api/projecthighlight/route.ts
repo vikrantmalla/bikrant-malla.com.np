@@ -1,5 +1,5 @@
 import dbConnect from "@/helpers/lib/dbConnect";
-import Projecthighlight from "@/helpers/models/ProjectHighlight";
+import Projecthighlight from "@/models/ProjectHighlight";
 import { NextRequest, NextResponse } from "next/server";
 
 dbConnect();

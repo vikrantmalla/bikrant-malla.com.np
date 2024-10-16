@@ -1,5 +1,5 @@
-import dbConnect from "../../../helpers/lib/dbConnect";
-import MetaTag from "@/helpers/models/MetaTag";
+import dbConnect from "@/helpers/lib/dbConnect";
+import MetaTag from "@/models/MetaTag";
 import { NextRequest, NextResponse } from "next/server";
 
 dbConnect();

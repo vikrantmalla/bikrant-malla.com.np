@@ -1,5 +1,5 @@
 import dbConnect from "@/helpers/lib/dbConnect";
-import Contact from "@/helpers/models/Contact";
+import Contact from "@/models/Contact";
 import { NextRequest, NextResponse } from "next/server";
 
 dbConnect();
