@@ -1,7 +1,10 @@
 import type { Viewport } from "next";
 import { ReduxProvider } from "@/redux/Provider";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { fetchPortfolioDetailsData } from "@/service/apiService";
 import SharedComponent from "@/components/shared/layoutComponent";
+
 import "../styles/globals.scss";
 
 export async function generateMetadata() {
@@ -14,7 +17,7 @@ export async function generateMetadata() {
     metadataBase: new URL(`${appUrl}/`),
     title: appTitle,
     description: `${metaData[0].description}`,
-    keywords:`${metaData[0].keyword}`,
+    keywords: `${metaData[0].keyword}`,
     authors: [{ name: `${metaData[0].author}`, url: `${appUrl}/` }],
     referrer: "origin-when-cross-origin",
     category: "portfolio",
@@ -85,8 +88,10 @@ export default async function RootLayout({
     <html lang="en">
       <ReduxProvider>
         <body>
+          <Analytics />
+          <SpeedInsights />
           {children}
-          <SharedComponent contact={contact}/>
+          <SharedComponent contact={contact} />
         </body>
       </ReduxProvider>
     </html>
