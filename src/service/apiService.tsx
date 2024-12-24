@@ -11,7 +11,14 @@ import {
 } from "./endpoints";
 
 async function fetchData<T>(endpoint: string): Promise<T> {
-  const res = await fetch(`${baseUrl}/${endpoint}`, { cache: "no-store" });
+  const res = await fetch(`${baseUrl}/${endpoint}`, {
+    cache: "force-cache", // Enables caching
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch ${endpoint}: ${res.statusText}`);
+  }
+
   const data: T = await res.json();
   return data;
 }
