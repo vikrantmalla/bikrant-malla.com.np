@@ -2,11 +2,12 @@
 // The config you add here will be used whenever a users loads a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
+import { baseUrl } from "@/helpers/lib/baseUrl";
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-  environment: process.env.NODE_ENV || 'development',
+  environment: process.env.NODE_ENV || "development",
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1,
 
@@ -18,6 +19,7 @@ Sentry.init({
   // This sets the sample rate to be 10%. You may want this to be 100% while
   // in development and sample at a lower rate in production
   replaysSessionSampleRate: 0.1,
+  profilesSampleRate: 1.0,
 
   // You can remove this option if you're not planning to use the Sentry Session Replay feature:
   integrations: [
@@ -26,5 +28,8 @@ Sentry.init({
       maskAllText: true,
       blockAllMedia: true,
     }),
+    Sentry.browserTracingIntegration(),
+    Sentry.browserProfilingIntegration(),
   ],
+  tracePropagationTargets: ["localhost", baseUrl],
 });
