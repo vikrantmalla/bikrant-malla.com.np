@@ -3,6 +3,19 @@ import { withSentryConfig } from '@sentry/nextjs';
 const nextConfig = {};
 
 export default withSentryConfig(nextConfig, {
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Document-Policy",
+            value: "js-profiling",
+          },
+        ],
+      },
+    ];
+  },
   // For all available options, see:
   // https://github.com/getsentry/sentry-webpack-plugin#options
 
