@@ -9,13 +9,11 @@
 - **Database**: [MongoDB](https://www.mongodb.com/)
 - **ODM**: [Mongoose](https://mongoosejs.com/)
 - **Styling**: [SCSS](https://sass-lang.com/)
-- **Testing framework**: [Jest](https://jestjs.io/)
 - **Analytics** [Google Analytics](https://analytics.google.com)
 - **Deployment**: [Vercel](https://vercel.com/)
 
 ## Overview
 
-- `__test__` - Test
 - `app/page.tsx` - The home page(index).
 - `app/archive/*` - The archive page.
 - `app/api/*` - [API routes](https://nextjs.org/docs/api-routes/introduction).
