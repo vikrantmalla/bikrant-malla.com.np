@@ -1,14 +1,12 @@
 "use client";
 import React from "react";
-import { RootState } from "@/redux/store";
-import { useSelector } from "react-redux";
 import useMousePosition from "../../../app/hooks/useMousePosition";
 import { joseFont } from "@/helpers/lib/font";
+import { useMouseStore } from "@/store/feature/mouseStore";
 
 const DotRing = () => {
-  const cursorType = useSelector(
-    (state: RootState) => state.mouseEffect.cursorType
-  );
+  const { cursorType } = useMouseStore();
+
   const { x, y } = useMousePosition();
   return (
     <>

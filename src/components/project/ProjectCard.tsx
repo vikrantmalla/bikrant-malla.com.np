@@ -1,20 +1,19 @@
 import Image from "next/image";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
 import { FaChevronRight } from "react-icons/fa";
 import { joseFont } from "@/helpers/lib/font";
 import { ProjectHighlightsCard } from "../../types/data";
-import { setCursorType } from "@/redux/feature/mouseSlice";
 import ExternalLink from "../shared/externalLink";
 import { CldImage } from "next-cloudinary";
+import { useMouseStore } from "@/store/feature/mouseStore";
 
 const ProjectCard = ({ project, config }: ProjectHighlightsCard) => {
   const { images, imageUrl, alt, title, build, projectview } = project;
   const { allowBackupImages } = config;
-  const dispatch = useDispatch<AppDispatch>();
+  const { setCursorType } = useMouseStore();
 
-  const cursorChangeHandler = (cursorType: React.SetStateAction<string>) => {
-    dispatch(setCursorType(cursorType));
+  const cursorChangeHandler = (cursorType: string) => {
+    setCursorType(cursorType)
   };
 
   return (

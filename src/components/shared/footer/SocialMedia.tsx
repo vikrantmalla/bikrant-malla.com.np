@@ -1,6 +1,6 @@
 import React from "react";
 import { FaGithub, FaBehance, FaLinkedinIn, FaTwitter } from "react-icons/fa";
-import { SocialMedia } from "../../../types/data";
+import type { SocialMedia } from "@/types/data";
 import ExternalLink from "../externalLink";
 
 const SocialMedia = ({

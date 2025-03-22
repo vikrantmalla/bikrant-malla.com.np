@@ -1,5 +1,4 @@
 import type { Viewport } from "next";
-import { ReduxProvider } from "@/redux/Provider";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { fetchPortfolioDetailsData } from "@/service/apiService";
@@ -87,16 +86,14 @@ export default async function RootLayout({
   const { contact } = portfolioDetails;
   return (
     <html lang="en">
-      <ReduxProvider>
-        <ZustandProvider>
-          <body>
-            <Analytics />
-            <SpeedInsights />
-            {children}
-            <SharedComponent contact={contact} />
-          </body>
-        </ZustandProvider>
-      </ReduxProvider>
+      <ZustandProvider>
+        <body>
+          <Analytics />
+          <SpeedInsights />
+          {children}
+          <SharedComponent contact={contact} />
+        </body>
+      </ZustandProvider>
     </html>
   );
 }
