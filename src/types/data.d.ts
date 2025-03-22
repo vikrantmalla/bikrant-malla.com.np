@@ -2,11 +2,16 @@ import { ReactNode } from "react";
 
 declare namespace Data {
   declare namespace ProviderContext {
-    interface AppSlice {
+    interface AppState {
       toggleMenu: boolean;
       navColor: boolean;
       activeLink: string;
       showForgetPasswordModal: boolean;
+      setToggleMenu: (value: boolean) => void;
+      setNavColor: (value: boolean) => void;
+      setActiveLink: (value: string) => void;
+      setShowForgetPasswordModal: (value: boolean) => void;
+
     }
 
     interface ThemeSlice {
