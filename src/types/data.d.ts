@@ -13,13 +13,16 @@ declare namespace Data {
       setShowForgetPasswordModal: (value: boolean) => void;
     }
 
-    interface ThemeSlice {
+    interface ThemeStore {
       isDarkTheme: boolean;
       currentTheme: string[];
-      themes: {
-        light: string[];
-        dark: string[];
-      };
+      themes: Theme;
+      setIsDarkTheme: (value: boolean) => void;
+    }
+
+    interface Theme {
+      light: string[];
+      dark: string[];
     }
 
     interface ProjectStore {
