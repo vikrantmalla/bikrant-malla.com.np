@@ -30,9 +30,9 @@ declare namespace Data {
       isAscending: boolean,
     }
 
-    interface MouseSlice {
-      cursorType: string;
-      mousePosition: { x: number; y: number };
+    interface MouseStore{
+      setCursorType: (type: string) => void;
+      setMousePosition: (position: { x: number; y: number }) => void;
     }
   }
 }
