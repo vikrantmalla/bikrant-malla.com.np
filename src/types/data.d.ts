@@ -11,7 +11,6 @@ declare namespace Data {
       setNavColor: (value: boolean) => void;
       setActiveLink: (value: string) => void;
       setShowForgetPasswordModal: (value: boolean) => void;
-
     }
 
     interface ThemeSlice {
@@ -23,14 +22,20 @@ declare namespace Data {
       };
     }
 
-    interface ProjectSlice {
+    interface ProjectStore {
       projectList: ArchiveProject[];
       selectedTag: string;
       showSkeletonLoading: boolean;
-      isAscending: boolean,
+      isAscending: boolean;
+      setSelectedTag: (tag: string) => void;
+      setProjectList: (projects: ArchiveProject[]) => void;
+      sortProjectList: () => void;
+      setSkeletonLoading: (value: boolean) => void;
     }
 
-    interface MouseStore{
+    interface MouseStore {
+      cursorType: string;
+      mousePosition: { x: number; y: number };
       setCursorType: (type: string) => void;
       setMousePosition: (position: { x: number; y: number }) => void;
     }
@@ -215,11 +220,10 @@ export interface ArchiveProject {
 }
 
 export interface ConfigData {
-  config: Config[]
+  config: Config[];
 }
 
 export interface Config {
   _id: string;
   allowSignUp: boolean;
 }
-
