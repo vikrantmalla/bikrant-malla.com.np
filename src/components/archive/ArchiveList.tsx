@@ -1,15 +1,13 @@
 "use client";
 import React from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 import { ArchiveProject } from "../../types/data";
 import { joseFont } from "@/helpers/lib/font";
 import ArchiveDetails from "./ArchiveCard";
+import { useProjectStore } from "@/store/feature/projectStore";
 
 const Card = () => {
-  const projectList = useSelector(
-    (state: RootState) => state.project.projectList
-  );
+  const { projectList } = useProjectStore();
+
   return (
     <>
       {projectList.length > 0 ? (

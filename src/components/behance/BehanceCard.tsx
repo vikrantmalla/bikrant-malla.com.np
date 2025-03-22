@@ -1,22 +1,20 @@
 "use client";
 import Image from "next/image";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store";
 import { BehanceCard as BehanceCardDataType } from "../../types/data";
 import { FaChevronRight } from "react-icons/fa";
 import { joseFont } from "@/helpers/lib/font";
-import { setCursorType } from "@/redux/feature/mouseSlice";
 import ExternalLink from "../shared/externalLink";
 import { CldImage } from "next-cloudinary";
+import { useMouseStore } from "@/store/feature/mouseStore";
 
 const BehanceCard = ({ project, config }: BehanceCardDataType) => {
   const { id, images, imageUrl, alt, title, subTitle, tools, projectview } =
     project;
   const { allowBackupImages } = config;
-  const dispatch = useDispatch<AppDispatch>();
+  const { setCursorType } = useMouseStore();
 
-  const cursorChangeHandler = (cursorType: React.SetStateAction<string>) => {
-    dispatch(setCursorType(cursorType));
+  const cursorChangeHandler = (cursorType: string) => {
+    setCursorType(cursorType)
   };
 
   return (

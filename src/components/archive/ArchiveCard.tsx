@@ -1,10 +1,9 @@
-import { RootState } from "@/redux/store";
-import { ArchiveProject } from "../../types/data";
+import { ArchiveProject } from "@/types/data";
 import { joseFont } from "@/helpers/lib/font";
 import { FaGithub, FaLink } from "react-icons/fa";
-import { useSelector } from "react-redux";
 import Skeleton from "../shared/skeleton";
 import { TagsCategory } from "@/types/enum";
+import { useProjectStore } from "@/store/feature/projectStore";
 
 const ArchiveDetails = ({
   id,
@@ -15,12 +14,7 @@ const ArchiveDetails = ({
   projectview,
   viewcode,
 }: ArchiveProject) => {
-  const selectedTag = useSelector(
-    (state: RootState) => state.project.selectedTag
-  );
-  const showSkeletonLoading = useSelector(
-    (state: RootState) => state.project.showSkeletonLoading
-  );
+  const { selectedTag, showSkeletonLoading } = useProjectStore();
   const tags = [...build];
   let formattedSelectedTag: string;
 

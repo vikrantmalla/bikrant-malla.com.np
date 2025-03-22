@@ -1,32 +1,25 @@
 "use client";
 import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store";
 import { joseFont } from "@/helpers/lib/font";
-import { ContactInfo, NavBarProps, NavItemProps } from "../../../types/data";
+import { ContactInfo, NavBarProps, NavItemProps } from "@/types/data";
 import { FaTimes, FaBars } from "react-icons/fa";
 import Link from "next/link";
 import ThemeSwitch from "./ThemeSwitch";
 import ResumeLink from "./ResumeLink";
 import Backdrop from "./Backdrop";
 import SocialMedia from "../footer/SocialMedia";
-import * as gtag from "../../../helpers/lib/gtag";
-import {
-  setActiveLink,
-  setNavColor,
-  setToggleMenu,
-} from "@/redux/feature/appSlice";
+import * as gtag from "@/helpers/lib/gtag";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { NavItemId, NavItemLabel } from "@/types/enum";
+import { useAppStore } from "@/store/feature/appStore";
 
 // MenuIcon component
 export function MenuIcon() {
-  const dispatch = useDispatch<AppDispatch>();
-  const toggleMenu = useSelector((state: RootState) => state.app.toggleMenu);
+  const { toggleMenu, setToggleMenu } = useAppStore();
 
   const handleClick = () => {
-    dispatch(setToggleMenu(!toggleMenu));
+    setToggleMenu(!toggleMenu);
     const mobileNav = !toggleMenu ? "mobile_nav_open" : "mobile_nav_close";
     gtag.event({
       action: `${mobileNav}`,
@@ -56,14 +49,10 @@ export function MenuIcon() {
 
 // Navigation component
 export function Navigation({ contact }: NavBarProps) {
-  const dispatch = useDispatch<AppDispatch>();
+  const { toggleMenu, activeLink, setToggleMenu } = useAppStore();
   const pathname = usePathname();
-  const isMenuOpen = useSelector((state: RootState) => state.app.toggleMenu);
-  const toggleMenu = useSelector((state: RootState) => state.app.toggleMenu);
-  const activeLink = useSelector((state: RootState) => state.app.activeLink);
-
   const handleToggleMenu = () => {
-    dispatch(setToggleMenu(!isMenuOpen));
+    setToggleMenu(!toggleMenu);
   };
 
   const handleTabClick = (tabId: string) => {
@@ -86,7 +75,7 @@ export function Navigation({ contact }: NavBarProps) {
   const isContactDefined = contact !== undefined;
   return (
     <nav className="nav">
-      <ul className={isMenuOpen ? "nav-menu active" : "nav-menu"}>
+      <ul className={toggleMenu ? "nav-menu active" : "nav-menu"}>
         {[
           NavItemId.ABOUTME,
           NavItemId.SKILL,
@@ -161,13 +150,17 @@ const NavItem = ({
 
 // NavBar component
 const NavBar = ({ contact }: NavBarProps) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const toggleMenu = useSelector((state: RootState) => state.app.toggleMenu);
-  const navColor = useSelector((state: RootState) => state.app.navColor);
-  const activeLink = useSelector((state: RootState) => state.app.activeLink);
+  const {
+    navColor,
+    toggleMenu,
+    activeLink,
+    setToggleMenu,
+    setActiveLink,
+    setNavColor,
+  } = useAppStore();
 
   const handleClick = () => {
-    dispatch(setToggleMenu(!toggleMenu));
+    setToggleMenu(!toggleMenu);
   };
 
   if (typeof window !== "undefined") {
@@ -179,7 +172,7 @@ const NavBar = ({ contact }: NavBarProps) => {
   }
 
   useEffect(() => {
-    dispatch(setNavColor(window.scrollY >= 50));
+    setNavColor(window.scrollY >= 50);
 
     const handleScroll = () => {
       const scrollTop = window.pageYOffset;
@@ -213,14 +206,14 @@ const NavBar = ({ contact }: NavBarProps) => {
       );
 
       if (activeSection && activeSection.id !== activeLink) {
-        dispatch(setActiveLink(activeSection.id));
+        setActiveLink(activeSection.id);
       }
 
-      dispatch(setNavColor(scrollTop >= 50));
+      setNavColor(scrollTop >= 50);
     };
 
     const changeNavbarColor = () => {
-      dispatch(setNavColor(window.scrollY >= 50));
+      setNavColor(window.scrollY >= 50);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -230,7 +223,7 @@ const NavBar = ({ contact }: NavBarProps) => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("scroll", changeNavbarColor);
     };
-  }, [activeLink, dispatch]);
+  }, [activeLink, setNavColor, setActiveLink]);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 200,

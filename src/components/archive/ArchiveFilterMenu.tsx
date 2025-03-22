@@ -2,31 +2,24 @@
 import { useCallback, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store";
 import Link from "next/link";
 import { joseFont } from "@/helpers/lib/font";
 import { ArchiveProps } from "../../types/data";
 import * as gtag from "../../helpers/lib/gtag";
-import {
-  setProjectList,
-  setSelectedTag,
-  setSkeletonLoading,
-  sortProjectList,
-} from "@/redux/feature/projectSlice";
 import { TagsCategory } from "@/types/enum";
 import { FaSortAmountDownAlt, FaSortAmountUpAlt } from "react-icons/fa";
+import { useProjectStore } from "@/store/feature/projectStore";
 
 const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const selectedTag = useSelector(
-    (state: RootState) => state.project.selectedTag
-  );
-  const isAscending = useSelector(
-    (state: RootState) => state.project.isAscending
-  );
-  const projectList = useSelector(
-    (state: RootState) => state.project.projectList
-  );
+  const {
+    projectList,
+    isAscending,
+    selectedTag,
+    sortProjectList,
+    setProjectList,
+    setSelectedTag,
+    setSkeletonLoading,
+  } = useProjectStore();
 
   let formattedSelectedTag: string;
 
@@ -59,7 +52,7 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
           p.build.includes(formattedSelectedTag)
         );
       }
-      dispatch(setProjectList(filteredProjects));
+      setProjectList(filteredProjects);
       const newKeyword = tag.toLowerCase().replace(/\s+/g, "_");
       gtag.event({
         action: `${newKeyword}`,
@@ -67,21 +60,21 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
         label: "keyword_list_update",
       });
     },
-    [dispatch, project, formattedSelectedTag]
+    [setProjectList, project, formattedSelectedTag]
   );
 
   useEffect(() => {
     const initialTagFromUrl = search.get("tag") || TagsCategory.ALL;
-    dispatch(setSelectedTag(initialTagFromUrl));
+    setSelectedTag(initialTagFromUrl);
     filterProjects(initialTagFromUrl);
-  }, [search, filterProjects, dispatch]);
+  }, [search, filterProjects, setSelectedTag]);
 
   const handleTagSelect = (techTag: string) => {
-    dispatch(setSelectedTag(techTag));
-    dispatch(setSkeletonLoading(true));
+    setSelectedTag(techTag);
+    setSkeletonLoading(true);
     filterProjects(techTag);
     setTimeout(() => {
-      dispatch(setSkeletonLoading(false));
+      setSkeletonLoading(false);
     }, 2000);
   };
 
@@ -92,7 +85,7 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
   );
 
   const handleSortClick = () => {
-    dispatch(sortProjectList());
+    sortProjectList();
     gtag.event({
       action: "sorted",
       category: "sorting",
@@ -120,7 +113,7 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
               aria-label={`Filter by ${techTag} projects`}
             >
               {techTag}
-              <span style={{ fontSize: '0.8em', marginLeft: '5px' }}>
+              <span style={{ fontSize: "0.8em", marginLeft: "5px" }}>
                 {formattedSelectedTag === techTag
                   ? `(${projectList.length})`
                   : ""}
