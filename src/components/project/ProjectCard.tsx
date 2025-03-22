@@ -1,11 +1,10 @@
 import Image from "next/image";
-import { useDispatch } from "react-redux";
 import { FaChevronRight } from "react-icons/fa";
 import { joseFont } from "@/helpers/lib/font";
-import { ProjectHighlightsCard } from "../../types/data";
-import ExternalLink from "../shared/externalLink";
 import { CldImage } from "next-cloudinary";
 import { useMouseStore } from "@/store/feature/mouseStore";
+import { ProjectHighlightsCard } from "@/types/data";
+import ExternalLink from "../shared/externalLink";
 
 const ProjectCard = ({ project, config }: ProjectHighlightsCard) => {
   const { images, imageUrl, alt, title, build, projectview } = project;
@@ -13,7 +12,7 @@ const ProjectCard = ({ project, config }: ProjectHighlightsCard) => {
   const { setCursorType } = useMouseStore();
 
   const cursorChangeHandler = (cursorType: string) => {
-    setCursorType(cursorType)
+    setCursorType(cursorType);
   };
 
   return (

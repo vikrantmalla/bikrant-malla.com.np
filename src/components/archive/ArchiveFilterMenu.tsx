@@ -1,8 +1,7 @@
 "use client";
+import Link from "next/link";
 import { useCallback, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import Link from "next/link";
 import { joseFont } from "@/helpers/lib/font";
 import { ArchiveProps } from "../../types/data";
 import * as gtag from "../../helpers/lib/gtag";
