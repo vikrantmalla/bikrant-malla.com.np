@@ -6,6 +6,7 @@ import { fetchPortfolioDetailsData } from "@/service/apiService";
 import SharedComponent from "@/components/shared/layoutComponent";
 
 import "../styles/globals.scss";
+import { ZustandProvider } from "@/store/provider";
 
 export async function generateMetadata() {
   const portfolioDetails = await fetchPortfolioDetailsData();
@@ -87,12 +88,14 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <ReduxProvider>
-        <body>
-          <Analytics />
-          <SpeedInsights />
-          {children}
-          <SharedComponent contact={contact} />
-        </body>
+        <ZustandProvider>
+          <body>
+            <Analytics />
+            <SpeedInsights />
+            {children}
+            <SharedComponent contact={contact} />
+          </body>
+        </ZustandProvider>
       </ReduxProvider>
     </html>
   );

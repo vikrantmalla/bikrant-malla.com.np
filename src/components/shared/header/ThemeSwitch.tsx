@@ -1,31 +1,23 @@
 "use client";
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store";
 import { FaMoon, FaSun } from "react-icons/fa";
-import { setIsDarkTheme } from "@/redux/feature/themeSlice";
+import { useThemeStore } from "@/store/feature/themeStore";
 import * as gtag from "@/helpers/lib/gtag";
 
 export default function Switch() {
-  const dispatch = useDispatch<AppDispatch>();
-  const isDarkTheme = useSelector(
-    (state: RootState) => state.theme.isDarkTheme
-  );
-  const currentTheme = useSelector(
-    (state: RootState) => state.theme.currentTheme
-  );
+  const { isDarkTheme, currentTheme, setIsDarkTheme } = useThemeStore();
 
   useEffect(() => {
     const lastTheme = window.localStorage.getItem("darkTheme");
 
     if (lastTheme === "true") {
-      dispatch(setIsDarkTheme(true));
+      setIsDarkTheme(true);
     } else {
-      dispatch(setIsDarkTheme(false));
+      setIsDarkTheme(false);
     }
     const root = document.getElementsByTagName("html")[0];
     root.style.cssText = currentTheme.join(";");
-  }, [currentTheme, dispatch]);
+  }, [currentTheme, setIsDarkTheme]);
 
   const toggle = (currentTheme: string[]) => {
     const root = document.getElementsByTagName("html")[0];
@@ -33,7 +25,7 @@ export default function Switch() {
     const body = document.getElementsByTagName("body")[0];
     body.style.cssText = "transition: background .5s ease";
 
-    dispatch(setIsDarkTheme(!isDarkTheme));
+    setIsDarkTheme(!isDarkTheme);
     window.localStorage.setItem("darkTheme", String(!isDarkTheme));
 
     const theme = isDarkTheme ? "light_theme" : "dark_theme";
@@ -44,7 +36,9 @@ export default function Switch() {
     });
   };
 
-  const arialMessage = `Switch to ${isDarkTheme ? 'light theme' : 'dark theme'}`
+  const arialMessage = `Switch to ${
+    isDarkTheme ? "light theme" : "dark theme"
+  }`;
   return (
     <button
       role="button"
@@ -52,7 +46,15 @@ export default function Switch() {
       onClick={() => toggle(currentTheme)}
       aria-label={arialMessage}
     >
-      {!isDarkTheme ? <FaMoon style={{ color: "#000" }} aria-label={`${arialMessage} icon`} /> : <FaSun size={15} style={{ color: "fff" }} aria-label={`${arialMessage} icon`}  />}
+      {!isDarkTheme ? (
+        <FaMoon style={{ color: "#000" }} aria-label={`${arialMessage} icon`} />
+      ) : (
+        <FaSun
+          size={15}
+          style={{ color: "fff" }}
+          aria-label={`${arialMessage} icon`}
+        />
+      )}
     </button>
   );
 }
