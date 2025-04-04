@@ -1,11 +1,11 @@
 import React from "react";
 import Script from "next/script";
 import * as gtag from "../lib/gtag";
-import { Enviroment } from "@/types/enum";
+import { Environment } from "@/types/enum";
 import { baseUrl } from "../lib/baseUrl";
 
 const CustomScript = () => {
-  const isProduction = process.env.NODE_ENV === Enviroment.PRODUCTION;
+  const isProduction = process.env.NODE_ENV === Environment.PRODUCTION;
   const jsonLd = {
     "@context": "https://schema.org/",
     "@type": "BreadcrumbList",

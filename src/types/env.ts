@@ -37,7 +37,7 @@ if (!parsedResult.success) {
   throw new Error("There is an error with the environment variables");
 }
 
-export const enviromentVariables = parsedResult.data;
+export const EnvironmentVariables = parsedResult.data;
 
 type EnvVarSchemaType = z.infer<typeof envVariables>;
 
