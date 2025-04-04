@@ -61,7 +61,7 @@ export enum SchemaMessage {
   INVALID_EMAIL = "Invalid email address",
 }
 
-export enum Enviroment {
+export enum Environment {
   DEVELOPMENT = "development",
   PRODUCTION = "production",
 }
