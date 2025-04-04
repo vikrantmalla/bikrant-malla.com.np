@@ -1,6 +1,4 @@
-import { create } from "zustand";
-import { devtools } from "zustand/middleware";
-import { Enviroment } from "@/types/enum";
+import { createStore } from "../provider";
 import { ProviderContext } from "@/types/data";
 
 // styles
@@ -38,24 +36,19 @@ const darkTheme: string[] = [
   "--span:#f9feff",
 ];
 
-export const useThemeStore = create<ProviderContext.ThemeStore>()(
-  devtools(
-    (set) => ({
-      isDarkTheme: false,
-      currentTheme: lightTheme, // Default to light theme
-      themes: {
-        light: lightTheme,
-        dark: darkTheme,
-      },
-      setIsDarkTheme: (value) =>
-        set((state) => ({
-          isDarkTheme: value,
-          currentTheme: value ? state.themes.dark : state.themes.light,
-        })),
-    }),
-    {
-      enabled: process.env.NODE_ENV !== Enviroment.PRODUCTION,
-      name: "themeStore",
-    }
-  )
+export const useThemeStore = createStore<ProviderContext.ThemeStore>(
+  (set) => ({
+    isDarkTheme: false,
+    currentTheme: lightTheme,
+    themes: {
+      light: lightTheme,
+      dark: darkTheme,
+    },
+    setIsDarkTheme: (value) =>
+      set((state: { themes: { dark: string[]; light: string[] } }) => ({
+        isDarkTheme: value,
+        currentTheme: value ? state.themes.dark : state.themes.light,
+      })),
+  }),
+  "themeStore"
 );
