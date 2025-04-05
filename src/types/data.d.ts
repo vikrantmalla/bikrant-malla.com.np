@@ -15,14 +15,13 @@ declare namespace Data {
 
     interface ThemeStore {
       isDarkTheme: boolean;
-      currentTheme: string[];
       themes: Theme;
       setIsDarkTheme: (value: boolean) => void;
     }
 
     interface Theme {
-      light: string[];
-      dark: string[];
+      light: ThemeProperties;
+      dark: ThemeProperties;
     }
 
     interface ProjectStore {
@@ -229,4 +228,21 @@ export interface ConfigData {
 export interface Config {
   _id: string;
   allowSignUp: boolean;
+}
+
+export interface ThemeProperties {
+  background: string;
+  navBackground: string;
+  navBackgroundShadow: string;
+  navActiveLink: string;
+  text: string;
+  textRev: string;
+  headingStroke: string;
+  hoverStroke: string;
+  toggle: string;
+  toggleHover: string;
+  link: string;
+  card: string;
+  cardBackgroundShadow: string;
+  span: string;
 }
