@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useLayoutEffect } from "react";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useThemeStore } from "@/store/feature/themeStore";
 import { lightTheme, darkTheme } from "@/store/feature/themeStore";
@@ -45,13 +45,17 @@ const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ className = "switch" }) => {
     root.style.cssText = themeVars.join(";");
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const storedTheme = window.localStorage.getItem("darkTheme");
-    const shouldBeDark = storedTheme === "true";
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    const shouldBeDark =
+      storedTheme !== null ? storedTheme === "true" : prefersDark;
 
     setIsDarkTheme(shouldBeDark);
     applyTheme(shouldBeDark);
-  }, [setIsDarkTheme, applyTheme]);
+  }, [applyTheme, setIsDarkTheme]);
 
   const handleToggle = useCallback(() => {
     const newThemeState = !isDarkTheme;

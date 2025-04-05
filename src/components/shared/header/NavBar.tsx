@@ -56,7 +56,6 @@ export function Navigation({ contact }: NavBarProps) {
   };
 
   const handleTabClick = (tabId: string) => {
-    const checkWidth = window.matchMedia("(min-width: 677px)");
 
     gtag.event({
       action: `#${tabId}`,
@@ -67,8 +66,8 @@ export function Navigation({ contact }: NavBarProps) {
     const element = document.getElementById(tabId);
     element?.scrollIntoView({ behavior: "smooth" });
 
-    if (checkWidth.matches) {
-      setToggleMenu(!toggleMenu);
+    if (window.innerWidth < 677) {
+      setToggleMenu(false);
     }
   };
 
