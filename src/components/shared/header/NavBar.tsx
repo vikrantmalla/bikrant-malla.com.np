@@ -56,7 +56,6 @@ export function Navigation({ contact }: NavBarProps) {
   };
 
   const handleTabClick = (tabId: string) => {
-
     gtag.event({
       action: `#${tabId}`,
       category: "ui_interaction",
@@ -128,7 +127,7 @@ const NavItem = ({
       style={{ textTransform: "capitalize" }}
     >
       {pathname === "/" ? (
-        <p
+        <button
           onClick={() => onTabClick(tabId)}
           className={
             activeLink === tabId.replace("#", "")
@@ -137,10 +136,10 @@ const NavItem = ({
           }
         >
           {tabId.replace("#", "")}
-        </p>
+        </button>
       ) : (
         <Link href="/" passHref>
-          {tabId.replace("#", "")}
+          <button>{tabId.replace("#", "")}</button>
         </Link>
       )}
     </li>

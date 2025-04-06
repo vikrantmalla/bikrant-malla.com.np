@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState, useEffect } from "react";
 import { FaChevronUp } from "react-icons/fa";
 
@@ -26,8 +26,16 @@ export default function ScrollArrow() {
   return (
     <div>
       {showButton && (
-        <button role="button" className="back-to-top" aria-label="Scroll the window to the top">
-          <FaChevronUp onClick={scrollToTop} className="topArrow" aria-label="Scroll the window to the top icon" />
+        <button
+          onClick={scrollToTop}
+          role="button"
+          className="back-to-top"
+          aria-label="Scroll the window to the top"
+        >
+          <FaChevronUp
+            className="topArrow"
+            aria-label="Scroll the window to the top icon"
+          />
         </button>
       )}
     </div>
