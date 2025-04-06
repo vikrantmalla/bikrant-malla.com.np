@@ -27,22 +27,29 @@
         text-align: center;
         padding: 0;
         .nav-item {
-          cursor: pointer;
-          padding: 0.5rem;
-          border-radius: 0.5rem;
-          &:hover {
-            background-color: var(--toggle);
-          }
           a {
             text-decoration: none;
             color: var(--navActiveLink);
           }
-          p {
+          button {
             color: var(--navActiveLink);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            background-color: transparent;
+            text-transform: capitalize;
+            border: none;
+            &:hover {
+              background-color: var(--toggle);
+            }
           }
         }
         .activeLink {
           color: var(--text) !important;
+          border: none;
+        }
+        .unActiveLink {
+          border: none;
         }
       }
       .active {
@@ -134,14 +141,21 @@
             &:nth-child(1) {
               margin-top: 4rem;
             }
-            &:hover {
-              background-color: transparent;
-            }
             a {
               color: var(--text);
             }
-            p {
+            button {
+              color: var(--navActiveLink);
+              padding: 0.5rem;
+              border-radius: 0.5rem;
+              cursor: pointer;
+              background-color: transparent;
+              text-transform: capitalize;
               color: var(--text);
+              border: none;
+              &:hover {
+                background-color: transparent;
+              }
             }
           }
         }
