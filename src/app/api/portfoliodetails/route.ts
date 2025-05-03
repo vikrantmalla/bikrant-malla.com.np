@@ -5,7 +5,7 @@ import Contact from "@/models/Contact";
 import MetaTag from "@/models/MetaTag";
 import AboutMe from "@/models/Aboutme";
 import Config from "@/models/Config";
-import Projecthighlight from "@/models/Projecthighlight";
+import Projecthighlight from "@/models/ProjectHighlight";
 
 export async function GET() {
   try {
