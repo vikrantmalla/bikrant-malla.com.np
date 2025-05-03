@@ -38,5 +38,5 @@ const ProjectHighlightSchema: Schema<ProjectHighlight> = new Schema({
   },
 });
 
-export default mongoose.models.Projecthighlights ||
-  mongoose.model("Projecthighlights", ProjectHighlightSchema);
+export default mongoose.models.ProjectHighlight ||
+  mongoose.model("ProjectHighlight", ProjectHighlightSchema);

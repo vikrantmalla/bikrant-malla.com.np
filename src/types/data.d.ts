@@ -52,7 +52,7 @@ export interface PortfolioDetails {
   behance: BehanceProject[];
   contact: ContactInfo[];
   metaData: MetaData[];
-  project: Project[];
+  projecthighlight: Project[];
   config: Config[];
 }
 

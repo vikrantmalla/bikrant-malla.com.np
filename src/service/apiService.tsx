@@ -12,8 +12,8 @@ import {
 
 async function fetchData<T>(endpoint: string): Promise<T> {
   const res = await fetch(`${baseUrl}/${endpoint}`, {
-    cache: "force-cache", // Enables caching
-  });
+    cache: 'no-store'
+ });
 
   if (!res.ok) {
     throw new Error(`Failed to fetch ${endpoint}: ${res.statusText}`);
