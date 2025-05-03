@@ -1,23 +1,25 @@
 import dbConnect from "@/helpers/lib/dbConnect";
-import Aboutme from "@/models/AboutMe";
+import { NextResponse } from "next/server";
 import Behance from "@/models/Behance";
 import Contact from "@/models/Contact";
 import MetaTag from "@/models/MetaTag";
-import Project from "@/models/ProjectHighlight";
+import AboutMe from "@/models/Aboutme";
 import Config from "@/models/Config";
-import { NextResponse } from "next/server";
+import Projecthighlight from "@/models/Projecthighlight";
 
-dbConnect();
 export async function GET() {
   try {
-    const allContent = {
-      aboutme: await Aboutme.find({}),
-      behance: await Behance.find({}),
-      contact: await Contact.find({}),
-      metaData: await MetaTag.find({}),
-      project: await Project.find({}),
-      config: await Config.find({})
-    };
+    await dbConnect();
+    const [aboutme, behance, contact, metaData, config, projecthighlight] =
+      await Promise.all([
+        AboutMe.find({}),
+        Behance.find({}),
+        Contact.find({}),
+        MetaTag.find({}),
+        Config.find({}),
+        Projecthighlight.find({}),
+      ]);
+    const allContent = { aboutme, behance, contact, metaData, config, projecthighlight };
     return NextResponse.json(
       {
         success: true,
