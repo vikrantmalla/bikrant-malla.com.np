@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import Behance from "@/models/Behance";
 import Contact from "@/models/Contact";
 import MetaTag from "@/models/MetaTag";
-import AboutMe from "@/models/Aboutme";
+import AboutMe from "@/models/AboutMe";
 import Config from "@/models/Config";
 import Projecthighlight from "@/models/ProjectHighlight";
 

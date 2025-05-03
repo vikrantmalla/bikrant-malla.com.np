@@ -42,5 +42,5 @@ const AboutMeDetailsSchema: Schema<AboutMeDetail> = new Schema({
   },
 });
 
-export default mongoose.models.Aboutme ||
-  mongoose.model("Aboutme", AboutMeDetailsSchema);
+export default mongoose.models.AboutMe ||
+  mongoose.model("AboutMe", AboutMeDetailsSchema);
