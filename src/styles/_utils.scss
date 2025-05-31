@@ -1,3 +1,6 @@
+@use "./breakpoint" as *;
+@use "./mixin" as *;
+
 .headingleft {
   margin: 1rem 0;
   @include heading(left);

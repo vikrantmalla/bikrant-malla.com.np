@@ -1,21 +1,21 @@
-@import "./breakpoint";
-@import "./scrollbar";
-@import "./variable";
-@import "./mixin";
-@import "./NotFound.scss";
-@import "./Skeleton.scss";
-@import "./utils";
-@import "./loading";
-@import "../components/shared/cursor/Dotring.scss";
-@import "../components/shared/header/Navbar.scss";
-@import "../components/shared/header/ThemeSwitch.scss";
-@import "../components/intro/Aboutme.scss";
-@import "../components/project/Project.scss";
-@import "../components/behance/Behance.scss";
-@import "../components/archive/Archive.scss";
-@import "../components/shared/footer/Contact.scss";
-@import "../components/shared/footer/Footer.scss";
-@import "../components/shared/scrollup/ScrollArrow.scss";
+@use "./breakpoint" as *;
+@use "./scrollbar" as *;
+@use "./variable" as *;
+@use "./mixin" as *;
+@use "./NotFound.scss" as *;
+@use "./Skeleton.scss" as *;
+@use "./utils" as *;
+@use "./loading" as *;
+@use "../components/shared/cursor/Dotring.scss" as *;
+@use "../components/shared/header/Navbar.scss" as *;
+@use "../components/shared/header/ThemeSwitch.scss" as *;
+@use "../components/intro/Aboutme.scss" as *;
+@use "../components/project/Project.scss" as *;
+@use "../components/behance/Behance.scss" as *;
+@use "../components/archive/Archive.scss" as *;
+@use "../components/shared/footer/Contact.scss" as *;
+@use "../components/shared/footer/Footer.scss" as *;
+@use "../components/shared/scrollup/ScrollArrow.scss" as *;
 
 /* define all colors as variables */
 

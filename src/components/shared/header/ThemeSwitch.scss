@@ -1,3 +1,5 @@
+@use "../../../styles/mixin" as *;
+
 .switch {
   background-color: var(--toggle);
   border: none;
