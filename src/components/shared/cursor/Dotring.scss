@@ -1,3 +1,5 @@
+@use "../../../styles/breakpoint" as *;
+
 @include lg {
   .ring {
     position: fixed;

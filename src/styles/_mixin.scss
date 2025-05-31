@@ -1,3 +1,5 @@
+// @use "./mixin" as *;
+
 @mixin flex($direction, $justify) {
   display: flex;
   flex-direction: $direction;
