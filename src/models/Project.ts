@@ -4,32 +4,28 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface ProjectHighlight extends Document {
   title: string;
   subTitle: string;
-  images: string;
+  imageUrl: string;
   alt: string;
-  projectview: string;
+  projectView: string;
   build: string[];
 }
 
-const ProjectSchema = new Schema({
+const ProjectSchema: Schema<ProjectHighlight> = new Schema({
   title: {
     type: String,
     required: [true, SchemaMessage.TITLE_IS_REQUIRED],
   },
-  year: {
-    type: Number,
-    required: [true, SchemaMessage.YEAR_IS_REQUIRED],
+  imageUrl: {
+    type: String,
+    required: [true, SchemaMessage.IMAGE_IS_REQUIRED],
   },
-  isnew: {
-    type: Boolean,
-    required: [true, SchemaMessage.ISNEW_IS_REQUIRED],
+  alt: {
+    type: String,
+    required: [true, SchemaMessage.ALT_IS_REQUIRED],
   },
-  projectview: {
+  projectView: {
     type: String,
     required: [true, SchemaMessage.PROJECTVIEW_IS_REQUIRED],
-  },
-  viewcode: {
-    type: String,
-    required: [true, SchemaMessage.VIEWCODE_IS_REQUIRED],
   },
   build: {
     type: [String],
