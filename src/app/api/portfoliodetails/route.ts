@@ -5,21 +5,21 @@ import Contact from "@/models/Contact";
 import MetaTag from "@/models/MetaTag";
 import AboutMe from "@/models/AboutMe";
 import Config from "@/models/Config";
-import Projecthighlight from "@/models/ProjectHighlight";
+import Project from "@/models/Project";
 
 export async function GET() {
   try {
     await dbConnect();
-    const [aboutme, behance, contact, metaData, config, projecthighlight] =
+    const [aboutme, behance, contact, metaData, config, project] =
       await Promise.all([
         AboutMe.find({}),
         Behance.find({}),
         Contact.find({}),
         MetaTag.find({}),
         Config.find({}),
-        Projecthighlight.find({}),
+        Project.find({}),
       ]);
-    const allContent = { aboutme, behance, contact, metaData, config, projecthighlight };
+    const allContent = { aboutme, behance, contact, metaData, config, Project };
     return NextResponse.json(
       {
         success: true,
