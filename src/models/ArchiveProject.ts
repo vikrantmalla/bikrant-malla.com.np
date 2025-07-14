@@ -9,7 +9,7 @@ export interface ArchiveProjects extends Document {
   projectView: string;
   build: string[];
   year: number;
-  isnew: boolean;
+  isLatest: boolean;
   viewCode: string;
 }
 const ArchiveProjectsSchema: Schema<ArchiveProjects> = new Schema({
@@ -21,7 +21,7 @@ const ArchiveProjectsSchema: Schema<ArchiveProjects> = new Schema({
     type: Number,
     required: [true, SchemaMessage.YEAR_IS_REQUIRED],
   },
-  isnew: {
+  isLatest: {
     type: Boolean,
     required: [true, SchemaMessage.ISNEW_IS_REQUIRED],
   },

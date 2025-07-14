@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DB_DEV_MONGODB_URI")
+}
+
+model User {
+  id        String              @id @default(auto()) @map("_id") @db.ObjectId
+  email     String              @unique // Kinde/Clerk user email
+  name      String? // Optional user name
+  roles     UserPortfolioRole[] @relation("UserRoles")
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+}
+
+model UserPortfolioRole {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  user        User      @relation("UserRoles", fields: [userId], references: [id])
+  userId      String    @db.ObjectId
+  portfolio   Portfolio @relation("PortfolioRoles", fields: [portfolioId], references: [id])
+  portfolioId String    @db.ObjectId
+  role        String // e.g., "editor", "viewer"
+  invitedAt   DateTime  @default(now())
+
+  @@unique([userId, portfolioId], name: "userId_portfolioId")
+}
+
+model Portfolio {
+  id                String              @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  jobTitle          String
+  aboutDescription1 String
+  aboutDescription2 String?
+  skills            String[]
+  email             String
+  ownerEmail        String
+  phone             String?
+  linkedIn          String?
+  gitHub            String?
+  facebook          String?
+  instagram         String?
+  projects          Project[]           @relation("PortfolioProjects")
+  archiveProjects   ArchiveProject[]    @relation("PortfolioArchiveProjects")
+  userRoles         UserPortfolioRole[] @relation("PortfolioRoles")
+}
+
+model TechTag {
+  id                      String              @id @default(auto()) @map("_id") @db.ObjectId
+  tag                     String
+  projectRelations        ProjectTag[]        @relation("ProjectToTag")
+  archiveProjectRelations ArchiveProjectTag[] @relation("ArchiveProjectToTag")
+}
+
+model Project {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  subTitle     String?
+  images       String?
+  imageUrl     String?
+  alt          String?
+  projectView  String
+  tools        String[]
+  platform     String?
+  portfolio    Portfolio?   @relation("PortfolioProjects", fields: [portfolioId], references: [id])
+  portfolioId  String?      @db.ObjectId
+  tagRelations ProjectTag[] @relation("ProjectToTag")
+}
+
+model ArchiveProject {
+  id           String              @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  year         Int
+  isNew        Boolean
+  projectView  String
+  viewCode     String
+  build        String[]
+  portfolio    Portfolio?          @relation("PortfolioArchiveProjects", fields: [portfolioId], references: [id])
+  portfolioId  String?             @db.ObjectId
+  tagRelations ArchiveProjectTag[] @relation("ArchiveProjectToTag")
+}
+
+model ProjectTag {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  project   Project @relation("ProjectToTag", fields: [projectId], references: [id])
+  projectId String  @db.ObjectId
+  tag       TechTag @relation("ProjectToTag", fields: [tagId], references: [id])
+  tagId     String  @db.ObjectId
+}
+
+model ArchiveProjectTag {
+  id               String         @id @default(auto()) @map("_id") @db.ObjectId
+  archiveProject   ArchiveProject @relation("ArchiveProjectToTag", fields: [archiveProjectId], references: [id])
+  archiveProjectId String         @db.ObjectId
+  tag              TechTag        @relation("ArchiveProjectToTag", fields: [tagId], references: [id])
+  tagId            String         @db.ObjectId
+}
+
+model MetaTag {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  keyword     String
+  author      String
+  fbID        String
+  twitterID   String
+}
+
+model Config {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  allowBackupImages Boolean
+}
