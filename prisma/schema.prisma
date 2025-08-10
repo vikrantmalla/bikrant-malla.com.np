@@ -45,7 +45,6 @@ model Portfolio {
   skills            String[]
   email             String
   ownerEmail        String
-  phone             String?
   linkedIn          String?
   gitHub            String?
   facebook          String?

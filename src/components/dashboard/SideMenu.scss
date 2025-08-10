@@ -1,0 +1,340 @@
+@use "../../styles/breakpoint" as *;
+@use "../../styles/mixin" as *;
+@use "../../styles/variable" as *;
+
+// Side Menu Variables
+$side-menu-width: 280px;
+$side-menu-width-mobile: 100vw;
+$side-menu-bg: var(--navBackground);
+$side-menu-text: var(--textRev);
+$side-menu-border: rgba(255, 255, 255, 0.1);
+$side-menu-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+$side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// Backdrop
+.side-menu-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  animation: fadeIn 0.3s ease-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+// Main Side Menu Container
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: $side-menu-width-mobile;
+  height: 100vh;
+  background: $side-menu-bg;
+  color: $side-menu-text;
+  z-index: 1000;
+  overflow-y: auto;
+  transition: $side-menu-transition;
+  box-shadow: $side-menu-shadow;
+  display: flex;
+  flex-direction: column;
+
+  @include md {
+    width: $side-menu-width;
+  }
+
+  &--open {
+    left: 0;
+  }
+
+  // Scrollbar styling
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+// Header Section
+.side-menu__header {
+  @include flex(row, space-between);
+  padding: 1.5rem;
+  border-bottom: 1px solid $side-menu-border;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.side-menu__logo {
+  @include flex(row, flex-start);
+  gap: 0.75rem;
+
+  &-icon {
+    font-size: 1.5rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  &-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+}
+
+.side-menu__close {
+  background: none;
+  border: none;
+  color: $side-menu-text;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  width: 40px;
+  height: 40px;
+  @include flex(row, center);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+  }
+
+  &-icon {
+    font-size: 1.5rem;
+    font-weight: 300;
+  }
+}
+
+// User Profile Section
+.side-menu__profile {
+  padding: 1.5rem;
+  border-bottom: 1px solid $side-menu-border;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.side-menu__avatar {
+  margin-bottom: 1rem;
+
+  &-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  &-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    @include flex(row, center);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.side-menu__user-info {
+  &-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+    color: $side-menu-text;
+  }
+
+  &-role {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    display: inline-block;
+  }
+}
+
+// Navigation Section
+.side-menu__nav {
+  flex: 1;
+  padding: 1rem 0;
+}
+
+.side-menu__nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.side-menu__nav-item {
+  margin: 0.25rem 0;
+}
+
+.side-menu__nav-link {
+  @include flex(row, flex-start);
+  gap: 1rem;
+  padding: 0.875rem 1.5rem;
+  color: $side-menu-text;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-radius: 0;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent);
+    transition: width 0.3s ease;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(4px);
+
+    &::before {
+      width: 4px;
+    }
+  }
+
+  &--active {
+    background: rgba(255, 255, 255, 0.1);
+    border-left: 4px solid #667eea;
+
+    &::before {
+      width: 4px;
+    }
+  }
+
+  &-icon {
+    font-size: 1.25rem;
+    min-width: 24px;
+    text-align: center;
+  }
+
+  &-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+}
+
+// Footer Section
+.side-menu__footer {
+  padding: 1.5rem;
+  border-top: 1px solid $side-menu-border;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.side-menu__footer-links {
+  @include flex(row, space-between);
+  margin-bottom: 1rem;
+}
+
+.side-menu__footer-link {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $side-menu-text;
+  }
+}
+
+.side-menu__version {
+  text-align: center;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: monospace;
+}
+
+// Responsive Design
+@include sm {
+  .side-menu {
+    width: $side-menu-width;
+  }
+}
+
+@include md {
+  .side-menu {
+    &__nav-link {
+      padding: 1rem 1.5rem;
+    }
+
+    &__nav-link-label {
+      font-size: 1rem;
+    }
+  }
+}
+
+// Animation for menu items
+.side-menu__nav-item {
+  animation: slideInLeft 0.3s ease-out;
+  animation-fill-mode: both;
+
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.05}s;
+    }
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .side-menu {
+    border-right: 2px solid $side-menu-text;
+  }
+
+  .side-menu__nav-link--active {
+    border-left: 4px solid $side-menu-text;
+  }
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .side-menu,
+  .side-menu__nav-link,
+  .side-menu__close {
+    transition: none;
+  }
+
+  .side-menu__nav-item {
+    animation: none;
+  }
+}

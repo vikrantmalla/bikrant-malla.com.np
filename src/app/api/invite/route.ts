@@ -1,6 +1,10 @@
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
+import InvitationEmail from '@/components/emails/InvitationEmail';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   const { getUser } = getKindeServerSession();
@@ -33,55 +37,43 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Forbidden: Only the portfolio owner can invite users' }, { status: 403 });
     }
 
-    // Send invitation via Kinde API
-    const response = await fetch(`${process.env.KINDE_ISSUER}/api/v1/users/invite`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.KINDE_API_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email,
-        role,
-      }),
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Kinde invite error:', errorData);
-      return NextResponse.json({ error: `Failed to send invitation: ${errorData.message || 'Unknown error'}` }, { status: response.status });
+    let dbUser;
+    if (existingUser) {
+      dbUser = existingUser;
+    } else {
+      // Create a placeholder user record for the invited user
+      dbUser = await prisma.user.create({
+        data: {
+          email,
+          name: 'Invited User',
+        },
+      });
     }
 
-    const invitedUser = await response.json();
-    console.log('Kinde invite response:', invitedUser); // Debug log
-
-    // Create or update user in Prisma (in case webhook hasn't run yet)
-    const dbUser = await prisma.user.upsert({
-      where: { email },
-      update: {
-        name: invitedUser.first_name || 'Invited User',
-      },
-      create: {
-        id: invitedUser.id || `kinde_${email}`,
-        email,
-        name: invitedUser.first_name || 'Invited User',
-      },
-    });
-
-    // Assign role to the invited user
-    const existingRole = await prisma.userPortfolioRole.findFirst({
+    // Check if invitation already exists
+    const existingInvitation = await prisma.userPortfolioRole.findFirst({
       where: {
         userId: dbUser.id,
         portfolioId: portfolio.id,
       },
     });
 
-    if (existingRole) {
+    if (existingInvitation) {
+      // Update existing invitation
       await prisma.userPortfolioRole.update({
-        where: { id: existingRole.id },
-        data: { role },
+        where: { id: existingInvitation.id },
+        data: { 
+          role,
+          invitedAt: new Date(),
+        },
       });
     } else {
+      // Create new invitation
       await prisma.userPortfolioRole.create({
         data: {
           userId: dbUser.id,
@@ -92,7 +84,78 @@ export async function POST(req: Request) {
       });
     }
 
-    return NextResponse.json({ message: `Invitation sent to ${email} with role ${role}` }, { status: 200 });
+    // Send email notification to the invited user using Resend
+    const signupUrl = `${process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_DEFAULT_APP_URL}/login`;
+    
+    // Enhanced debug logging
+    console.log('=== EMAIL DEBUG INFO ===');
+    console.log('Environment variables:', {
+      hasResendApiKey: !!process.env.RESEND_API_KEY,
+      resendFromEmail: process.env.RESEND_FROM_EMAIL,
+      appUrl: process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_DEFAULT_APP_URL,
+    });
+    console.log('Email sending details:', {
+      from: process.env.RESEND_FROM_EMAIL || 'noreply@bikrant-malla.com.np',
+      to: email,
+      signupUrl,
+      portfolioName: portfolio.name,
+      role,
+    });
+    console.log('========================');
+    
+    try {
+      const emailResult = await resend.emails.send({
+        from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+        to: email,
+        subject: `You have been invited to collaborate on ${portfolio.name}`,
+        react: InvitationEmail({
+          inviterName: user.given_name || user.email,
+          portfolioName: portfolio.name,
+          role,
+          signupUrl,
+        }),
+      });
+      
+      console.log('✅ Email sent successfully:', emailResult);
+    } catch (emailError) {
+      console.error('❌ Failed to send invitation email:', emailError);
+      console.error('Email error details:', {
+        message: emailError instanceof Error ? emailError.message : 'Unknown error',
+        stack: emailError instanceof Error ? emailError.stack : undefined,
+      });
+      
+      // Check for specific domain verification error
+      const errorMessage = emailError instanceof Error ? emailError.message : '';
+      if (errorMessage.includes('domain is not verified')) {
+        return NextResponse.json({ 
+          error: 'Email domain not verified',
+          details: 'The sending email domain is not verified in Resend. Please use a verified domain or contact support.',
+          solution: 'Update RESEND_FROM_EMAIL to use a verified domain (e.g., onboarding@resend.dev for testing)',
+          debug: {
+            hasApiKey: !!process.env.RESEND_API_KEY,
+            fromEmail: process.env.RESEND_FROM_EMAIL,
+          }
+        }, { status: 400 });
+      }
+      
+      // Return error response with details for debugging
+      return NextResponse.json({ 
+        error: 'Failed to send email',
+        details: emailError instanceof Error ? emailError.message : 'Unknown error',
+        debug: {
+          hasApiKey: !!process.env.RESEND_API_KEY,
+          fromEmail: process.env.RESEND_FROM_EMAIL,
+        }
+      }, { status: 500 });
+    }
+
+    console.log(`Invitation created for ${email} with role ${role} to portfolio ${portfolio.name}`);
+
+    return NextResponse.json({ 
+      message: `Invitation sent to ${email} with role ${role}`,
+      note: 'The user will need to sign up through the regular Kinde flow to access the portfolio'
+    }, { status: 200 });
+
   } catch (error) {
     console.error('Invite user error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

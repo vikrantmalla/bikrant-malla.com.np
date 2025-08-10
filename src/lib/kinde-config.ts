@@ -1,7 +1,7 @@
 // Kinde Auth Configuration
 export const kindeConfig = {
   // These should be set in your environment variables
-  issuer: process.env.KINDE_ISSUER_URL || process.env.KINDE_ISSUER,
+  issuer: process.env.KINDE_ISSUER_URL,
   clientId: process.env.KINDE_CLIENT_ID,
   clientSecret: process.env.KINDE_CLIENT_SECRET,
   redirectUrl: process.env.KINDE_REDIRECT_URL || `${process.env.NEXT_PUBLIC_BASE_URL}/callback`,

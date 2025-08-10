@@ -84,6 +84,21 @@ export default async function RootLayout({
 }) {
   // const portfolioDetails = await fetchPortfolioDetailsData();
   // const { contact } = portfolioDetails;
+    const contact = {
+      contact: [
+        {
+          _id: "dummyId",
+          message: "Let's connect",
+          ctaMessage: "Get in touch",
+          emailUrl: "mailto:bikrantmalla@gmail.com",
+          githubUrl: "https://github.com/bikrantmalla",
+          behanceUrl: "",
+          linkedinUrl: "",
+          twitterUrl: "",
+          __v: 0,
+        }
+      ]
+    }
   return (
     <html lang="en">
       <ZustandProvider>
@@ -91,7 +106,7 @@ export default async function RootLayout({
           <Analytics />
           <SpeedInsights />
           {children}
-          {/* <SharedComponent contact={contact} /> */}
+          {/* <SharedComponent contact={contact.contact} /> */}
         </body>
       </ZustandProvider>
     </html>
