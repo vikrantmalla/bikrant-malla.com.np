@@ -16,6 +16,8 @@
 @use "../components/shared/footer/Contact.scss" as *;
 @use "../components/shared/footer/Footer.scss" as *;
 @use "../components/shared/scrollup/ScrollArrow.scss" as *;
+@use "../components/dashboard/SideMenu.scss" as *;
+@use "../app/dashboard/dashboard.scss" as *;
 
 /* define all colors as variables */
 

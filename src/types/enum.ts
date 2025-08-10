@@ -81,3 +81,14 @@ export enum NavItemLabel {
   PROJECT = "projects",
   SKILL = "skills",
 }
+
+export enum Role {
+  OWNER = "OWNER",
+  EDITOR = "EDITOR",
+  USER = "USER",
+}
+
+export enum Theme {
+  LIGHT = "light",
+  DARK = "dark",
+}

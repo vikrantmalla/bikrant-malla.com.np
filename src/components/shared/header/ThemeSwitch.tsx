@@ -5,6 +5,7 @@ import { useThemeStore } from "@/store/feature/themeStore";
 import { lightTheme, darkTheme } from "@/store/feature/themeStore";
 import * as gtag from "@/helpers/lib/gtag";
 import { toCSSVars } from "@/helpers/utils";
+import { Theme } from "@/types/enum";
 
 interface ThemeSwitchProps {
   className?: string;
@@ -37,8 +38,8 @@ const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ className = "switch" }) => {
     const root = document.documentElement;
 
     // Toggle class on HTML element
-    root.classList.remove(isDark ? "light" : "dark");
-    root.classList.add(isDark ? "dark" : "light");
+    root.classList.remove(isDark ? Theme.LIGHT : Theme.DARK);
+    root.classList.add(isDark ? Theme.DARK : Theme.LIGHT);
 
     // Optional: Keep CSS variables if needed
     const themeVars = isDark ? toCSSVars(darkTheme) : toCSSVars(lightTheme);
@@ -76,7 +77,7 @@ const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ className = "switch" }) => {
     });
   }, [isDarkTheme, setIsDarkTheme, applyTheme]);
 
-  const ariaLabel = `Switch to ${isDarkTheme ? "light" : "dark"} theme`;
+  const ariaLabel = `Switch to ${isDarkTheme ? Theme.LIGHT : Theme.DARK} theme`;
 
   return (
     <button
