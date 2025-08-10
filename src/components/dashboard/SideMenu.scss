@@ -260,9 +260,13 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   font-size: 0.875rem;
   transition: color 0.2s ease;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
 
   &:hover {
     color: $side-menu-text;
+    background: rgba(255, 255, 255, 0.05);
   }
 }
 
