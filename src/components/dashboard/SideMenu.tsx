@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { useThemeStore } from "@/store/feature/themeStore";
 import "./SideMenu.scss";
@@ -8,17 +7,18 @@ import "./SideMenu.scss";
 interface SideMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  onFormChange?: (formType: string) => void;
 }
 
 interface MenuItem {
   id: string;
   label: string;
   icon: string;
-  href: string;
+  formType: string;
   isActive?: boolean;
 }
 
-const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
+const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, onFormChange }) => {
   const { user, userRole } = useAuth();
   const { isDarkTheme, themes } = useThemeStore();
   const currentTheme = isDarkTheme ? themes.dark : themes.light;
@@ -29,36 +29,37 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
       id: "dashboard",
       label: "Dashboard",
       icon: "📊",
-      href: "/dashboard",
+      formType: "overview",
     },
     {
       id: "portfolio",
       label: "Portfolio",
       icon: "💼",
-      href: "/dashboard/portfolio",
+      formType: "portfolio",
     },
     {
       id: "projects",
       label: "Projects",
       icon: "🚀",
-      href: "/dashboard/projects",
+      formType: "projects",
     },
     {
       id: "archive",
       label: "Archive",
       icon: "📁",
-      href: "/dashboard/archive",
+      formType: "archive",
     },
     {
       id: "settings",
       label: "Settings",
       icon: "⚙️",
-      href: "/dashboard/settings",
+      formType: "settings",
     },
   ];
 
-  const handleItemClick = (itemId: string) => {
+  const handleItemClick = (itemId: string, formType: string) => {
     setActiveItem(itemId);
+    onFormChange?.(formType);
     onClose();
   };
 
@@ -117,16 +118,15 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
           <ul className="side-menu__nav-list">
             {menuItems.map((item) => (
               <li key={item.id} className="side-menu__nav-item">
-                <Link
-                  href={item.href}
+                <div
                   className={`side-menu__nav-link ${
                     activeItem === item.id ? "side-menu__nav-link--active" : ""
                   }`}
-                  onClick={() => handleItemClick(item.id)}
+                  onClick={() => handleItemClick(item.id, item.formType)}
                 >
                   <span className="side-menu__nav-icon">{item.icon}</span>
                   <span className="side-menu__nav-label">{item.label}</span>
-                </Link>
+                </div>
               </li>
             ))}
           </ul>
@@ -135,12 +135,12 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose }) => {
         {/* Footer */}
         <div className="side-menu__footer">
           <div className="side-menu__footer-links">
-            <Link href="/" className="side-menu__footer-link">
+            <div className="side-menu__footer-link">
               View Site
-            </Link>
-            <Link href="/dashboard/settings" className="side-menu__footer-link">
+            </div>
+            <div className="side-menu__footer-link">
               Settings
-            </Link>
+            </div>
           </div>
           <div className="side-menu__version">
             v1.0.0
