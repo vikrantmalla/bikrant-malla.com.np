@@ -6,7 +6,7 @@ export enum ApiEndpoint {
   BEHANCE_ENDPOINT = "api/behance",
   CONTACT_ENDPOINT = "api/contact",
   META_DATA_ENDPOINT = "api/metadata",
-  PORTFOLIO_DETAILS_ENDPOINT = "api/portfoliodetails",
+  PORTFOLIO_DETAILS_ENDPOINT = "api/portfolio",
   PROJECTS_ENDPOINT = "api/projects",
   PROJECT_HIGHLIGHTS_ENDPOINT = "api/projecthighlight",
   TAGS_ENDPOINT = "api/tags",

@@ -9,7 +9,8 @@ export const useAuth = () => {
   const router = useRouter();
   const [userRole, setUserRole] = useState<{ hasEditorRole: boolean; isOwner: boolean } | null>(null);
   const [isCheckingRole, setIsCheckingRole] = useState(false);
-
+  const [portfolioInfo, setPortfolioInfo] = useState<{ id: string; name: string; ownerEmail: string } | null>(null);
+console.log("portfolioInfo", portfolioInfo);
   // Check user role
   const checkUserRole = useCallback(async () => {
     if (!isAuthenticated || !user) return null;
@@ -24,6 +25,7 @@ export const useAuth = () => {
           isOwner: data.user.isOwner
         };
         setUserRole(roleData);
+        setPortfolioInfo(data.user.portfolio);
         return roleData;
       } else if (response.status === 404) {
         // User not found in database - try to create them
@@ -40,6 +42,7 @@ export const useAuth = () => {
               isOwner: data.user.isOwner
             };
             setUserRole(roleData);
+            setPortfolioInfo(data.user.portfolio);
             return roleData;
           }
         }
@@ -84,6 +87,7 @@ export const useAuth = () => {
     checkUserRole,
     redirectToLogin,
     hasAccess,
-    logout
+    logout,
+    portfolioInfo
   };
 }; 

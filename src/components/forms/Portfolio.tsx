@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
-import "./Portfolio.scss";
+import { useState, useEffect } from "react";
+import "./form.scss";
 
 const portfolioSchema = z
   .object({
@@ -29,7 +29,6 @@ const portfolioSchema = z
       .string()
       .email("Invalid owner email address")
       .min(1, "Owner Email is required"),
-    phone: z.string().optional(),
     linkedIn: z.string().url().optional().or(z.literal("")),
     gitHub: z.string().url().optional().or(z.literal("")),
     facebook: z.string().url().optional().or(z.literal("")),
@@ -40,14 +39,36 @@ const portfolioSchema = z
     path: ["ownerEmail"],
   });
 
+interface PortfolioData {
+  id: string;
+  name: string;
+  jobTitle: string;
+  aboutDescription1: string;
+  aboutDescription2?: string;
+  skills: string[];
+  email: string;
+  ownerEmail: string;
+  linkedIn?: string;
+  gitHub?: string;
+  facebook?: string;
+  instagram?: string;
+}
+
 const PortfolioForm = () => {
   const [message, setMessage] = useState({ text: "", isError: false });
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentPortfolio, setCurrentPortfolio] = useState<PortfolioData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Helper function to determine if fields should be disabled
+  const isFieldDisabled = () => !isEditing && !!currentPortfolio;
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm({
     resolver: zodResolver(portfolioSchema),
     defaultValues: {
@@ -58,7 +79,6 @@ const PortfolioForm = () => {
       skills: "",
       email: "",
       ownerEmail: "",
-      phone: "",
       linkedIn: "",
       gitHub: "",
       facebook: "",
@@ -66,163 +86,392 @@ const PortfolioForm = () => {
     },
   });
 
+  // Fetch existing portfolio data
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      try {
+        const response = await fetch("/api/portfolio");
+        if (response.ok) {
+          const portfolio = await response.json();
+          setCurrentPortfolio(portfolio);
+          // Populate form with existing data
+          setValue("name", portfolio.name);
+          setValue("jobTitle", portfolio.jobTitle);
+          setValue("aboutDescription1", portfolio.aboutDescription1);
+          setValue("aboutDescription2", portfolio.aboutDescription2 || "");
+          setValue("skills", portfolio.skills ? portfolio.skills.join(", ") : "");
+          setValue("email", portfolio.email);
+          setValue("ownerEmail", portfolio.ownerEmail);
+          setValue("linkedIn", portfolio.linkedIn || "");
+          setValue("gitHub", portfolio.gitHub || "");
+          setValue("facebook", portfolio.facebook || "");
+          setValue("instagram", portfolio.instagram || "");
+        }
+      } catch (error) {
+        console.error("Error fetching portfolio:", error);
+      }
+    };
+
+    fetchPortfolio();
+  }, [setValue]);
+
   const onSubmit = async (data: any) => {
+    setIsLoading(true);
+    setMessage({ text: "", isError: false });
+
     try {
-      const response = await fetch("/api/portfolio/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      let response;
+      
+      if (isEditing && currentPortfolio) {
+        // Update existing portfolio
+        response = await fetch(`/api/portfolio/${currentPortfolio.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+      } else {
+        // Create new portfolio
+        response = await fetch("/api/portfolio/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+      }
 
       const result = await response.json();
 
       if (response.ok) {
-        setMessage({ text: result.message, isError: false });
-        reset();
+        setMessage({ 
+          text: isEditing ? "Portfolio updated successfully!" : "Portfolio created successfully!", 
+          isError: false 
+        });
+        
+        if (!isEditing) {
+          // If creating new, reset form
+          reset();
+        }
+        
+        // Refresh portfolio data
+        const portfolioResponse = await fetch("/api/portfolio");
+        if (portfolioResponse.ok) {
+          const portfolio = await portfolioResponse.json();
+          setCurrentPortfolio(portfolio);
+        }
       } else {
         setMessage({
-          text: result.error || "Failed to create portfolio",
+          text: result.error || `Failed to ${isEditing ? 'update' : 'create'} portfolio`,
           isError: true,
         });
       }
     } catch (error) {
       setMessage({
-        text: "An error occurred while submitting the form",
+        text: `An error occurred while ${isEditing ? 'updating' : 'submitting'} the form`,
         isError: true,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const handleEdit = () => {
+    setIsEditing(true);
+    setMessage({ text: "", isError: false });
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setMessage({ text: "", isError: false });
+    
+    // Reset form to current portfolio data
+    if (currentPortfolio) {
+      setValue("name", currentPortfolio.name);
+      setValue("jobTitle", currentPortfolio.jobTitle);
+      setValue("aboutDescription1", currentPortfolio.aboutDescription1);
+      setValue("aboutDescription2", currentPortfolio.aboutDescription2 || "");
+      setValue("skills", currentPortfolio.skills ? currentPortfolio.skills.join(", ") : "");
+      setValue("email", currentPortfolio.email);
+      setValue("ownerEmail", currentPortfolio.ownerEmail);
+      setValue("linkedIn", currentPortfolio.linkedIn || "");
+      setValue("gitHub", currentPortfolio.gitHub || "");
+      setValue("facebook", currentPortfolio.facebook || "");
+      setValue("instagram", currentPortfolio.instagram || "");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!currentPortfolio) return;
+
+    if (!confirm("Are you sure you want to delete this portfolio? This action cannot be undone.")) {
+      return;
+    }
+
+    setIsLoading(true);
+    setMessage({ text: "", isError: false });
+
+    try {
+      const response = await fetch(`/api/portfolio/${currentPortfolio.id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setMessage({ text: "Portfolio deleted successfully!", isError: false });
+        setCurrentPortfolio(null);
+        reset();
+        setIsEditing(false);
+      } else {
+        const result = await response.json();
+        setMessage({
+          text: result.error || "Failed to delete portfolio",
+          isError: true,
+        });
+      }
+    } catch (error) {
+      setMessage({
+        text: "An error occurred while deleting the portfolio",
+        isError: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCreateNew = () => {
+    setIsEditing(false);
+    setCurrentPortfolio(null);
+    reset();
+    setMessage({ text: "", isError: false });
+  };
+
   return (
-    <div className="portfolio-form">
-      <h1 className="portfolio-form__title">Create Portfolio</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="portfolio-form__form">
-        <div className="portfolio-form__form-group">
-          <label htmlFor="name" className="portfolio-form__label portfolio-form__label--required">
+    <div className="form-container form-container--small">
+      <div className="form-header">
+        <h1 className="form-title">
+          {isEditing ? "Edit Portfolio" : currentPortfolio ? "View Portfolio" : "Create Portfolio"}
+        </h1>
+        
+        {currentPortfolio && !isEditing && (
+          <div className="form-actions">
+            <button 
+              type="button" 
+              onClick={handleEdit}
+              className="form-button form-button--secondary"
+            >
+              Edit Portfolio
+            </button>
+            <button 
+              type="button" 
+              onClick={handleDelete}
+              className="form-button form-button--danger"
+              disabled={isLoading}
+            >
+              Delete Portfolio
+            </button>
+            <button 
+              type="button" 
+              onClick={handleCreateNew}
+              className="form-button form-button--secondary"
+            >
+              Create New
+            </button>
+          </div>
+        )}
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="form-layout">
+        <div className="form-group">
+          <label htmlFor="name" className="form-label form-label--required">
             Full Name
           </label>
-          <input {...register("name")} className="portfolio-form__input" />
+          <input 
+            {...register("name")} 
+            className="form-input"
+            disabled={isFieldDisabled()}
+          />
           {errors.name && (
-            <span className="portfolio-form__error">{errors.name.message}</span>
+            <span className="form-error">{errors.name.message}</span>
           )}
         </div>
 
-        <div className="portfolio-form__form-group">
-          <label htmlFor="jobTitle" className="portfolio-form__label portfolio-form__label--required">
+        <div className="form-group">
+          <label htmlFor="jobTitle" className="form-label form-label--required">
             Job Title
           </label>
-          <input {...register("jobTitle")} className="portfolio-form__input" />
+          <input 
+            {...register("jobTitle")} 
+            className="form-input"
+            disabled={isFieldDisabled()}
+          />
           {errors.jobTitle && (
-            <span className="portfolio-form__error">{errors.jobTitle.message}</span>
+            <span className="form-error">{errors.jobTitle.message}</span>
           )}
         </div>
 
-        <div className="portfolio-form__form-group">
-          <label htmlFor="aboutDescription1" className="portfolio-form__label portfolio-form__label--required">
+        <div className="form-group">
+          <label htmlFor="aboutDescription1" className="form-label form-label--required">
             About Description 1
           </label>
-          <textarea {...register("aboutDescription1")} className="portfolio-form__textarea" />
+          <textarea 
+            {...register("aboutDescription1")} 
+            className="form-textarea"
+            disabled={isFieldDisabled()}
+          />
           {errors.aboutDescription1 && (
-            <span className="portfolio-form__error">{errors.aboutDescription1.message}</span>
+            <span className="form-error">{errors.aboutDescription1.message}</span>
           )}
         </div>
 
-        <div className="portfolio-form__form-group">
-          <label htmlFor="aboutDescription2" className="portfolio-form__label">
+        <div className="form-group">
+          <label htmlFor="aboutDescription2" className="form-label">
             About Description 2
           </label>
-          <textarea {...register("aboutDescription2")} className="portfolio-form__textarea" />
+          <textarea 
+            {...register("aboutDescription2")} 
+            className="form-textarea"
+            disabled={isFieldDisabled()}
+          />
         </div>
 
-        <div className="portfolio-form__form-group">
-          <label htmlFor="skills" className="portfolio-form__label">
+        <div className="form-group">
+          <label htmlFor="skills" className="form-label">
             Skills (comma-separated)
           </label>
           <input
             {...register("skills")}
             placeholder="e.g., JavaScript, Python, React"
-            className="portfolio-form__input"
+            className="form-input"
+            disabled={isFieldDisabled()}
           />
         </div>
 
-        <div className="portfolio-form__form-group">
-          <label htmlFor="email" className="portfolio-form__label portfolio-form__label--required">
+        <div className="form-group">
+          <label htmlFor="email" className="form-label form-label--required">
             Email
           </label>
-          <input {...register("email")} type="email" className="portfolio-form__input" />
+          <input 
+            {...register("email")} 
+            type="email" 
+            className="form-input"
+            disabled={isFieldDisabled()}
+          />
           {errors.email && (
-            <span className="portfolio-form__error">{errors.email.message}</span>
+            <span className="form-error">{errors.email.message}</span>
           )}
         </div>
 
-        <div className="portfolio-form__form-group">
-          <label htmlFor="ownerEmail" className="portfolio-form__label portfolio-form__label--required">
+        <div className="form-group">
+          <label htmlFor="ownerEmail" className="form-label form-label--required">
             Owner Email
           </label>
-          <input {...register("ownerEmail")} type="email" className="portfolio-form__input" />
+          <input 
+            {...register("ownerEmail")} 
+            type="email" 
+            className="form-input"
+            disabled={isFieldDisabled()}
+          />
           {errors.ownerEmail && (
-            <span className="portfolio-form__error">{errors.ownerEmail.message}</span>
+            <span className="form-error">{errors.ownerEmail.message}</span>
           )}
         </div>
 
-        <div className="portfolio-form__form-group">
-          <label htmlFor="phone" className="portfolio-form__label">
-            Phone
-          </label>
-          <input {...register("phone")} type="tel" className="portfolio-form__input" />
-        </div>
-
-        <div className="portfolio-form__form-group">
-          <label htmlFor="linkedIn" className="portfolio-form__label">
+        <div className="form-group">
+          <label htmlFor="linkedIn" className="form-label">
             LinkedIn URL
           </label>
-          <input {...register("linkedIn")} type="url" className="portfolio-form__input" />
+          <input 
+            {...register("linkedIn")} 
+            type="url" 
+            className="form-input"
+            disabled={isFieldDisabled()}
+          />
           {errors.linkedIn && (
-            <span className="portfolio-form__error">{errors.linkedIn.message}</span>
+            <span className="form-error">{errors.linkedIn.message}</span>
           )}
         </div>
 
-        <div className="portfolio-form__form-group">
-          <label htmlFor="gitHub" className="portfolio-form__label">
+        <div className="form-group">
+          <label htmlFor="gitHub" className="form-label">
             GitHub URL
           </label>
-          <input {...register("gitHub")} type="url" className="portfolio-form__input" />
+          <input 
+            {...register("gitHub")} 
+            type="url" 
+            className="form-input"
+            disabled={isFieldDisabled()}
+          />
           {errors.gitHub && (
-            <span className="portfolio-form__error">{errors.gitHub.message}</span>
+            <span className="form-error">{errors.gitHub.message}</span>
           )}
         </div>
 
-        <div className="portfolio-form__form-group">
-          <label htmlFor="facebook" className="portfolio-form__label">
+        <div className="form-group">
+          <label htmlFor="facebook" className="form-label">
             Facebook URL
           </label>
-          <input {...register("facebook")} type="url" className="portfolio-form__input" />
+          <input 
+            {...register("facebook")} 
+            type="url" 
+            className="form-input"
+            disabled={isFieldDisabled()}
+          />
           {errors.facebook && (
-            <span className="portfolio-form__error">{errors.facebook.message}</span>
+            <span className="form-error">{errors.facebook.message}</span>
           )}
         </div>
 
-        <div className="portfolio-form__form-group">
-          <label htmlFor="instagram" className="portfolio-form__label">
+        <div className="form-group">
+          <label htmlFor="instagram" className="form-label">
             Instagram URL
           </label>
-          <input {...register("instagram")} type="url" className="portfolio-form__input" />
+          <input 
+            {...register("instagram")} 
+            type="url" 
+            className="form-input"
+            disabled={isFieldDisabled()}
+          />
           {errors.instagram && (
-            <span className="portfolio-form__error">{errors.instagram.message}</span>
+            <span className="form-error">{errors.instagram.message}</span>
           )}
         </div>
 
-        <button type="submit" className="portfolio-form__button">
-          Create Portfolio
-        </button>
+        {isEditing && (
+          <div className="form-actions-container">
+            <button 
+              type="submit" 
+              className="form-button form-button--primary"
+              disabled={isLoading}
+            >
+              {isLoading ? "Updating..." : "Update Portfolio"}
+            </button>
+            <button 
+              type="button" 
+              onClick={handleCancel}
+              className="form-button form-button--secondary"
+              disabled={isLoading}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+
+        {!currentPortfolio && (
+          <button 
+            type="submit" 
+            className="form-button form-button--primary"
+            disabled={isLoading}
+          >
+            {isLoading ? "Creating..." : "Create Portfolio"}
+          </button>
+        )}
       </form>
 
       {message.text && (
         <div
-          className={`portfolio-form__message ${
-            message.isError ? "portfolio-form__message--error" : "portfolio-form__message--success"
+          className={`form-message ${
+            message.isError ? "form-message--error" : "form-message--success"
           }`}
         >
           {message.text}

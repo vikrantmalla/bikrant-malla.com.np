@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import AuthModal from "@/components/authModal/authModal";
 import { useAuth } from "@/hooks/useAuth";
 import PortfolioForm from "@/components/forms/Portfolio";
+import ProjectsForm from "@/components/forms/Projects";
+import ArchiveProjectsForm from "@/components/forms/ArchiveProjects";
 import SideMenu from "@/components/dashboard/SideMenu";
 import ThemeSwitch from "@/components/shared/header/ThemeSwitch";
 import { useThemeStore } from "@/store/feature/themeStore";
@@ -364,19 +366,7 @@ export default function Dashboard() {
                 >
                   Projects Management
                 </h2>
-                <div
-                  className="dashboard__form-placeholder"
-                  style={{
-                    background: currentTheme?.card || "#ffffff",
-                    padding: "2rem",
-                    borderRadius: "0.75rem",
-                    textAlign: "center",
-                    color: currentTheme?.text || "#000",
-                  }}
-                >
-                  <h3>Projects Form Coming Soon</h3>
-                  <p>This form will be implemented to manage projects.</p>
-                </div>
+                <ProjectsForm />
               </section>
             )}
 
@@ -388,19 +378,7 @@ export default function Dashboard() {
                 >
                   Archive Management
                 </h2>
-                <div
-                  className="dashboard__form-placeholder"
-                  style={{
-                    background: currentTheme?.card || "#ffffff",
-                    padding: "2rem",
-                    borderRadius: "0.75rem",
-                    textAlign: "center",
-                    color: currentTheme?.text || "#000",
-                  }}
-                >
-                  <h3>Archive Form Coming Soon</h3>
-                  <p>This form will be implemented to manage archived items.</p>
-                </div>
+                <ArchiveProjectsForm />
               </div>
             )}
 

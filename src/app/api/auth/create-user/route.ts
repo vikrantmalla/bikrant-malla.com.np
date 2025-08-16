@@ -16,9 +16,11 @@ export async function POST(req: Request) {
       where: { email: user.email },
       update: {
         name: user.given_name || user.family_name || 'User',
+        kindeUserId: user.id,
       },
       create: {
         email: user.email,
+        kindeUserId: user.id,
         name: user.given_name || user.family_name || 'User',
       },
     });
