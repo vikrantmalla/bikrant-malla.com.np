@@ -1,9 +1,9 @@
 import React from "react";
-import { BehanceData, BehanceProject } from "../../types/data";
+import { BehanceProject, BackupConfig } from "../../types/data";
 import BehanceCard from "./BehanceCard";
 import { joseFont } from "@/helpers/lib/font";
 
-const Behance = ({ behance, configData }: BehanceData) => {
+const Behance = ({ behance, configData }: { behance: BehanceProject[]; configData: BackupConfig }) => {
   return (
     <>
       <section className="concept" id="concept">
