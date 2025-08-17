@@ -42,14 +42,14 @@ model Portfolio {
   name              String
   jobTitle          String
   aboutDescription1 String
-  aboutDescription2 String?
+  aboutDescription2 String
   skills            String[]
   email             String
   ownerEmail        String
-  linkedIn          String?
-  gitHub            String?
-  facebook          String?
-  instagram         String?
+  linkedIn          String
+  gitHub            String
+  facebook          String
+  instagram         String
   projects          Project[]           @relation("PortfolioProjects")
   archiveProjects   ArchiveProject[]    @relation("PortfolioArchiveProjects")
   userRoles         UserPortfolioRole[] @relation("PortfolioRoles")

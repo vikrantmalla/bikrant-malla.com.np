@@ -8,7 +8,7 @@ import { CldImage } from "next-cloudinary";
 import { useMouseStore } from "@/store/feature/mouseStore";
 
 const BehanceCard = ({ project, config }: BehanceCardDataType) => {
-  const { id, images, imageUrl, alt, title, subTitle, tools, projectview } =
+  const { id, images, imageUrl, alt, title, subTitle, tools, projectView } =
     project;
   const { allowBackupImages } = config;
   const { setCursorType } = useMouseStore();
@@ -26,7 +26,7 @@ const BehanceCard = ({ project, config }: BehanceCardDataType) => {
           onMouseLeave={() => cursorChangeHandler("")}
         >
           <ExternalLink
-            href={projectview}
+            href={projectView}
             label={`${title} design (opens in a new tab)`}
             gtagAction="behance_project_image_clicked"
             gtagCategory="image_interaction"
@@ -36,14 +36,14 @@ const BehanceCard = ({ project, config }: BehanceCardDataType) => {
               <CldImage
                 width="500"
                 height="800"
-                src={`${imageUrl}`}
-                alt={alt}
+                src={imageUrl || ""}
+                alt={alt || ""}
                 priority={false}
               />
             ) : (
               <Image
-                src={`/${images}`}
-                alt={alt}
+                src={`/${images || ""}`}
+                alt={alt || ""}
                 width={500}
                 height={500}
                 className="responsive-image"
@@ -55,9 +55,9 @@ const BehanceCard = ({ project, config }: BehanceCardDataType) => {
       <div className="card-details">
         <div className="card-head">
           <h2 className={`${joseFont} fs-400`}>
-            {title} <span className={`${joseFont} fs-300`}>{subTitle}</span>
+            {title} {subTitle && <span className={`${joseFont} fs-300`}>{subTitle}</span>}
           </h2>
-          <p className={`${joseFont} fs-300`}>{tools}</p>
+          <p className={`${joseFont} fs-300`}>{tools.join(", ")}</p>
         </div>
         <div className="card-body">
           <div
@@ -65,7 +65,7 @@ const BehanceCard = ({ project, config }: BehanceCardDataType) => {
             onMouseLeave={() => cursorChangeHandler("")}
           >
             <ExternalLink
-              href={projectview}
+              href={projectView}
               label={`${title} design (opens in a new tab)`}
               gtagAction="behance_project_clicked"
               gtagCategory="project_interaction"

@@ -47,56 +47,67 @@ declare namespace Data {
 export = Data;
 
 export interface PortfolioDetails {
-  success: boolean;
-  aboutme: AboutMe[];
-  behance: BehanceProject[];
-  contact: ContactInfo[];
-  metaData: MetaData[];
-  projecthighlight: Project[];
-  config: Config[];
+  id: string;
+  name: string;
+  jobTitle: string;
+  aboutDescription1: string;
+  aboutDescription2: string;
+  skills: string[];
+  email: string;
+  ownerEmail: string;
+  linkedIn: string;
+  gitHub: string;
+  facebook: string;
+  instagram: string;
+  projects: Project[];
+  archiveProjects: ArchiveProject[];
 }
 
 export interface AboutMeData {
-  aboutme: Aboutme[];
+  aboutme: Aboutme;
 }
 
 export interface AboutMe {
-  _id: string;
   title: string;
-  jobTitle: string;
   subTitle: string;
   aboutDescription1: string;
   aboutDescription2: string;
-  skill1: string[];
-  skill2: string[];
-  __v: number;
 }
 
 export interface BehanceData {
   behance: BehanceProject[];
-  configData: Config;
+  configData: BackupConfig;
 }
 
 export interface BehanceCard {
   key: number;
   project: BehanceProject;
-  config: Config;
+  config: BackupConfig;
 }
 
 export interface BehanceProject {
   id: string;
   title: string;
-  subTitle: string;
-  images: string;
-  imageUrl: string;
-  alt: string;
+  subTitle?: string;
+  images?: string;
+  imageUrl?: string;
+  alt?: string;
   tools: string[];
-  projectview: string;
-  __v: number;
+  projectView: string;
+  platform?: string;
+  portfolioId?: string;
 }
 
 export interface Contact {
-  contact: ContactInfo[];
+  email: string;
+  linkedIn?: string;
+  gitHub?: string;
+  facebook?: string;
+  instagram?: string;
+}
+
+export interface ContactProps {
+  contact: Contact;
 }
 
 export interface NavBarProps {
@@ -104,7 +115,7 @@ export interface NavBarProps {
 }
 
 export interface ContactInfo {
-  _id: string;
+  id: string;
   message: string;
   ctaMessage: string;
   emailUrl: string;
@@ -112,53 +123,93 @@ export interface ContactInfo {
   behanceUrl: string;
   linkedinUrl: string;
   twitterUrl: string;
-  __v: number;
 }
 
 export interface SocialMedia {
-  githubUrl: string;
-  behanceUrl: string;
-  linkedinUrl: string;
-  twitterUrl: string;
-  visibleCount: number;
+  gitHub?: string;
+  linkedIn?: string;
+  facebook?: string;
+  instagram?: string;
+  visibleCount?: number;
 }
 
 export interface MetaData {
-  _id: string;
+  id: string;
   title: string;
   description: string;
   keyword: string;
   author: string;
   fbID: string;
   twitterID: string;
-  __v: number;
 }
 
 export interface ProjectHighlightData {
   project: Project[];
-  configData: Config;
+  configData: BackupConfig;
 }
 
 export interface ProjectHighlightsCard {
   key: number;
   project: Project;
-  config: Config;
+  config: BackupConfig;
 }
 
 export interface Project {
-  _id: string;
+  id: string;
   title: string;
-  images: string;
-  imageUrl: string;
-  alt: string;
-  projectview: string;
-  build: string[];
-  __v: number;
+  subTitle?: string;
+  images?: string;
+  imageUrl?: string;
+  alt?: string;
+  projectView: string;
+  tools: string[];
+  platform?: string;
+  portfolioId?: string;
 }
 
-interface Config {
-  _id: number;
+export interface BackupConfig {
+  id?: string;
   allowBackupImages: boolean;
+}
+
+export interface MetaTag {
+  id: string;
+  title: string;
+  description: string;
+  keyword: string;
+  author: string;
+  fbID: string;
+  twitterID: string;
+}
+
+export interface User {
+  id: string;
+  kindeUserId: string;
+  email: string;
+  name?: string;
+  roles: UserPortfolioRole[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserPortfolioRole {
+  id: string;
+  userId: string;
+  portfolioId: string;
+  role: string;
+  invitedAt: Date;
+}
+
+export interface ProjectTag {
+  id: string;
+  projectId: string;
+  tagId: string;
+}
+
+export interface ArchiveProjectTag {
+  id: string;
+  archiveProjectId: string;
+  tagId: string;
 }
 
 export interface Links {
@@ -204,21 +255,19 @@ export interface ArchiveProps {
 }
 
 export interface TechTag {
-  _id: string;
+  id: string;
   tag: string;
 }
 
 export interface ArchiveProject {
-  isnew: boolean;
   id: string;
-  _id: string;
-  __v: number;
-  build: string[];
-  isnew: boolean;
-  projectview: string;
   title: string;
-  viewcode: string;
   year: number;
+  isNew: boolean;
+  projectView: string;
+  viewCode: string;
+  build: string[];
+  portfolioId?: string;
 }
 
 export interface ConfigData {
@@ -226,7 +275,7 @@ export interface ConfigData {
 }
 
 export interface Config {
-  _id: string;
+  id: string;
   allowSignUp: boolean;
 }
 

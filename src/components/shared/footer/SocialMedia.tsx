@@ -1,35 +1,35 @@
 import React from "react";
-import { FaGithub, FaBehance, FaLinkedinIn, FaTwitter } from "react-icons/fa";
-import type { SocialMedia } from "@/types/data";
+import { FaGithub, FaBehance, FaLinkedinIn, FaTwitter, FaFacebook, FaInstagram } from "react-icons/fa";
+import type { Contact } from "@/types/data";
 import ExternalLink from "../externalLink";
 
 const SocialMedia = ({
-  githubUrl,
-  behanceUrl,
-  linkedinUrl,
-  twitterUrl,
-  visibleCount,
-}: SocialMedia) => {
+  gitHub,
+  linkedIn,
+  facebook,
+  instagram,
+  visibleCount = 4,
+}: Contact & { visibleCount?: number }) => {
   const socialMediaIcons = [
     {
       key: "github",
       icon: <FaGithub size={20} />,
-      url: githubUrl ?? "",
+      url: gitHub ?? "",
     },
     {
       key: "linkedin",
       icon: <FaLinkedinIn size={20} />,
-      url: linkedinUrl ?? "",
+      url: linkedIn ?? "",
     },
     {
-      key: "behance",
-      icon: <FaBehance size={20} />,
-      url: behanceUrl ?? "",
+      key: "facebook",
+      icon: <FaFacebook size={20} />,
+      url: facebook ?? "",
     },
     {
-      key: "twitter",
-      icon: <FaTwitter size={20} />,
-      url: twitterUrl ?? "",
+      key: "instagram",
+      icon: <FaInstagram size={20} />,
+      url: instagram ?? "",
     },
   ];
 
