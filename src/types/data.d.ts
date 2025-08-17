@@ -111,18 +111,7 @@ export interface ContactProps {
 }
 
 export interface NavBarProps {
-  contact?: ContactInfo[];
-}
-
-export interface ContactInfo {
-  id: string;
-  message: string;
-  ctaMessage: string;
-  emailUrl: string;
-  githubUrl: string;
-  behanceUrl: string;
-  linkedinUrl: string;
-  twitterUrl: string;
+  contact: Contact;
 }
 
 export interface SocialMedia {

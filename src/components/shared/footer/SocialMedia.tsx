@@ -1,15 +1,22 @@
 import React from "react";
 import { FaGithub, FaBehance, FaLinkedinIn, FaTwitter, FaFacebook, FaInstagram } from "react-icons/fa";
-import type { Contact } from "@/types/data";
 import ExternalLink from "../externalLink";
 
-const SocialMedia = ({
+interface SocialMediaProps {
+  gitHub?: string;
+  linkedIn?: string;
+  facebook?: string;
+  instagram?: string;
+  visibleCount?: number;
+}
+
+const SocialMedia: React.FC<SocialMediaProps> = ({
   gitHub,
   linkedIn,
   facebook,
   instagram,
   visibleCount = 4,
-}: Contact & { visibleCount?: number }) => {
+}) => {
   const socialMediaIcons = [
     {
       key: "github",
