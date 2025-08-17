@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { joseFont } from "@/helpers/lib/font";
-import { ContactInfo, NavBarProps, NavItemProps } from "@/types/data";
+import { NavBarProps, NavItemProps } from "@/types/data";
 import { FaTimes, FaBars } from "react-icons/fa";
 import Link from "next/link";
 import ThemeSwitch from "./ThemeSwitch";
@@ -94,12 +94,15 @@ export function Navigation({ contact }: NavBarProps) {
           className="social-media mobile-nav-social-media"
           style={{ margin: "1rem 0" }}
         >
-          {isContactDefined &&
-            contact.map((details: ContactInfo, index: number) => (
-              <div key={index}>
-                <SocialMedia {...details} visibleCount={2} />
-              </div>
-            ))}
+          {isContactDefined && (
+            <SocialMedia 
+              gitHub={contact.gitHub}
+              linkedIn={contact.linkedIn}
+              facebook={contact.facebook}
+              instagram={contact.instagram}
+              visibleCount={2} 
+            />
+          )}
         </li>
       </ul>
     </nav>
@@ -231,7 +234,7 @@ const NavBar = ({ contact }: NavBarProps) => {
     <>
       <header className={`header ${navColor ? "colorChange" : ""}`}>
         <div className="nav-container">
-          <Navigation />
+          <Navigation contact={contact} />
           {!toggleMenu && <MenuIcon />}
           {toggleMenu && (
             <>
