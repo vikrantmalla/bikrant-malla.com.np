@@ -1,12 +1,14 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
-import { clientApi } from "@/service/apiService";
+import { useCallback } from "react";
+import { useFormManager } from "@/hooks/useFormManager";
+import FormHeader from "./FormHeader";
+import ItemsList from "./ItemsList";
+import FormMessage from "./FormMessage";
 import "./form.scss";
 
+// Updated schema to match Prisma schema
 const archiveProjectSchema = z.object({
   title: z.string().min(1, "Title is required"),
   year: z
@@ -41,23 +43,24 @@ interface ArchiveProjectData {
 }
 
 const ArchiveProjectsForm = () => {
-  const [message, setMessage] = useState({ text: "", isError: false });
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentArchiveProject, setCurrentArchiveProject] =
-    useState<ArchiveProjectData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [archiveProjects, setArchiveProjects] = useState<ArchiveProjectData[]>(
-    []
-  );
-  const [selectedArchiveProjectId, setSelectedArchiveProjectId] = useState<
-    string | null
-  >(null);
-  const hasFetched = useRef(false);
-
-  const { portfolioInfo } = useAuth();
-
-  // Helper function to determine if fields should be disabled
-  const isFieldDisabled = () => !isEditing && !!currentArchiveProject;
+  const {
+    message,
+    isEditing,
+    currentItem: currentArchiveProject,
+    isLoading,
+    items: archiveProjects,
+    selectedItemId: selectedArchiveProjectId,
+    isFieldDisabled,
+    handleEdit,
+    handleCancel,
+    handleDelete,
+    handleCreateNew,
+    handleSelectItem: handleSelectArchiveProject,
+    onSubmit,
+    resetForm,
+    setCurrentItem: setCurrentArchiveProject,
+    setIsEditing,
+  } = useFormManager<ArchiveProjectData>("archiveProjects", "Archive Project");
 
   const {
     register,
@@ -77,308 +80,111 @@ const ArchiveProjectsForm = () => {
     },
   });
 
-  // Fetch existing archive projects data
-  useEffect(() => {
-    if (hasFetched.current) return;
-    
-    const fetchArchiveProjects = async () => {
-      try {
-        const archiveProjectsData = await clientApi.archiveProjects.get();
-        setArchiveProjects(archiveProjectsData);
-      } catch (error) {
-        console.error("Error fetching archive projects:", error);
-      } finally {
-        hasFetched.current = true;
-      }
-    };
-
-    fetchArchiveProjects();
-  }, []); // Empty dependency array to run only once on mount
-
-  // Get portfolio ID from user context or existing archive projects
-  const getPortfolioId = async () => {
-    // First try to get from user context (most reliable)
-    if (portfolioInfo?.id) {
-      return portfolioInfo.id;
-    }
-
-    // Fallback to existing archive projects
-    if (archiveProjects.length > 0 && archiveProjects[0].portfolioId) {
-      return archiveProjects[0].portfolioId;
-    }
-
-    // Last resort: try to get portfolio ID from user context via API
-    try {
-      const data = await clientApi.auth.checkRole();
-      if (data.user.portfolio?.id) {
-        return data.user.portfolio.id;
-      }
-    } catch (error) {
-      console.error("Error fetching portfolio ID:", error);
-    }
-
-    return null;
-  };
-
-  const onSubmit = useCallback(async (data: any) => {
-    setIsLoading(true);
-    setMessage({ text: "", isError: false });
-
+  const handleFormSubmit = useCallback(async (data: any) => {
     // Validate required fields before submission
     if (!data.title?.trim() || !data.year || !data.projectView?.trim() || !data.viewCode?.trim()) {
-      setMessage({
-        text: "Please fill in all required fields (Title, Year, Project View, and View Code are required)",
-        isError: true,
-      });
-      setIsLoading(false);
       return;
     }
+    // Note: build field is optional, so no validation needed
+    await onSubmit(data);
+  }, [onSubmit]);
 
-    const portfolioId = await getPortfolioId();
-    if (!portfolioId) {
-      setMessage({
-        text: "No portfolio found. Please create a portfolio first.",
-        isError: true,
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      let result;
-
-      if (isEditing && currentArchiveProject) {
-        // Update existing archive project
-        result = await clientApi.archiveProjects.update(currentArchiveProject.id, data);
-      } else {
-        // Create new archive project
-        result = await clientApi.archiveProjects.create({ ...data, portfolioId });
-      }
-
-      if (result) {
-        setMessage({
-          text: isEditing
-            ? "Archive project updated successfully!"
-            : "Archive project created successfully!",
-          isError: false,
-        });
-
-        if (!isEditing) {
-          // If creating new, reset form
-          reset();
-        }
-
-        // Refresh archive projects data
-        try {
-          const archiveProjectsData = await clientApi.archiveProjects.get();
-          setArchiveProjects(archiveProjectsData);
-        } catch (error) {
-          console.error("Error refreshing archive projects:", error);
-        }
-      } else {
-        setMessage({
-          text: `Failed to ${isEditing ? "update" : "create"} archive project`,
-          isError: true,
-        });
-      }
-    } catch (error) {
-      setMessage({
-        text: `An error occurred while ${
-          isEditing ? "updating" : "submitting"
-        } the form`,
-        isError: true,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isEditing, currentArchiveProject, portfolioInfo, archiveProjects, reset]);
-
-  const handleEdit = useCallback((archiveProject: ArchiveProjectData) => {
-    setCurrentArchiveProject(archiveProject);
-    setIsEditing(true);
-    setMessage({ text: "", isError: false });
-
-    // Populate form with archive project data - ensure required fields have valid values
-    setValue("title", archiveProject.title || "");
-    setValue("year", archiveProject.year ? archiveProject.year.toString() : "");
-    setValue("isNew", archiveProject.isNew || false);
-    setValue("projectView", archiveProject.projectView || "");
-    setValue("viewCode", archiveProject.viewCode || "");
+  const handleEditClick = useCallback((archiveProject: ArchiveProjectData) => {
+    handleEdit(archiveProject);
+    
+    // Populate form with archive project data
+    setValue("title", archiveProject.title);
+    setValue("year", archiveProject.year.toString());
+    setValue("isNew", archiveProject.isNew);
+    setValue("projectView", archiveProject.projectView);
+    setValue("viewCode", archiveProject.viewCode);
     setValue(
       "build",
       archiveProject.build ? archiveProject.build.join(", ") : ""
     );
-  }, [setValue]);
+  }, [handleEdit, setValue]);
 
-  const handleCancel = useCallback(() => {
-    setIsEditing(false);
-    setCurrentArchiveProject(null);
-    setMessage({ text: "", isError: false });
+  const handleCancelClick = useCallback(() => {
+    handleCancel();
     reset();
-  }, [reset]);
+  }, [handleCancel, reset]);
 
-  const handleDelete = useCallback(async (archiveProjectId: string) => {
-    if (
-      !confirm(
-        "Are you sure you want to delete this archive project? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
-
-    setIsLoading(true);
-    setMessage({ text: "", isError: false });
-
-    try {
-      const result = await clientApi.archiveProjects.delete(archiveProjectId);
-
-      if (result) {
-        setMessage({
-          text: "Archive project deleted successfully!",
-          isError: false,
-        });
-
-        // Remove from local state
-        setArchiveProjects(
-          archiveProjects.filter((p) => p.id !== archiveProjectId)
-        );
-
-        // Reset form if we were editing this archive project
-        if (
-          currentArchiveProject &&
-          currentArchiveProject.id === archiveProjectId
-        ) {
-          setCurrentArchiveProject(null);
-          setIsEditing(false);
-          reset();
-        }
-      } else {
-        setMessage({
-          text: "Failed to delete archive project",
-          isError: true,
-        });
-      }
-    } catch (error) {
-      setMessage({
-        text: "An error occurred while deleting the archive project",
-        isError: true,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentArchiveProject, archiveProjects, reset]);
-
-  const handleCreateNew = useCallback(() => {
-    setIsEditing(false);
-    setCurrentArchiveProject(null);
+  const handleCreateNewClick = useCallback(() => {
+    handleCreateNew();
     reset();
-    setMessage({ text: "", isError: false });
-  }, [reset]);
+  }, [handleCreateNew, reset]);
 
-  const handleSelectArchiveProject = useCallback((archiveProjectId: string) => {
-    setSelectedArchiveProjectId(archiveProjectId);
+  const handleSelectArchiveProjectClick = useCallback((archiveProjectId: string) => {
+    handleSelectArchiveProject(archiveProjectId);
     const archiveProject = archiveProjects.find(
-      (p) => p.id === archiveProjectId
+      (p: ArchiveProjectData) => p.id === archiveProjectId
     );
     if (archiveProject) {
-      setCurrentArchiveProject(archiveProject);
-      // Populate form for viewing - ensure required fields have valid values
-      setValue("title", archiveProject.title || "");
-      setValue("year", archiveProject.year ? archiveProject.year.toString() : "");
-      setValue("isNew", archiveProject.isNew || false);
-      setValue("projectView", archiveProject.projectView || "");
-      setValue("viewCode", archiveProject.viewCode || "");
+      // Populate form for viewing
+      setValue("title", archiveProject.title);
+      setValue("year", archiveProject.year.toString());
+      setValue("isNew", archiveProject.isNew);
+      setValue("projectView", archiveProject.projectView);
+      setValue("viewCode", archiveProject.viewCode);
       setValue(
         "build",
         archiveProject.build ? archiveProject.build.join(", ") : ""
       );
     }
-  }, [archiveProjects, setValue]);
+  }, [archiveProjects, handleSelectArchiveProject, setValue]);
+
+  const renderArchiveProject = useCallback((archiveProject: ArchiveProjectData) => (
+    <>
+      <h4>{archiveProject.title}</h4>
+      <p>
+        <strong>Year:</strong> {archiveProject.year}
+      </p>
+      <p>
+        <strong>View:</strong> {archiveProject.projectView}
+      </p>
+      <p>
+        <strong>Code:</strong> {archiveProject.viewCode}
+      </p>
+      {archiveProject.build && archiveProject.build.length > 0 && (
+        <p>
+          <strong>Build:</strong> {archiveProject.build.join(", ")}
+        </p>
+      )}
+      <p>
+        <strong>New:</strong> {archiveProject.isNew ? "Yes" : "No"}
+      </p>
+    </>
+  ), []);
+
+  const getTitle = () => {
+    if (isEditing) return "Edit Archive Project";
+    if (currentArchiveProject) return "View Archive Project";
+    return "Create Archive Project";
+  };
 
   return (
     <div className="form-container">
-      <div className="form-header">
-        <h1 className="form-title">
-          {isEditing
-            ? "Edit Archive Project"
-            : currentArchiveProject
-            ? "View Archive Project"
-            : "Create Archive Project"}
-        </h1>
+      <FormHeader
+        title={getTitle()}
+        isEditing={isEditing}
+        hasCurrentItem={!!currentArchiveProject}
+        isLoading={isLoading}
+        onEdit={() => currentArchiveProject && handleEditClick(currentArchiveProject)}
+        onDelete={() => currentArchiveProject && handleDelete(currentArchiveProject.id)}
+        onCreateNew={handleCreateNewClick}
+        itemName="Archive Project"
+      />
 
-        <div className="form-actions">
-          {currentArchiveProject && !isEditing && (
-            <>
-              <button
-                type="button"
-                onClick={() => handleEdit(currentArchiveProject)}
-                className="form-button form-button--secondary"
-                title="Edit Archive Project"
-              >
-                <FaEdit />
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDelete(currentArchiveProject.id)}
-                className="form-button form-button--danger"
-                disabled={isLoading}
-                title="Delete Archive Project"
-              >
-                <FaTrash />
-              </button>
-            </>
-          )}
-          <button
-            type="button"
-            onClick={handleCreateNew}
-            className="form-button form-button--secondary"
-            title="Create New Archive Project"
-          >
-            <FaPlus />
-          </button>
-        </div>
-      </div>
+      <ItemsList
+        items={archiveProjects}
+        selectedItemId={selectedArchiveProjectId}
+        onSelectItem={handleSelectArchiveProjectClick}
+        renderItem={renderArchiveProject}
+        title="Existing Archive Projects"
+        itemName="Archive Project"
+      />
 
-      {/* Archive Projects List */}
-      {archiveProjects.length > 0 && (
-        <div className="projects-list">
-          <h3>Existing Archive Projects</h3>
-          <div className="projects-grid">
-            {archiveProjects.map((archiveProject) => (
-              <div
-                key={archiveProject.id}
-                className={`project-card ${
-                  selectedArchiveProjectId === archiveProject.id
-                    ? "project-card--selected"
-                    : ""
-                }`}
-                onClick={() => handleSelectArchiveProject(archiveProject.id)}
-              >
-                <h4>{archiveProject.title}</h4>
-                <p>
-                  <strong>Year:</strong> {archiveProject.year}
-                </p>
-                <p>
-                  <strong>View:</strong> {archiveProject.projectView}
-                </p>
-                <p>
-                  <strong>Code:</strong> {archiveProject.viewCode}
-                </p>
-                {archiveProject.build && archiveProject.build.length > 0 && (
-                  <p>
-                    <strong>Build:</strong> {archiveProject.build.join(", ")}
-                  </p>
-                )}
-                <p>
-                  <strong>New:</strong> {archiveProject.isNew ? "Yes" : "No"}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit(onSubmit)} className="form-layout">
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="form-layout">
         <div className="form-group">
           <label htmlFor="title" className="form-label form-label--required">
             Project Title
@@ -476,7 +282,7 @@ const ArchiveProjectsForm = () => {
             </button>
             <button
               type="button"
-              onClick={handleCancel}
+              onClick={handleCancelClick}
               className="form-button form-button--secondary"
               disabled={isLoading}
             >
@@ -496,15 +302,7 @@ const ArchiveProjectsForm = () => {
         )}
       </form>
 
-      {message.text && (
-        <div
-          className={`form-message ${
-            message.isError ? "form-message--error" : "form-message--success"
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
+      <FormMessage message={message} />
     </div>
   );
 };

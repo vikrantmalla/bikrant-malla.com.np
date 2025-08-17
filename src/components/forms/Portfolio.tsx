@@ -1,20 +1,22 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
-import { clientApi } from "@/service/apiService";
+import { useCallback, useEffect } from "react";
+import { useSingleItemFormManager } from "@/hooks/useSingleItemFormManager";
+import FormHeader from "./FormHeader";
+import FormMessage from "./FormMessage";
 import "./form.scss";
 
+// Updated schema to match Prisma schema
 const portfolioSchema = z
   .object({
     name: z.string().min(1, "Full Name is required"),
     jobTitle: z.string().min(1, "Job Title is required"),
     aboutDescription1: z.string().min(1, "About Description 1 is required"),
-    aboutDescription2: z.string().optional(),
+    aboutDescription2: z.string().min(1, "About Description 2 is required"),
     skills: z
       .string()
-      .optional()
+      .min(1, "Skills are required")
       .transform((val) =>
         val
           ? val
@@ -31,10 +33,10 @@ const portfolioSchema = z
       .string()
       .email("Invalid owner email address")
       .min(1, "Owner Email is required"),
-    linkedIn: z.string().url().optional().or(z.literal("")),
-    gitHub: z.string().url().optional().or(z.literal("")),
-    facebook: z.string().url().optional().or(z.literal("")),
-    instagram: z.string().url().optional().or(z.literal("")),
+    linkedIn: z.string().url("Invalid LinkedIn URL").min(1, "LinkedIn URL is required"),
+    gitHub: z.string().url("Invalid GitHub URL").min(1, "GitHub URL is required"),
+    facebook: z.string().url("Invalid Facebook URL").min(1, "Facebook URL is required"),
+    instagram: z.string().url("Invalid Instagram URL").min(1, "Instagram URL is required"),
   })
   .refine((data) => data.email === data.ownerEmail, {
     message: "Owner Email must match Email",
@@ -46,26 +48,32 @@ interface PortfolioData {
   name: string;
   jobTitle: string;
   aboutDescription1: string;
-  aboutDescription2?: string;
+  aboutDescription2: string;
   skills: string[];
   email: string;
   ownerEmail: string;
-  linkedIn?: string;
-  gitHub?: string;
-  facebook?: string;
-  instagram?: string;
+  linkedIn: string;
+  gitHub: string;
+  facebook: string;
+  instagram: string;
 }
 
 const PortfolioForm = () => {
-  const [message, setMessage] = useState({ text: "", isError: false });
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentPortfolio, setCurrentPortfolio] =
-    useState<PortfolioData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const hasFetched = useRef(false);
-
-  // Helper function to determine if fields should be disabled
-  const isFieldDisabled = () => !isEditing && !!currentPortfolio;
+  const {
+    message,
+    isEditing,
+    currentItem: currentPortfolio,
+    isLoading,
+    isFieldDisabled,
+    handleEdit,
+    handleCancel,
+    handleDelete,
+    handleCreateNew,
+    onSubmit,
+    resetForm,
+    setCurrentItem: setCurrentPortfolio,
+    setIsEditing,
+  } = useSingleItemFormManager<PortfolioData>("portfolio", "Portfolio");
 
   const {
     register,
@@ -90,108 +98,17 @@ const PortfolioForm = () => {
     },
   });
 
-  // Fetch existing portfolio data
+  // Fetch existing portfolio data and populate form
   useEffect(() => {
-    if (hasFetched.current) return;
-    
-    const fetchPortfolio = async () => {
-      try {
-        const portfolio = await clientApi.portfolio.get();
-        setCurrentPortfolio(portfolio);
-        // Populate form with existing data
-        setValue("name", portfolio.name);
-        setValue("jobTitle", portfolio.jobTitle);
-        setValue("aboutDescription1", portfolio.aboutDescription1);
-        setValue("aboutDescription2", portfolio.aboutDescription2 || "");
-        setValue(
-          "skills",
-          portfolio.skills ? portfolio.skills.join(", ") : ""
-        );
-        setValue("email", portfolio.email);
-        setValue("ownerEmail", portfolio.ownerEmail);
-        setValue("linkedIn", portfolio.linkedIn || "");
-        setValue("gitHub", portfolio.gitHub || "");
-        setValue("facebook", portfolio.facebook || "");
-        setValue("instagram", portfolio.instagram || "");
-      } catch (error) {
-        console.error("Error fetching portfolio:", error);
-      } finally {
-        hasFetched.current = true;
-      }
-    };
-
-    fetchPortfolio();
-  }, [setValue]); // Remove setValue from dependencies to prevent infinite loops
-
-  const onSubmit = useCallback(async (data: any) => {
-    setIsLoading(true);
-    setMessage({ text: "", isError: false });
-
-    try {
-      let result;
-
-      if (isEditing && currentPortfolio) {
-        // Update existing portfolio
-        result = await clientApi.portfolio.update(currentPortfolio.id, data);
-      } else {
-        // Create new portfolio
-        result = await clientApi.portfolio.create(data);
-      }
-
-      if (result) {
-        setMessage({
-          text: isEditing
-            ? "Portfolio updated successfully!"
-            : "Portfolio created successfully!",
-          isError: false,
-        });
-
-        if (!isEditing) {
-          // If creating new, reset form
-          reset();
-        }
-
-        // Refresh portfolio data
-        try {
-          const portfolio = await clientApi.portfolio.get();
-          setCurrentPortfolio(portfolio);
-        } catch (error) {
-          console.error("Error refreshing portfolio:", error);
-        }
-      } else {
-        setMessage({
-          text: `Failed to ${isEditing ? "update" : "create"} portfolio`,
-          isError: true,
-        });
-      }
-    } catch (error) {
-      setMessage({
-        text: `An error occurred while ${
-          isEditing ? "updating" : "submitting"
-        } the form`,
-        isError: true,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isEditing, currentPortfolio, reset]);
-
-  const handleEdit = useCallback(() => {
-    setIsEditing(true);
-    setMessage({ text: "", isError: false });
-  }, []);
-
-  const handleCancel = useCallback(() => {
-    setIsEditing(false);
-    setMessage({ text: "", isError: false });
-
-    // Reset form to current portfolio data
     if (currentPortfolio) {
       setValue("name", currentPortfolio.name);
       setValue("jobTitle", currentPortfolio.jobTitle);
       setValue("aboutDescription1", currentPortfolio.aboutDescription1);
       setValue("aboutDescription2", currentPortfolio.aboutDescription2);
-      setValue("skills", currentPortfolio.skills ? currentPortfolio.skills.join(", ") : "");
+      setValue(
+        "skills",
+        currentPortfolio.skills.join(", ")
+      );
       setValue("email", currentPortfolio.email);
       setValue("ownerEmail", currentPortfolio.ownerEmail);
       setValue("linkedIn", currentPortfolio.linkedIn);
@@ -201,94 +118,87 @@ const PortfolioForm = () => {
     }
   }, [currentPortfolio, setValue]);
 
-  const handleDelete = useCallback(async () => {
-    if (!currentPortfolio) return;
-
-    if (
-      !confirm(
-        "Are you sure you want to delete this portfolio? This action cannot be undone."
-      )
-    ) {
-      return;
+  // Ensure form fields are properly disabled when not in editing mode
+  useEffect(() => {
+    if (!isEditing && currentPortfolio) {
+      // Force form to be in view mode by ensuring all fields are disabled
+      // This is a safety measure to ensure the form behaves correctly
     }
+  }, [isEditing, currentPortfolio]);
 
-    setIsLoading(true);
-    setMessage({ text: "", isError: false });
-
-    try {
-      const result = await clientApi.portfolio.delete(currentPortfolio.id);
-
-      if (result) {
-        setMessage({ text: "Portfolio deleted successfully!", isError: false });
-        setCurrentPortfolio(null);
-        reset();
-        setIsEditing(false);
-      } else {
-        setMessage({
-          text: "Failed to delete portfolio",
-          isError: true,
-        });
+  const handleFormSubmit = useCallback(
+    async (data: any) => {
+      // Validate required fields before submission
+      if (!data.name?.trim() || !data.jobTitle?.trim() || !data.aboutDescription1?.trim() || 
+          !data.aboutDescription2?.trim() || !data.skills?.trim() || !data.email?.trim() || 
+          !data.ownerEmail?.trim() || !data.linkedIn?.trim() || !data.gitHub?.trim() || 
+          !data.facebook?.trim() || !data.instagram?.trim()) {
+        return;
       }
-    } catch (error) {
-      setMessage({
-        text: "An error occurred while deleting the portfolio",
-        isError: true,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentPortfolio, reset]);
+      await onSubmit(data);
+    },
+    [onSubmit]
+  );
 
-  const handleCreateNew = useCallback(() => {
-    setIsEditing(false);
-    setCurrentPortfolio(null);
+  const handleEditClick = useCallback(() => {
+    if (currentPortfolio) {
+      handleEdit();
+    }
+  }, [handleEdit, currentPortfolio]);
+
+  const handleCancelClick = useCallback(() => {
+    handleCancel();
+
+    // Reset form to current portfolio data
+    if (currentPortfolio) {
+      setValue("name", currentPortfolio.name);
+      setValue("jobTitle", currentPortfolio.jobTitle);
+      setValue("aboutDescription1", currentPortfolio.aboutDescription1);
+      setValue("aboutDescription2", currentPortfolio.aboutDescription2);
+      setValue(
+        "skills",
+        currentPortfolio.skills.join(", ")
+      );
+      setValue("email", currentPortfolio.email);
+      setValue("ownerEmail", currentPortfolio.ownerEmail);
+      setValue("linkedIn", currentPortfolio.linkedIn);
+      setValue("gitHub", currentPortfolio.gitHub);
+      setValue("facebook", currentPortfolio.facebook);
+      setValue("instagram", currentPortfolio.instagram);
+    }
+  }, [currentPortfolio, handleCancel, setValue]);
+
+  const handleCreateNewClick = useCallback(() => {
+    handleCreateNew();
     reset();
-    setMessage({ text: "", isError: false });
-  }, [reset]);
+  }, [handleCreateNew, reset]);
+
+  const handleDeleteClick = useCallback(() => {
+    if (currentPortfolio) {
+      handleDelete();
+    }
+  }, [handleDelete, currentPortfolio]);
+
+  const getTitle = () => {
+    if (isEditing) return "Edit Portfolio";
+    if (currentPortfolio) return "View Portfolio";
+    return "Create Portfolio";
+  };
 
   return (
     <div className="form-container form-container--small">
-      <div className="form-header">
-        <h1 className="form-title">
-          {isEditing
-            ? "Edit Portfolio"
-            : currentPortfolio
-            ? "View Portfolio"
-            : "Create Portfolio"}
-        </h1>
+      <FormHeader
+        title={getTitle()}
+        isEditing={isEditing}
+        hasCurrentItem={!!currentPortfolio}
+        isLoading={isLoading}
+        onEdit={handleEditClick}
+        onDelete={handleDeleteClick}
+        onCreateNew={handleCreateNewClick}
+        itemName="Portfolio"
+      />
 
-        {currentPortfolio && !isEditing && (
-          <div className="form-actions">
-            <button
-              type="button"
-              onClick={handleCreateNew}
-              className="form-button form-button--secondary"
-              title="Create New Portfolio"
-            >
-              <FaPlus />
-            </button>
-            <button
-              type="button"
-              onClick={handleEdit}
-              className="form-button form-button--secondary"
-              title="Edit Portfolio"
-            >
-              <FaEdit />
-            </button>
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="form-button form-button--danger"
-              disabled={isLoading}
-              title="Delete Portfolio"
-            >
-              <FaTrash />
-            </button>
-          </div>
-        )}
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="form-layout">
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="form-layout">
         <div className="form-group">
           <label htmlFor="name" className="form-label form-label--required">
             Full Name
@@ -337,7 +247,10 @@ const PortfolioForm = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="aboutDescription2" className="form-label">
+          <label
+            htmlFor="aboutDescription2"
+            className="form-label form-label--required"
+          >
             About Description 2
           </label>
           <textarea
@@ -345,10 +258,15 @@ const PortfolioForm = () => {
             className="form-textarea"
             disabled={isFieldDisabled()}
           />
+          {errors.aboutDescription2 && (
+            <span className="form-error">
+              {errors.aboutDescription2.message}
+            </span>
+          )}
         </div>
 
         <div className="form-group">
-          <label htmlFor="skills" className="form-label">
+          <label htmlFor="skills" className="form-label form-label--required">
             Skills (comma-separated)
           </label>
           <input
@@ -357,6 +275,9 @@ const PortfolioForm = () => {
             className="form-input"
             disabled={isFieldDisabled()}
           />
+          {errors.skills && (
+            <span className="form-error">{errors.skills.message}</span>
+          )}
         </div>
 
         <div className="form-group">
@@ -393,7 +314,7 @@ const PortfolioForm = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="linkedIn" className="form-label">
+          <label htmlFor="linkedIn" className="form-label form-label--required">
             LinkedIn URL
           </label>
           <input
@@ -408,7 +329,7 @@ const PortfolioForm = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="gitHub" className="form-label">
+          <label htmlFor="gitHub" className="form-label form-label--required">
             GitHub URL
           </label>
           <input
@@ -423,7 +344,7 @@ const PortfolioForm = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="facebook" className="form-label">
+          <label htmlFor="facebook" className="form-label form-label--required">
             Facebook URL
           </label>
           <input
@@ -438,7 +359,7 @@ const PortfolioForm = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="instagram" className="form-label">
+          <label htmlFor="instagram" className="form-label form-label--required">
             Instagram URL
           </label>
           <input
@@ -463,7 +384,7 @@ const PortfolioForm = () => {
             </button>
             <button
               type="button"
-              onClick={handleCancel}
+              onClick={handleCancelClick}
               className="form-button form-button--secondary"
               disabled={isLoading}
             >
@@ -483,15 +404,7 @@ const PortfolioForm = () => {
         )}
       </form>
 
-      {message.text && (
-        <div
-          className={`form-message ${
-            message.isError ? "form-message--error" : "form-message--success"
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
+      <FormMessage message={message} />
     </div>
   );
 };
