@@ -131,21 +131,6 @@ const SideMenu: React.FC<SideMenuProps> = ({ isOpen, onClose, onFormChange }) =>
             ))}
           </ul>
         </nav>
-
-        {/* Footer */}
-        <div className="side-menu__footer">
-          <div className="side-menu__footer-links">
-            <div className="side-menu__footer-link">
-              View Site
-            </div>
-            <div className="side-menu__footer-link">
-              Settings
-            </div>
-          </div>
-          <div className="side-menu__version">
-            v1.0.0
-          </div>
-        </div>
       </div>
     </>
   );

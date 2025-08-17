@@ -65,13 +65,13 @@ model TechTag {
 model Project {
   id           String       @id @default(auto()) @map("_id") @db.ObjectId
   title        String
-  subTitle     String?
-  images       String?
-  imageUrl     String?
-  alt          String?
+  subTitle     String
+  images       String
+  imageUrl     String
+  alt          String
   projectView  String
   tools        String[]
-  platform     String?
+  platform     String
   portfolio    Portfolio?   @relation("PortfolioProjects", fields: [portfolioId], references: [id])
   portfolioId  String?      @db.ObjectId
   tagRelations ProjectTag[] @relation("ProjectToTag")

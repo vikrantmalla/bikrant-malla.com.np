@@ -3,6 +3,7 @@ import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { sanitizeRedirectUrl } from "@/lib/kinde-config";
+import { clientApi } from "@/service/apiService";
 
 export const useAuth = () => {
   const { user, isAuthenticated, isLoading } = useKindeBrowserClient();
@@ -10,44 +11,21 @@ export const useAuth = () => {
   const [userRole, setUserRole] = useState<{ hasEditorRole: boolean; isOwner: boolean } | null>(null);
   const [isCheckingRole, setIsCheckingRole] = useState(false);
   const [portfolioInfo, setPortfolioInfo] = useState<{ id: string; name: string; ownerEmail: string } | null>(null);
-console.log("portfolioInfo", portfolioInfo);
+
   // Check user role
   const checkUserRole = useCallback(async () => {
     if (!isAuthenticated || !user) return null;
 
     setIsCheckingRole(true);
     try {
-      const response = await fetch("/api/auth/check-role");
-      if (response.ok) {
-        const data = await response.json();
-        const roleData = {
-          hasEditorRole: data.user.hasEditorRole,
-          isOwner: data.user.isOwner
-        };
-        setUserRole(roleData);
-        setPortfolioInfo(data.user.portfolio);
-        return roleData;
-      } else if (response.status === 404) {
-        // User not found in database - try to create them
-        const createResponse = await fetch("/api/auth/create-user", {
-          method: "POST",
-        });
-        if (createResponse.ok) {
-          // Retry the role check
-          const retryResponse = await fetch("/api/auth/check-role");
-          if (retryResponse.ok) {
-            const data = await retryResponse.json();
-            const roleData = {
-              hasEditorRole: data.user.hasEditorRole,
-              isOwner: data.user.isOwner
-            };
-            setUserRole(roleData);
-            setPortfolioInfo(data.user.portfolio);
-            return roleData;
-          }
-        }
-      }
-      return null;
+      const data = await clientApi.auth.checkRole();
+      const roleData = {
+        hasEditorRole: data.user.hasEditorRole,
+        isOwner: data.user.isOwner
+      };
+      setUserRole(roleData);
+      setPortfolioInfo(data.user.portfolio);
+      return roleData;
     } catch (error) {
       console.error("Error checking user role:", error);
       return null;

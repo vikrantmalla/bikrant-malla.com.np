@@ -1,7 +1,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { clientApi } from "@/service/apiService";
 import "./form.scss";
 
 const portfolioSchema = z
@@ -57,8 +59,10 @@ interface PortfolioData {
 const PortfolioForm = () => {
   const [message, setMessage] = useState({ text: "", isError: false });
   const [isEditing, setIsEditing] = useState(false);
-  const [currentPortfolio, setCurrentPortfolio] = useState<PortfolioData | null>(null);
+  const [currentPortfolio, setCurrentPortfolio] =
+    useState<PortfolioData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const hasFetched = useRef(false);
 
   // Helper function to determine if fields should be disabled
   const isFieldDisabled = () => !isEditing && !!currentPortfolio;
@@ -88,124 +92,123 @@ const PortfolioForm = () => {
 
   // Fetch existing portfolio data
   useEffect(() => {
+    if (hasFetched.current) return;
+    
     const fetchPortfolio = async () => {
       try {
-        const response = await fetch("/api/portfolio");
-        if (response.ok) {
-          const portfolio = await response.json();
-          setCurrentPortfolio(portfolio);
-          // Populate form with existing data
-          setValue("name", portfolio.name);
-          setValue("jobTitle", portfolio.jobTitle);
-          setValue("aboutDescription1", portfolio.aboutDescription1);
-          setValue("aboutDescription2", portfolio.aboutDescription2 || "");
-          setValue("skills", portfolio.skills ? portfolio.skills.join(", ") : "");
-          setValue("email", portfolio.email);
-          setValue("ownerEmail", portfolio.ownerEmail);
-          setValue("linkedIn", portfolio.linkedIn || "");
-          setValue("gitHub", portfolio.gitHub || "");
-          setValue("facebook", portfolio.facebook || "");
-          setValue("instagram", portfolio.instagram || "");
-        }
+        const portfolio = await clientApi.portfolio.get();
+        setCurrentPortfolio(portfolio);
+        // Populate form with existing data
+        setValue("name", portfolio.name);
+        setValue("jobTitle", portfolio.jobTitle);
+        setValue("aboutDescription1", portfolio.aboutDescription1);
+        setValue("aboutDescription2", portfolio.aboutDescription2 || "");
+        setValue(
+          "skills",
+          portfolio.skills ? portfolio.skills.join(", ") : ""
+        );
+        setValue("email", portfolio.email);
+        setValue("ownerEmail", portfolio.ownerEmail);
+        setValue("linkedIn", portfolio.linkedIn || "");
+        setValue("gitHub", portfolio.gitHub || "");
+        setValue("facebook", portfolio.facebook || "");
+        setValue("instagram", portfolio.instagram || "");
       } catch (error) {
         console.error("Error fetching portfolio:", error);
+      } finally {
+        hasFetched.current = true;
       }
     };
 
     fetchPortfolio();
-  }, [setValue]);
+  }, [setValue]); // Remove setValue from dependencies to prevent infinite loops
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = useCallback(async (data: any) => {
     setIsLoading(true);
     setMessage({ text: "", isError: false });
 
     try {
-      let response;
-      
+      let result;
+
       if (isEditing && currentPortfolio) {
         // Update existing portfolio
-        response = await fetch(`/api/portfolio/${currentPortfolio.id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
+        result = await clientApi.portfolio.update(currentPortfolio.id, data);
       } else {
         // Create new portfolio
-        response = await fetch("/api/portfolio/create", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
+        result = await clientApi.portfolio.create(data);
       }
 
-      const result = await response.json();
-
-      if (response.ok) {
-        setMessage({ 
-          text: isEditing ? "Portfolio updated successfully!" : "Portfolio created successfully!", 
-          isError: false 
+      if (result) {
+        setMessage({
+          text: isEditing
+            ? "Portfolio updated successfully!"
+            : "Portfolio created successfully!",
+          isError: false,
         });
-        
+
         if (!isEditing) {
           // If creating new, reset form
           reset();
         }
-        
+
         // Refresh portfolio data
-        const portfolioResponse = await fetch("/api/portfolio");
-        if (portfolioResponse.ok) {
-          const portfolio = await portfolioResponse.json();
+        try {
+          const portfolio = await clientApi.portfolio.get();
           setCurrentPortfolio(portfolio);
+        } catch (error) {
+          console.error("Error refreshing portfolio:", error);
         }
       } else {
         setMessage({
-          text: result.error || `Failed to ${isEditing ? 'update' : 'create'} portfolio`,
+          text: `Failed to ${isEditing ? "update" : "create"} portfolio`,
           isError: true,
         });
       }
     } catch (error) {
       setMessage({
-        text: `An error occurred while ${isEditing ? 'updating' : 'submitting'} the form`,
+        text: `An error occurred while ${
+          isEditing ? "updating" : "submitting"
+        } the form`,
         isError: true,
       });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isEditing, currentPortfolio, reset]);
 
-  const handleEdit = () => {
+  const handleEdit = useCallback(() => {
     setIsEditing(true);
     setMessage({ text: "", isError: false });
-  };
+  }, []);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setIsEditing(false);
     setMessage({ text: "", isError: false });
-    
+
     // Reset form to current portfolio data
     if (currentPortfolio) {
       setValue("name", currentPortfolio.name);
       setValue("jobTitle", currentPortfolio.jobTitle);
       setValue("aboutDescription1", currentPortfolio.aboutDescription1);
-      setValue("aboutDescription2", currentPortfolio.aboutDescription2 || "");
+      setValue("aboutDescription2", currentPortfolio.aboutDescription2);
       setValue("skills", currentPortfolio.skills ? currentPortfolio.skills.join(", ") : "");
       setValue("email", currentPortfolio.email);
       setValue("ownerEmail", currentPortfolio.ownerEmail);
-      setValue("linkedIn", currentPortfolio.linkedIn || "");
-      setValue("gitHub", currentPortfolio.gitHub || "");
-      setValue("facebook", currentPortfolio.facebook || "");
-      setValue("instagram", currentPortfolio.instagram || "");
+      setValue("linkedIn", currentPortfolio.linkedIn);
+      setValue("gitHub", currentPortfolio.gitHub);
+      setValue("facebook", currentPortfolio.facebook);
+      setValue("instagram", currentPortfolio.instagram);
     }
-  };
+  }, [currentPortfolio, setValue]);
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     if (!currentPortfolio) return;
 
-    if (!confirm("Are you sure you want to delete this portfolio? This action cannot be undone.")) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this portfolio? This action cannot be undone."
+      )
+    ) {
       return;
     }
 
@@ -213,19 +216,16 @@ const PortfolioForm = () => {
     setMessage({ text: "", isError: false });
 
     try {
-      const response = await fetch(`/api/portfolio/${currentPortfolio.id}`, {
-        method: "DELETE",
-      });
+      const result = await clientApi.portfolio.delete(currentPortfolio.id);
 
-      if (response.ok) {
+      if (result) {
         setMessage({ text: "Portfolio deleted successfully!", isError: false });
         setCurrentPortfolio(null);
         reset();
         setIsEditing(false);
       } else {
-        const result = await response.json();
         setMessage({
-          text: result.error || "Failed to delete portfolio",
+          text: "Failed to delete portfolio",
           isError: true,
         });
       }
@@ -237,45 +237,52 @@ const PortfolioForm = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPortfolio, reset]);
 
-  const handleCreateNew = () => {
+  const handleCreateNew = useCallback(() => {
     setIsEditing(false);
     setCurrentPortfolio(null);
     reset();
     setMessage({ text: "", isError: false });
-  };
+  }, [reset]);
 
   return (
     <div className="form-container form-container--small">
       <div className="form-header">
         <h1 className="form-title">
-          {isEditing ? "Edit Portfolio" : currentPortfolio ? "View Portfolio" : "Create Portfolio"}
+          {isEditing
+            ? "Edit Portfolio"
+            : currentPortfolio
+            ? "View Portfolio"
+            : "Create Portfolio"}
         </h1>
-        
+
         {currentPortfolio && !isEditing && (
           <div className="form-actions">
-            <button 
-              type="button" 
+            <button
+              type="button"
+              onClick={handleCreateNew}
+              className="form-button form-button--secondary"
+              title="Create New Portfolio"
+            >
+              <FaPlus />
+            </button>
+            <button
+              type="button"
               onClick={handleEdit}
               className="form-button form-button--secondary"
+              title="Edit Portfolio"
             >
-              Edit Portfolio
+              <FaEdit />
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={handleDelete}
               className="form-button form-button--danger"
               disabled={isLoading}
+              title="Delete Portfolio"
             >
-              Delete Portfolio
-            </button>
-            <button 
-              type="button" 
-              onClick={handleCreateNew}
-              className="form-button form-button--secondary"
-            >
-              Create New
+              <FaTrash />
             </button>
           </div>
         )}
@@ -286,8 +293,8 @@ const PortfolioForm = () => {
           <label htmlFor="name" className="form-label form-label--required">
             Full Name
           </label>
-          <input 
-            {...register("name")} 
+          <input
+            {...register("name")}
             className="form-input"
             disabled={isFieldDisabled()}
           />
@@ -300,8 +307,8 @@ const PortfolioForm = () => {
           <label htmlFor="jobTitle" className="form-label form-label--required">
             Job Title
           </label>
-          <input 
-            {...register("jobTitle")} 
+          <input
+            {...register("jobTitle")}
             className="form-input"
             disabled={isFieldDisabled()}
           />
@@ -311,16 +318,21 @@ const PortfolioForm = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="aboutDescription1" className="form-label form-label--required">
+          <label
+            htmlFor="aboutDescription1"
+            className="form-label form-label--required"
+          >
             About Description 1
           </label>
-          <textarea 
-            {...register("aboutDescription1")} 
+          <textarea
+            {...register("aboutDescription1")}
             className="form-textarea"
             disabled={isFieldDisabled()}
           />
           {errors.aboutDescription1 && (
-            <span className="form-error">{errors.aboutDescription1.message}</span>
+            <span className="form-error">
+              {errors.aboutDescription1.message}
+            </span>
           )}
         </div>
 
@@ -328,8 +340,8 @@ const PortfolioForm = () => {
           <label htmlFor="aboutDescription2" className="form-label">
             About Description 2
           </label>
-          <textarea 
-            {...register("aboutDescription2")} 
+          <textarea
+            {...register("aboutDescription2")}
             className="form-textarea"
             disabled={isFieldDisabled()}
           />
@@ -351,9 +363,9 @@ const PortfolioForm = () => {
           <label htmlFor="email" className="form-label form-label--required">
             Email
           </label>
-          <input 
-            {...register("email")} 
-            type="email" 
+          <input
+            {...register("email")}
+            type="email"
             className="form-input"
             disabled={isFieldDisabled()}
           />
@@ -363,12 +375,15 @@ const PortfolioForm = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="ownerEmail" className="form-label form-label--required">
+          <label
+            htmlFor="ownerEmail"
+            className="form-label form-label--required"
+          >
             Owner Email
           </label>
-          <input 
-            {...register("ownerEmail")} 
-            type="email" 
+          <input
+            {...register("ownerEmail")}
+            type="email"
             className="form-input"
             disabled={isFieldDisabled()}
           />
@@ -381,9 +396,9 @@ const PortfolioForm = () => {
           <label htmlFor="linkedIn" className="form-label">
             LinkedIn URL
           </label>
-          <input 
-            {...register("linkedIn")} 
-            type="url" 
+          <input
+            {...register("linkedIn")}
+            type="url"
             className="form-input"
             disabled={isFieldDisabled()}
           />
@@ -396,9 +411,9 @@ const PortfolioForm = () => {
           <label htmlFor="gitHub" className="form-label">
             GitHub URL
           </label>
-          <input 
-            {...register("gitHub")} 
-            type="url" 
+          <input
+            {...register("gitHub")}
+            type="url"
             className="form-input"
             disabled={isFieldDisabled()}
           />
@@ -411,9 +426,9 @@ const PortfolioForm = () => {
           <label htmlFor="facebook" className="form-label">
             Facebook URL
           </label>
-          <input 
-            {...register("facebook")} 
-            type="url" 
+          <input
+            {...register("facebook")}
+            type="url"
             className="form-input"
             disabled={isFieldDisabled()}
           />
@@ -426,9 +441,9 @@ const PortfolioForm = () => {
           <label htmlFor="instagram" className="form-label">
             Instagram URL
           </label>
-          <input 
-            {...register("instagram")} 
-            type="url" 
+          <input
+            {...register("instagram")}
+            type="url"
             className="form-input"
             disabled={isFieldDisabled()}
           />
@@ -439,15 +454,15 @@ const PortfolioForm = () => {
 
         {isEditing && (
           <div className="form-actions-container">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="form-button form-button--primary"
               disabled={isLoading}
             >
               {isLoading ? "Updating..." : "Update Portfolio"}
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={handleCancel}
               className="form-button form-button--secondary"
               disabled={isLoading}
@@ -458,8 +473,8 @@ const PortfolioForm = () => {
         )}
 
         {!currentPortfolio && (
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="form-button form-button--primary"
             disabled={isLoading}
           >
