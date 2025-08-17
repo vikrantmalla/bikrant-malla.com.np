@@ -7,75 +7,82 @@ import SharedComponent from "@/components/shared/layoutComponent";
 import "../styles/globals.scss";
 import { ZustandProvider } from "@/store/provider";
 
-// export async function generateMetadata() {
-//   const portfolioDetails = await fetchPortfolioDetailsData();
-//   const { metaData } = portfolioDetails;
-//   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-//   const googleSiteID = process.env.NEXT_PUBLIC_GOOGLE_SITE_ID;
-//   const appTitle = "Bikrant Malla - Frontend Web Developer";
-//   return {
-//     metadataBase: new URL(`${appUrl}/`),
-//     title: appTitle,
-//     description: `${metaData[0].description}`,
-//     keywords: `${metaData[0].keyword}`,
-//     authors: [{ name: `${metaData[0].author}`, url: `${appUrl}/` }],
-//     referrer: "origin-when-cross-origin",
-//     category: "portfolio",
-//     openGraph: {
-//       title: appTitle,
-//       description: `${metaData[0].description}`,
-//       authors: [{ name: `${metaData[0].author}`, url: `${appUrl}/` }],
-//       url: `${appUrl}`,
-//       siteName: `${metaData[0].author}`,
-//       images: [
-//         {
-//           url: `${appUrl}/ogimg.png`,
-//           alt: "Bikrant malla",
-//         },
-//       ],
-//       locale: "en_US",
-//       type: "website",
-//     },
-//     twitter: {
-//       card: "summary_large_image",
-//       title: appTitle,
-//       description: `${metaData[0].description}`,
-//       creator: `${metaData[0].twitterID}`,
-//       creatorId: `${metaData[0].twitterID}`,
-//       images: [`${appUrl}/ogimg.png`],
-//     },
-//     robots: {
-//       index: true,
-//       follow: true,
-//       googleBot: {
-//         index: true,
-//         "max-video-preview": -1,
-//         "max-image-preview": "large",
-//         "max-snippet": -1,
-//       },
-//     },
-//     alternates: {
-//       canonical: "/",
-//     },
-//     verification: {
-//       google: `${googleSiteID}`,
-//     },
-//   };
-// }
+export async function generateMetadata() {
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL || "https://bikrant-malla.com.np";
+  const googleSiteID = process.env.NEXT_PUBLIC_GOOGLE_SITE_ID;
 
-// export function generateViewport(): Viewport {
-//   return {
-//     themeColor: [
-//       { media: "(prefers-color-scheme: light)", color: "#f9fafb" },
-//       { media: "(prefers-color-scheme: dark)", color: "#13141c" },
-//     ],
-//     colorScheme: "dark light",
-//     width: "device-width",
-//     initialScale: 1,
-//     maximumScale: 5,
-//     userScalable: true,
-//   };
-// }
+  return {
+    metadataBase: new URL(appUrl),
+    title: "Bikrant Malla - Frontend Web Developer",
+    description:
+      "Frontend Web Developer specializing in React, Next.js, and modern web technologies. Creating beautiful, responsive, and user-friendly web experiences.",
+    keywords:
+      "frontend developer, web developer, react developer, next.js developer, portfolio, web technologies, UI/UX, responsive design, bikrant malla",
+    authors: [{ name: "Bikrant Malla", url: appUrl }],
+    referrer: "origin-when-cross-origin",
+    category: "portfolio",
+    openGraph: {
+      title: "Bikrant Malla - Frontend Web Developer",
+      description:
+        "Frontend Web Developer specializing in React, Next.js, and modern web technologies. Creating beautiful, responsive, and user-friendly web experiences.",
+      authors: [{ name: "Bikrant Malla", url: appUrl }],
+      url: appUrl,
+      siteName: "Bikrant Malla",
+      images: [
+        {
+          url: `${appUrl}/ogimg.png`,
+          alt: "Bikrant Malla - Frontend Web Developer",
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Bikrant Malla - Frontend Web Developer",
+      description:
+        "Frontend Web Developer specializing in React, Next.js, and modern web technologies.",
+      creator: "@bikrantmalla",
+      creatorId: "@bikrantmalla",
+      images: [`${appUrl}/ogimg.png`],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
+    alternates: {
+      canonical: "/",
+    },
+    verification: googleSiteID
+      ? {
+          google: googleSiteID,
+        }
+      : undefined,
+  };
+}
+
+export function generateViewport(): Viewport {
+  return {
+    themeColor: [
+      { media: "(prefers-color-scheme: light)", color: "#f9fafb" },
+      { media: "(prefers-color-scheme: dark)", color: "#13141c" },
+    ],
+    colorScheme: "dark light",
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -90,7 +97,7 @@ export default async function RootLayout({
     facebook: portfolioDetail.facebook,
     instagram: portfolioDetail.instagram,
   };
-  // const { contact } = portfolioDetails;
+
   return (
     <html lang="en">
       <ZustandProvider>
