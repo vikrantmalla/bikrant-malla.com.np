@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import AuthModal from "@/components/authModal/authModal";
 import { useAuth } from "@/hooks/useAuth";
 import PortfolioForm from "@/components/forms/Portfolio";
@@ -23,14 +23,18 @@ export default function Dashboard() {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("overview");
   const [activeForm, setActiveForm] = useState("overview");
+  const hasInitializedAuth = useRef(false);
 
   // Check user role on component mount
   useEffect(() => {
+    if (hasInitializedAuth.current) return;
+    
     const initializeAuth = async () => {
       if (isAuthenticated) {
         await checkUserRole();
       }
       setLoading(false);
+      hasInitializedAuth.current = true;
     };
 
     initializeAuth();
