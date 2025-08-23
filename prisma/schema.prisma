@@ -106,16 +106,6 @@ model ArchiveProjectTag {
   tagId            String         @db.ObjectId
 }
 
-model MetaTag {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String
-  keyword     String
-  author      String
-  fbID        String
-  twitterID   String
-}
-
 model Config {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId
   allowBackupImages Boolean
