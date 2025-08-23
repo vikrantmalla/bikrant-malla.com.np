@@ -2,6 +2,7 @@ import { baseUrl } from "@/helpers/lib/baseUrl";
 import Data, { ArchiveDetailsData, PortfolioDetails } from "@/types/data";
 import {
   ABOUT_ME_ENDPOINT,
+  ARCHIVE_ENDPOINT,
   BEHANCE_ENDPOINT,
   CONTACT_ENDPOINT,
   META_DATA_ENDPOINT,
@@ -29,7 +30,7 @@ export async function fetchPortfolioDetailsData(): Promise<PortfolioDetails> {
 }
 
 export async function fetchProjectData(): Promise<ArchiveDetailsData> {
-  return fetchData<ArchiveDetailsData>(PROJECTS_ENDPOINT);
+  return fetchData<ArchiveDetailsData>(ARCHIVE_ENDPOINT);
 }
 
 // GET, POST, PUT, DELETE METHOD

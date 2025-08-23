@@ -44,7 +44,7 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
         filteredProjects = project;
       } else if (tag === TagsCategory.FEATURE.toLowerCase()) {
         // Filter based on isNew property for "Feature" tag
-        filteredProjects = project.filter((p) => p.isnew);
+        filteredProjects = project.filter((p) => p.isNew);
       } else {
         // Filter based on tag props
         filteredProjects = project.filter((p) =>

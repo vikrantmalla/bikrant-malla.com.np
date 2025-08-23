@@ -73,6 +73,7 @@
   transition: all 0.2s ease;
   color: var(--text, #000);
   box-sizing: border-box;
+  background-color: var(--background, #fff);
 }
 
 .form-input:focus {

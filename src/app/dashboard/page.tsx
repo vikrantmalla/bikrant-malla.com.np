@@ -20,7 +20,6 @@ export default function Dashboard() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("overview");
   const [activeForm, setActiveForm] = useState("overview");
   const hasInitializedAuth = useRef(false);
@@ -63,14 +62,6 @@ export default function Dashboard() {
       console.error("Invite error:", error);
       alert("Failed to send invitation");
     }
-  };
-
-  const handleMenuToggle = () => {
-    setIsSideMenuOpen(!isSideMenuOpen);
-  };
-
-  const handleMenuClose = () => {
-    setIsSideMenuOpen(false);
   };
 
   const handleFormChange = (formType: string) => {
@@ -128,49 +119,17 @@ export default function Dashboard() {
         color: currentTheme?.text || "#000",
       }}
     >
-      {/* Header */}
-      <header
-        className="dashboard__header"
-        style={{
-          background: currentTheme?.card || "#ffffff",
-          borderColor: currentTheme?.card || "#e5e7eb",
-        }}
-      >
-        <div className="dashboard__header-left">
-          <button
-            onClick={handleMenuToggle}
-            className="dashboard__menu-toggle"
-            aria-label="Toggle side menu"
-            style={{ color: currentTheme?.text || "#000" }}
-          >
-            <span className="dashboard__menu-icon">☰</span>
-          </button>
-          <h1
-            className="dashboard__title"
-            style={{ color: currentTheme?.text || "#000" }}
-          >
-            Dashboard
-          </h1>
-        </div>
-
-        {isAuthenticated && (
-          <div className="dashboard__header-right">
-            <ThemeSwitch className="dashboard__theme-switch" />
-            <button
-              onClick={() => setIsLogoutModalOpen(true)}
-              className="dashboard__logout-btn"
-            >
-              Logout
-            </button>
-            <button onClick={() => setIsSideMenuOpen(true)}>
-              Open Side Menu
-            </button>
-          </div>
-        )}
-      </header>
+      {/* Side Menu - Always Visible */}
+      <SideMenu
+        isOpen={true}
+        onClose={() => {}}
+        onFormChange={handleFormChange}
+        onLogout={() => setIsLogoutModalOpen(true)}
+        onThemeToggle={() => {}}
+      />
 
       {/* Main Content */}
-      <main className="dashboard__main">
+      <main className="dashboard__main dashboard__main--with-sidebar">
         {!isAuthenticated ? (
           <div className="dashboard__auth-section">
             <div
@@ -423,13 +382,6 @@ export default function Dashboard() {
         isOpen={isLogoutModalOpen}
         onClose={() => setIsLogoutModalOpen(false)}
         type="logout"
-      />
-
-      {/* Side Menu */}
-      <SideMenu
-        isOpen={isSideMenuOpen}
-        onClose={handleMenuClose}
-        onFormChange={handleFormChange}
       />
     </div>
   );

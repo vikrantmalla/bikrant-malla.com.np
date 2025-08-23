@@ -9,10 +9,10 @@ const ArchiveDetails = ({
   id,
   year,
   title,
-  isnew,
+  isNew,
   build,
-  projectview,
-  viewcode,
+  projectView,
+  viewCode,
 }: ArchiveProject) => {
   const { selectedTag, showSkeletonLoading } = useProjectStore();
   const tags = [...build];
@@ -35,19 +35,19 @@ const ArchiveDetails = ({
    */
   // const reorderedTags = formattedTag !== "All"
   // ? (formattedTag !== "Feature"
-  //     ? [formattedTag, ...tags.filter(tag => tag !== formattedTag)]
+  //     ? [formorderedTag, ...tags.filter(tag => tag !== formattedTag)]
   //     : tags.filter(tag => tag !== "Feature"))
   // : tags;
 
   return (
     <>
       {!showSkeletonLoading ? (
-        <div className={`${isnew ? "project active" : "project"}`} key={id}>
+        <div className={`${isNew ? "project active" : "project"}`} key={id}>
           <div className="project-head">
             <div className="details">
               <div className="title">
                 <h2 className={`${joseFont} fs-400`}>{title}</h2>
-                {isnew && selectedTag === TagsCategory.ALL ? (
+                {isNew && selectedTag === TagsCategory.ALL ? (
                   <span className={`new ${joseFont}`}>{`NEW!`}</span>
                 ) : (
                   ""
@@ -56,10 +56,10 @@ const ArchiveDetails = ({
               <p className={`${joseFont} fs-300`}>{year}</p>
             </div>
             <div className="links">
-              <a href={viewcode}>
+              <a href={viewCode}>
                 <FaGithub />
               </a>
-              <a href={projectview}>
+              <a href={projectView}>
                 <FaLink />
               </a>
             </div>

@@ -16,6 +16,7 @@ $dashboard-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0
   background: $dashboard-bg;
   color: $dashboard-text;
   font-family: "Josefin Sans", "Poppins", "Roboto", sans-serif;
+  display: flex;
 }
 
 // Loading State
@@ -185,10 +186,23 @@ $dashboard-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0
 
 // Main Content
 .dashboard__main {
+  flex: 1;
   padding: 1.5rem;
 
   @include md {
     padding: 2rem;
+  }
+
+  &--with-sidebar {
+    margin-left: 280px; // Width of the sidebar
+    
+    @include md {
+      margin-left: 300px;
+    }
+    
+    @include lg {
+      margin-left: 320px;
+    }
   }
 }
 
