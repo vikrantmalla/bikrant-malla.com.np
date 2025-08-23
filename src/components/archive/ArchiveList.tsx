@@ -12,7 +12,7 @@ const Card = () => {
     <>
       {projectList.length > 0 ? (
         projectList.map((data: ArchiveProject, id: number) => {
-          return <ArchiveDetails key={id} {...data} isnew={data.isnew} />;
+          return <ArchiveDetails key={id} {...data} />;
         })
       ) : (
         <div className="message-placeholder">

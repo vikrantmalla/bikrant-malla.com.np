@@ -10,6 +10,7 @@ export enum ApiEndpoint {
   PROJECTS_ENDPOINT = "api/projects",
   PROJECT_HIGHLIGHTS_ENDPOINT = "api/projecthighlight",
   TAGS_ENDPOINT = "api/tags",
+  ARCHIVE_ENDPOINT = "api/archive",
 }
 
 export enum TagsCategory {
