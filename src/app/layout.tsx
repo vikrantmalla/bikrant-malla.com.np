@@ -100,14 +100,14 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <ZustandProvider>
-        <body>
+      <body>
+        <ZustandProvider>
           <Analytics />
           <SpeedInsights />
           {children}
           <SharedComponent contact={contact} />
-        </body>
-      </ZustandProvider>
+        </ZustandProvider>
+      </body>
     </html>
   );
 }

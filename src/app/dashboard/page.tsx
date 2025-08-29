@@ -27,7 +27,7 @@ export default function Dashboard() {
   // Check user role on component mount
   useEffect(() => {
     if (hasInitializedAuth.current) return;
-    
+
     const initializeAuth = async () => {
       if (isAuthenticated) {
         await checkUserRole();
@@ -130,246 +130,214 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="dashboard__main dashboard__main--with-sidebar">
-        {!isAuthenticated ? (
-          <div className="dashboard__auth-section">
-            <div
-              className="dashboard__auth-card"
-              style={{
-                background: currentTheme?.card || "#ffffff",
-              }}
-            >
-              <h2
-                className="dashboard__auth-title"
-                style={{ color: currentTheme?.text || "#000" }}
-              >
-                Welcome to Dashboard
-              </h2>
-              <p className="dashboard__auth-message">
-                Please log in to access your portfolio management tools.
-              </p>
-              <button
-                onClick={() => setIsLoginModalOpen(true)}
-                className="dashboard__login-btn"
-                style={{ background: currentTheme?.navBackground || "#111111" }}
-              >
-                Log In
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="dashboard__content">
-            {/* Conditional Form Rendering */}
-            {activeForm === "overview" && (
-              <>
-                {/* Overview Section */}
-                <section className="dashboard__section">
-                  <h2
-                    className="dashboard__section-title"
-                    style={{ color: currentTheme?.text || "#000" }}
-                  >
-                    Overview
-                  </h2>
-                  <div className="dashboard__stats">
-                    <div
-                      className="dashboard__stat-card"
-                      style={{
-                        background: currentTheme?.card || "#ffffff",
-                      }}
-                    >
-                      <div className="dashboard__stat-icon">📊</div>
-                      <div className="dashboard__stat-content">
-                        <h3 className="dashboard__stat-title">
-                          Total Projects
-                        </h3>
-                        <p
-                          className="dashboard__stat-value"
-                          style={{ color: currentTheme?.text || "#000" }}
-                        >
-                          12
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className="dashboard__stat-card"
-                      style={{
-                        background: currentTheme?.card || "#ffffff",
-                      }}
-                    >
-                      <div className="dashboard__stat-icon">💼</div>
-                      <div className="dashboard__stat-content">
-                        <h3 className="dashboard__stat-title">
-                          Portfolio Items
-                        </h3>
-                        <p
-                          className="dashboard__stat-value"
-                          style={{ color: currentTheme?.text || "#000" }}
-                        >
-                          8
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      className="dashboard__stat-card"
-                      style={{
-                        background: currentTheme?.card || "#ffffff",
-                      }}
-                    >
-                      <div className="dashboard__stat-icon">📁</div>
-                      <div className="dashboard__stat-content">
-                        <h3 className="dashboard__stat-title">Archived</h3>
-                        <p
-                          className="dashboard__stat-value"
-                          style={{ color: currentTheme?.text || "#000" }}
-                        >
-                          4
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-
-                {/* Invite Section */}
-                <section className="dashboard__section">
-                  <h2
-                    className="dashboard__section-title"
-                    style={{ color: currentTheme?.text || "#000" }}
-                  >
-                    Invite Collaborator
-                  </h2>
+        <div className="dashboard__content">
+          {/* Conditional Form Rendering */}
+          {activeForm === "overview" && (
+            <>
+              {/* Overview Section */}
+              <div className="dashboard__section">
+                <h2
+                  className="dashboard__section-title"
+                  style={{ color: currentTheme?.text || "#000" }}
+                >
+                  Overview
+                </h2>
+                <div className="dashboard__stats">
                   <div
-                    className="dashboard__invite-form"
+                    className="dashboard__stat-card"
                     style={{
                       background: currentTheme?.card || "#ffffff",
                     }}
                   >
-                    <div className="dashboard__form-group">
-                      <label
-                        htmlFor="invite-email"
-                        className="dashboard__form-label"
+                    <div className="dashboard__stat-icon">📊</div>
+                    <div className="dashboard__stat-content">
+                      <h3 className="dashboard__stat-title">Total Projects</h3>
+                      <p
+                        className="dashboard__stat-value"
                         style={{ color: currentTheme?.text || "#000" }}
                       >
-                        Email Address
-                      </label>
-                      <input
-                        id="invite-email"
-                        type="email"
-                        value={inviteData.email}
-                        onChange={(e) =>
-                          setInviteData({
-                            ...inviteData,
-                            email: e.target.value,
-                          })
-                        }
-                        placeholder="Enter collaborator's email"
-                        className="dashboard__form-input"
-                        style={{
-                          background: currentTheme?.background || "#ffffff",
-                          color: currentTheme?.text || "#000",
-                          borderColor: currentTheme?.card || "#e5e7eb",
-                        }}
-                      />
+                        12
+                      </p>
                     </div>
-                    <div className="dashboard__form-group">
-                      <label
-                        htmlFor="invite-role"
-                        className="dashboard__form-label"
-                        style={{ color: currentTheme?.text || "#000" }}
-                      >
-                        Role
-                      </label>
-                      <select
-                        id="invite-role"
-                        value={inviteData.role}
-                        onChange={(e) =>
-                          setInviteData({ ...inviteData, role: e.target.value })
-                        }
-                        className="dashboard__form-select"
-                        style={{
-                          background: currentTheme?.background || "#ffffff",
-                          color: currentTheme?.text || "#000",
-                          borderColor: currentTheme?.card || "#e5e7eb",
-                        }}
-                      >
-                        <option value="editor">Editor</option>
-                        <option value="viewer">Viewer</option>
-                      </select>
-                    </div>
-                    <button
-                      onClick={inviteUser}
-                      className="dashboard__invite-btn"
-                      disabled={!inviteData.email}
-                      style={{
-                        background: currentTheme?.navBackground || "#111111",
-                      }}
-                    >
-                      Send Invitation
-                    </button>
                   </div>
-                </section>
-              </>
-            )}
-
-            {activeForm === "portfolio" && (
-              <div>
-                <h2
-                  className="dashboard__section-title"
-                  style={{ color: currentTheme?.text || "#000" }}
-                >
-                  Portfolio Management
-                </h2>
-                <PortfolioForm />
-              </div>
-            )}
-
-            {activeForm === "projects" && (
-              <section>
-                <h2
-                  className="dashboard__section-title"
-                  style={{ color: currentTheme?.text || "#000" }}
-                >
-                  Projects Management
-                </h2>
-                <ProjectsForm />
-              </section>
-            )}
-
-            {activeForm === "archive" && (
-              <div>
-                <h2
-                  className="dashboard__section-title"
-                  style={{ color: currentTheme?.text || "#000" }}
-                >
-                  Archive Management
-                </h2>
-                <ArchiveProjectsForm />
-              </div>
-            )}
-
-            {activeForm === "settings" && (
-              <div>
-                <h2
-                  className="dashboard__section-title"
-                  style={{ color: currentTheme?.text || "#000" }}
-                >
-                  Settings
-                </h2>
-                <div
-                  className="dashboard__form-placeholder"
-                  style={{
-                    background: currentTheme?.card || "#ffffff",
-                    padding: "2rem",
-                    borderRadius: "0.75rem",
-                    textAlign: "center",
-                    color: currentTheme?.text || "#000",
-                  }}
-                >
-                  <h3>Settings Form Coming Soon</h3>
-                  <p>This form will be implemented to manage settings.</p>
+                  <div
+                    className="dashboard__stat-card"
+                    style={{
+                      background: currentTheme?.card || "#ffffff",
+                    }}
+                  >
+                    <div className="dashboard__stat-icon">💼</div>
+                    <div className="dashboard__stat-content">
+                      <h3 className="dashboard__stat-title">Portfolio Items</h3>
+                      <p
+                        className="dashboard__stat-value"
+                        style={{ color: currentTheme?.text || "#000" }}
+                      >
+                        8
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    className="dashboard__stat-card"
+                    style={{
+                      background: currentTheme?.card || "#ffffff",
+                    }}
+                  >
+                    <div className="dashboard__stat-icon">📁</div>
+                    <div className="dashboard__stat-content">
+                      <h3 className="dashboard__stat-title">Archived</h3>
+                      <p
+                        className="dashboard__stat-value"
+                        style={{ color: currentTheme?.text || "#000" }}
+                      >
+                        4
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
-        )}
+
+              {/* Invite Section */}
+              <div className="dashboard__section">
+                <h2
+                  className="dashboard__section-title"
+                  style={{ color: currentTheme?.text || "#000" }}
+                >
+                  Invite Collaborator
+                </h2>
+                <div
+                  className="dashboard__invite-form"
+                  style={{
+                    background: currentTheme?.card || "#ffffff",
+                  }}
+                >
+                  <div className="dashboard__form-group">
+                    <label
+                      htmlFor="invite-email"
+                      className="dashboard__form-label"
+                      style={{ color: currentTheme?.text || "#000" }}
+                    >
+                      Email Address
+                    </label>
+                    <input
+                      id="invite-email"
+                      type="email"
+                      value={inviteData.email}
+                      onChange={(e) =>
+                        setInviteData({
+                          ...inviteData,
+                          email: e.target.value,
+                        })
+                      }
+                      placeholder="Enter collaborator's email"
+                      className="dashboard__form-input"
+                      style={{
+                        background: currentTheme?.background || "#ffffff",
+                        color: currentTheme?.text || "#000",
+                        borderColor: currentTheme?.card || "#e5e7eb",
+                      }}
+                    />
+                  </div>
+                  <div className="dashboard__form-group">
+                    <label
+                      htmlFor="invite-role"
+                      className="dashboard__form-label"
+                      style={{ color: currentTheme?.text || "#000" }}
+                    >
+                      Role
+                    </label>
+                    <select
+                      id="invite-role"
+                      value={inviteData.role}
+                      onChange={(e) =>
+                        setInviteData({ ...inviteData, role: e.target.value })
+                      }
+                      className="dashboard__form-select"
+                      style={{
+                        background: currentTheme?.background || "#ffffff",
+                        color: currentTheme?.text || "#000",
+                        borderColor: currentTheme?.card || "#e5e7eb",
+                      }}
+                    >
+                      <option value="editor">Editor</option>
+                      <option value="viewer">Viewer</option>
+                    </select>
+                  </div>
+                  <button
+                    onClick={inviteUser}
+                    className="dashboard__invite-btn"
+                    disabled={!inviteData.email}
+                    style={{
+                      background: currentTheme?.navBackground || "#111111",
+                    }}
+                  >
+                    Send Invitation
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {activeForm === "portfolio" && (
+            <div>
+              <h2
+                className="dashboard__section-title"
+                style={{ color: currentTheme?.text || "#000" }}
+              >
+                Portfolio Management
+              </h2>
+              <PortfolioForm />
+            </div>
+          )}
+
+          {activeForm === "projects" && (
+            <div>
+              <h2
+                className="dashboard__section-title"
+                style={{ color: currentTheme?.text || "#000" }}
+              >
+                Projects Management
+              </h2>
+              <ProjectsForm />
+            </div>
+          )}
+
+          {activeForm === "archive" && (
+            <div>
+              <h2
+                className="dashboard__section-title"
+                style={{ color: currentTheme?.text || "#000" }}
+              >
+                Archive Management
+              </h2>
+              <ArchiveProjectsForm />
+            </div>
+          )}
+
+          {activeForm === "settings" && (
+            <div>
+              <h2
+                className="dashboard__section-title"
+                style={{ color: currentTheme?.text || "#000" }}
+              >
+                Settings
+              </h2>
+              <div
+                className="dashboard__form-placeholder"
+                style={{
+                  background: currentTheme?.card || "#ffffff",
+                  padding: "2rem",
+                  borderRadius: "0.75rem",
+                  textAlign: "center",
+                  color: currentTheme?.text || "#000",
+                }}
+              >
+                <h3>Settings Form Coming Soon</h3>
+                <p>This form will be implemented to manage settings.</p>
+              </div>
+            </div>
+          )}
+        </div>
       </main>
 
       {/* Modals */}

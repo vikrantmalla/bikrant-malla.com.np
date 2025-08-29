@@ -76,10 +76,15 @@ export function useFormManager<T extends { id: string; portfolioId?: string }>(
     
     const fetchItems = async () => {
       try {
-        const itemsData = await clientApi[apiEndpoint].get();
-        setItems(itemsData);
+        const response = await clientApi[apiEndpoint].get();
+        // Extract the items array from the API response
+        // API returns { message, projects, portfolio } for projects endpoint
+        // and { message, archiveProjects, portfolio } for archive-projects endpoint
+        const itemsData = response.projects || response.archiveProjects || response;
+        setItems(Array.isArray(itemsData) ? itemsData : []);
       } catch (error) {
         console.error(`Error fetching ${itemName}:`, error);
+        setItems([]);
       } finally {
         hasFetched.current = true;
       }
@@ -128,8 +133,10 @@ export function useFormManager<T extends { id: string; portfolioId?: string }>(
         } else {
           // After successful update, refresh items data and exit editing mode
           try {
-            const itemsData = await clientApi[apiEndpoint].get();
-            setItems(itemsData);
+            const response = await clientApi[apiEndpoint].get();
+            // Extract the items array from the API response
+            const itemsData = response.projects || response.archiveProjects || response;
+            setItems(Array.isArray(itemsData) ? itemsData : []);
             setIsEditing(false); // Exit editing mode after successful update
           } catch (error) {
             console.error(`Error refreshing ${itemName}:`, error);

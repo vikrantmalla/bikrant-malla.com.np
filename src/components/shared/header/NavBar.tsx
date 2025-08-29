@@ -95,12 +95,12 @@ export function Navigation({ contact }: NavBarProps) {
           style={{ margin: "1rem 0" }}
         >
           {isContactDefined && (
-            <SocialMedia 
+            <SocialMedia
               gitHub={contact.gitHub}
               linkedIn={contact.linkedIn}
               facebook={contact.facebook}
               instagram={contact.instagram}
-              visibleCount={2} 
+              visibleCount={2}
             />
           )}
         </li>
@@ -163,6 +163,8 @@ const NavBar = ({ contact }: NavBarProps) => {
   const handleClick = () => {
     setToggleMenu(!toggleMenu);
   };
+  const pathname = usePathname();
+  const hideNavBar = pathname === "/dashboard";
 
   if (typeof window !== "undefined") {
     if (toggleMenu) {
@@ -232,7 +234,11 @@ const NavBar = ({ contact }: NavBarProps) => {
   });
   return (
     <>
-      <header className={`header ${navColor ? "colorChange" : ""}`}>
+      <header
+        className={`header ${navColor ? "colorChange" : ""} ${
+          hideNavBar ? "hidden" : ""
+        }`}
+      >
         <div className="nav-container">
           <Navigation contact={contact} />
           {!toggleMenu && <MenuIcon />}

@@ -15,7 +15,8 @@ function ItemsList<T extends { id: string }>({
   title,
   itemName,
 }: ItemsListProps<T>) {
-  if (items.length === 0) return null;
+  // Safety check: ensure items is an array
+  if (!Array.isArray(items) || items.length === 0) return null;
 
   return (
     <div className="projects-list">
