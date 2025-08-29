@@ -6,9 +6,14 @@ import { usePathname } from "next/navigation";
 const Footer = () => {
   const pathname = usePathname();
   let currentYear = new Date().getFullYear();
+  const hideFooter = pathname === "/dashboard";
   return (
     <>
-      <footer className={`${pathname === "/404" ? "notfoundFooter" : ""}`}>
+      <footer
+        className={`${pathname === "/404" ? "notfoundFooter" : ""} ${
+          hideFooter ? "hidden" : ""
+        }`}
+      >
         <div className="credit">
           <Link
             href="https://github.com/vikrantmalla/bikrant-malla.com.np.git"

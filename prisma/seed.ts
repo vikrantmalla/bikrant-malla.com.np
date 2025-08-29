@@ -22,28 +22,36 @@ async function main() {
   }
 
   try {
-    // Create a portfolio with realistic data
+    // Use a consistent email for development
+    const devEmail = "vikrantmalla999@gmail.com";
+    const portfolioName = "Bikrant Malla";
+    const jobTitle = "Full Stack Developer";
+
+    // Create a portfolio with consistent data
     const portfolio = await prisma.portfolio.create({
       data: {
-        name: faker.person.fullName(),
-        jobTitle: faker.person.jobTitle(),
-        aboutDescription1: faker.lorem.paragraph(2),
-        aboutDescription2: faker.lorem.paragraph(1),
-        skills: faker.helpers.arrayElements(
-          [
-            "React",
-            "Next.js",
-            "Node.js",
-            "TypeScript",
-          ],
-          { min: 5, max: 10 }
-        ),
-        email: faker.internet.email(),
-        ownerEmail: faker.internet.email(),
-        linkedIn: faker.internet.url({ protocol: "https" }),
-        gitHub: faker.internet.url({ protocol: "https" }),
-        facebook: faker.internet.url({ protocol: "https" }),
-        instagram: faker.internet.url({ protocol: "https" }),
+        name: portfolioName,
+        jobTitle: jobTitle,
+        aboutDescription1: "Passionate developer with expertise in modern web technologies. Building scalable and user-friendly applications that make a difference.",
+        aboutDescription2: "Specializing in React, Next.js, and full-stack development with a focus on performance and user experience.",
+        skills: [
+          "React",
+          "Next.js", 
+          "Node.js",
+          "TypeScript",
+          "MongoDB",
+          "PostgreSQL",
+          "Tailwind CSS",
+          "GraphQL",
+          "Docker",
+          "AWS"
+        ],
+        email: devEmail,
+        ownerEmail: devEmail, // Same email as owner
+        linkedIn: "https://linkedin.com/in/bikrantmalla",
+        gitHub: "https://github.com/bikrantmalla",
+        facebook: "https://facebook.com/bikrantmalla",
+        instagram: "https://instagram.com/bikrantmalla",
       },
     });
 
@@ -56,6 +64,13 @@ async function main() {
       prisma.techTag.create({ data: { tag: "TypeScript" } }),
       prisma.techTag.create({ data: { tag: "Node.js" } }),
       prisma.techTag.create({ data: { tag: "MongoDB" } }),
+      prisma.techTag.create({ data: { tag: "PostgreSQL" } }),
+      prisma.techTag.create({ data: { tag: "Tailwind CSS" } }),
+      prisma.techTag.create({ data: { tag: "GraphQL" } }),
+      prisma.techTag.create({ data: { tag: "Docker" } }),
+      prisma.techTag.create({ data: { tag: "AWS" } }),
+      prisma.techTag.create({ data: { tag: "Python" } }),
+      prisma.techTag.create({ data: { tag: "Django" } }),
     ]);
 
     console.log("✅ Tech tags created:", techTags.length);
@@ -133,39 +148,43 @@ async function main() {
 
     console.log("✅ Archive projects created:", archiveProjects.length);
 
-    // Create a user with realistic data
+    // Create a user with the same email as portfolio owner
     const user = await prisma.user.create({
       data: {
-        kindeUserId: faker.string.uuid(),
-        email: faker.internet.email(),
-        name: faker.person.fullName(),
+        kindeUserId: `kinde_${Date.now()}`, // Generate a unique ID
+        email: devEmail, // Same email as portfolio owner
+        name: portfolioName, // Same name as portfolio
       },
     });
 
-    console.log("✅ User created:", user.name);
+    console.log("✅ User created:", user.name, "with email:", user.email);
 
-    // Create user portfolio role
+    // Create user portfolio role - this user is the owner
     await prisma.userPortfolioRole.create({
       data: {
         userId: user.id,
         portfolioId: portfolio.id,
-        role: "owner",
+        role: "owner", // This user owns the portfolio
       },
     });
 
-    console.log("✅ User portfolio role created");
+    console.log("✅ User portfolio role created - user is portfolio owner");
 
     // Create config
     await prisma.config.create({
       data: {
-        allowBackupImages: faker.datatype.boolean(),
+        allowBackupImages: true,
       },
     });
 
     console.log("✅ Config created");
 
     console.log("🎉 Database seeding completed successfully!");
-
+    console.log("📧 Portfolio owner email:", devEmail);
+    console.log("👤 User email:", user.email);
+    console.log("🔗 Portfolio ID:", portfolio.id);
+    console.log("🔗 User ID:", user.id);
+    
     if (isProduction) {
       console.log("⚠️  Remember: This data was created in PRODUCTION mode");
     }

@@ -3,12 +3,12 @@
 @use "../../styles/variable" as *;
 
 // Side Menu Variables
-$side-menu-width: 280px;
+$side-menu-width: 230px;
 $side-menu-width-mobile: 100vw;
-$side-menu-bg: var(--navBackground);
-$side-menu-text: var(--textRev);
-$side-menu-border: rgba(255, 255, 255, 0.1);
-$side-menu-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+$side-menu-bg: #f8fafc;
+$side-menu-text: #1e293b;
+$side-menu-border: #e2e8f0;
+$side-menu-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 // Backdrop (removed for permanent sidebar)
@@ -63,26 +63,10 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   @include flex(row, space-between);
   padding: 1.5rem;
   border-bottom: 1px solid $side-menu-border;
-  background: rgba(255, 255, 255, 0.05);
+  background: #ffffff;
 }
 
-.side-menu__theme-toggle {
-  display: flex;
-  align-items: center;
-  
-  .side-menu__theme-switch {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 0.375rem;
-    padding: 0.5rem;
-    transition: all 0.2s ease;
-    
-    &:hover {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-  }
-}
+
 
 .side-menu__logo {
   @include flex(row, flex-start);
@@ -106,15 +90,15 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 .side-menu__profile {
   padding: 1.5rem;
   border-bottom: 1px solid $side-menu-border;
-  background: rgba(255, 255, 255, 0.02);
+  background: #ffffff;
 }
 
 .side-menu__avatar {
-  margin-bottom: 1rem;
-
+  @include flex(row, space-between);
+  gap: 1rem;
   &-img {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid rgba(255, 255, 255, 0.2);
@@ -122,16 +106,16 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   &-placeholder {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
     @include flex(row, center);
-    font-size: 1.5rem;
+    font-size: .8rem;
     font-weight: 600;
     color: white;
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 3px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -139,17 +123,7 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   &-name {
     font-size: 1.1rem;
     font-weight: 600;
-    margin: 0 0 0.25rem 0;
     color: $side-menu-text;
-  }
-
-  &-role {
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.7);
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    display: inline-block;
   }
 }
 
@@ -187,12 +161,12 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     top: 0;
     height: 100%;
     width: 0;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent);
+    background: linear-gradient(90deg, #3b82f6, transparent);
     transition: width 0.3s ease;
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: #f1f5f9;
     transform: translateX(4px);
 
     &::before {
@@ -201,8 +175,8 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   &--active {
-    background: rgba(255, 255, 255, 0.1);
-    border-left: 4px solid #667eea;
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
 
     &::before {
       width: 4px;
@@ -220,13 +194,20 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 500;
     letter-spacing: 0.3px;
   }
+
+  &-chevron {
+    margin-left: auto;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    transition: transform 0.2s ease;
+  }
 }
 
 // Footer Section
 .side-menu__footer {
   padding: 1.5rem;
   border-top: 1px solid $side-menu-border;
-  background: rgba(255, 255, 255, 0.02);
+  background: #ffffff;
   margin-top: auto;
 }
 
@@ -235,16 +216,20 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   gap: 0.75rem;
   width: 100%;
   padding: 0.75rem 1rem;
-  border: none;
+  border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  background: #ffffff;
+  color: #1e293b;
   
   &:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
   
   &-icon {
@@ -258,11 +243,10 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 .side-menu__footer-links {
   @include flex(row, space-between);
-  margin-bottom: 1rem;
 }
 
 .side-menu__footer-link {
-  color: rgba(255, 255, 255, 0.7);
+  color: #64748b;
   text-decoration: none;
   font-size: 0.875rem;
   transition: color 0.2s ease;
@@ -271,8 +255,8 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 0.25rem;
 
   &:hover {
-    color: $side-menu-text;
-    background: rgba(255, 255, 255, 0.05);
+    color: #1e293b;
+    background: #f1f5f9;
   }
 }
 
@@ -345,5 +329,99 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   .side-menu__nav-item {
     animation: none;
+  }
+}
+
+// Logout Popup Styles
+.side-menu__logout-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.side-menu__logout-popup {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 90%;
+  animation: popupSlideIn 0.2s ease-out;
+}
+
+.side-menu__logout-popup-header {
+  margin-bottom: 1rem;
+  
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1e293b;
+  }
+}
+
+.side-menu__logout-popup-content {
+  margin-bottom: 1.5rem;
+  
+  p {
+    margin: 0;
+    color: #64748b;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+}
+
+.side-menu__logout-popup-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.side-menu__logout-popup-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  
+  &--cancel {
+    background: #f1f5f9;
+    color: #475569;
+    
+    &:hover {
+      background: #e2e8f0;
+      color: #334155;
+    }
+  }
+  
+  &--confirm {
+    background: transparent;
+    color: #3b82f6;
+    
+    &:hover {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+  }
+}
+
+@keyframes popupSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
