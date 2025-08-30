@@ -10,7 +10,7 @@ interface CustomLogoutButtonProps {
 }
 
 export default function CustomLogoutButton({ 
-  className = "bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors",
+  className = "",
   children = "Log Out"
 }: CustomLogoutButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,13 +24,13 @@ export default function CustomLogoutButton({
 
   return (
     <LogoutLink
-      className={`${className} ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+      className={`${className} ${isLoading ? "loading" : ""}`}
       onClick={handleLogout}
       postLogoutRedirectURL={kindeConfig.defaultLogoutRedirect}
     >
       {isLoading ? (
-        <div className="flex items-center">
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+        <div className="loading-content">
+          <div className="loading-spinner"></div>
           Logging out...
         </div>
       ) : (

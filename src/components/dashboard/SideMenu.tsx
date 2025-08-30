@@ -71,17 +71,9 @@ const SideMenu: React.FC<SideMenuProps> = ({
     onFormChange?.(formType);
   };
 
-  const handleLogoutClick = () => {
-    setShowLogoutPopup(true);
-  };
-
-  const handleLogoutConfirm = () => {
+  const handleLogout = () => {
     setShowLogoutPopup(false);
     onLogout?.();
-  };
-
-  const handleLogoutCancel = () => {
-    setShowLogoutPopup(false);
   };
 
   const getUserInitials = () => {
@@ -103,7 +95,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
       >
         {/* Header Section */}
         <div className="side-menu__header-section">
-        <div className="side-menu__footer-links">
+          <div className="side-menu__footer-links">
             <Link href="/" className="side-menu__footer-link">
               <FaArrowLeft />
             </Link>
@@ -159,40 +151,12 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
         {/* Footer Actions */}
         <div className="side-menu__footer">
-          <button className="side-menu__logout-btn" onClick={handleLogoutClick}>
+          <button className="side-menu__logout-btn" onClick={handleLogout}>
             <span className="side-menu__logout-icon">🚪</span>
             <span className="side-menu__logout-text">Logout</span>
           </button>
         </div>
       </div>
-
-      {/* Logout Confirmation Popup */}
-      {showLogoutPopup && (
-        <div className="side-menu__logout-popup-overlay">
-          <div className="side-menu__logout-popup">
-            <div className="side-menu__logout-popup-header">
-              <h3>Log Out</h3>
-            </div>
-            <div className="side-menu__logout-popup-content">
-              <p>Are you sure you want to log out?</p>
-            </div>
-            <div className="side-menu__logout-popup-actions">
-              <button
-                className="side-menu__logout-popup-btn side-menu__logout-popup-btn--cancel"
-                onClick={handleLogoutCancel}
-              >
-                Cancel
-              </button>
-              <button
-                className="side-menu__logout-popup-btn side-menu__logout-popup-btn--confirm"
-                onClick={handleLogoutConfirm}
-              >
-                Log Out
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };
