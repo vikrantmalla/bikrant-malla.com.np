@@ -3,14 +3,10 @@ export enum ApiEndpoint {
   ABOUT_ME_ENDPOINT = "api/aboutme",
   AUTH_SIGN_UP_ENDPOINT = "/api/auth/signup",
   AUTH_SIGN_IN_ENDPOINT = "/api/auth/signin",
-  BEHANCE_ENDPOINT = "api/behance",
   CONTACT_ENDPOINT = "api/contact",
-  META_DATA_ENDPOINT = "api/metadata",
   PORTFOLIO_DETAILS_ENDPOINT = "api/portfolio",
-  PROJECTS_ENDPOINT = "api/projects",
-  PROJECT_HIGHLIGHTS_ENDPOINT = "api/projecthighlight",
-  TAGS_ENDPOINT = "api/tags",
-  ARCHIVE_ENDPOINT = "api/archive",
+  ARCHIVE_ENDPOINT = "api/archive-projects",
+  TECH_TAGS_ENDPOINT = "api/tech-tags",
 }
 
 export enum TagsCategory {

@@ -9,14 +9,14 @@ export async function GET(request: Request) {
     return permissionCheck.response;
   }
   
-    const user = permissionCheck.kindeUser;
+  const user = permissionCheck.kindeUser;
+  const dbUser = permissionCheck.user;
   
   if (!user || !user.email) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
   
   try {
-    
     // Check if user exists in our database
     let dbUser = await prisma.user.findUnique({
       where: { email: user.email },

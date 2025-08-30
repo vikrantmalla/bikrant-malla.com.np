@@ -7,7 +7,7 @@ import { ProjectHighlightsCard } from "@/types/data";
 import ExternalLink from "../shared/externalLink";
 
 const ProjectCard = ({ project, config }: ProjectHighlightsCard) => {
-  const { images, imageUrl, alt, title, build, projectview } = project;
+  const { images, imageUrl, alt, title, build, projectview } = project as any;
   const { allowBackupImages } = config;
   const { setCursorType } = useMouseStore();
 

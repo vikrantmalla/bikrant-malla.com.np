@@ -61,6 +61,28 @@ export interface PortfolioDetails {
   instagram: string;
   projects: Project[];
   archiveProjects: ArchiveProject[];
+  // Optional relations that might be included in API responses
+  userRoles?: UserPortfolioRole[];
+}
+
+// Base Portfolio interface matching Prisma schema
+export interface Portfolio {
+  id: string;
+  name: string;
+  jobTitle: string;
+  aboutDescription1: string;
+  aboutDescription2: string;
+  skills: string[];
+  email: string;
+  ownerEmail: string;
+  linkedIn: string;
+  gitHub: string;
+  facebook: string;
+  instagram: string;
+  // Optional relations that might be included in API responses
+  projects?: Project[];
+  archiveProjects?: ArchiveProject[];
+  userRoles?: UserPortfolioRole[];
 }
 
 export interface AboutMeData {
@@ -146,14 +168,17 @@ export interface ProjectHighlightsCard {
 export interface Project {
   id: string;
   title: string;
-  subTitle?: string;
-  images?: string;
-  imageUrl?: string;
-  alt?: string;
+  subTitle: string; // Required in Prisma schema
+  images: string; // Required in Prisma schema
+  imageUrl: string; // Required in Prisma schema
+  alt: string; // Required in Prisma schema
   projectView: string;
   tools: string[];
-  platform?: string;
+  platform: string; // Required in Prisma schema
   portfolioId?: string;
+  // Optional relations that might be included in API responses
+  portfolio?: Portfolio;
+  tagRelations?: ProjectTag[];
 }
 
 export interface BackupConfig {
@@ -187,18 +212,27 @@ export interface UserPortfolioRole {
   portfolioId: string;
   role: string;
   invitedAt: Date;
+  // Optional relations that might be included in API responses
+  user?: User;
+  portfolio?: Portfolio;
 }
 
 export interface ProjectTag {
   id: string;
   projectId: string;
   tagId: string;
+  // Optional relations that might be included in API responses
+  project?: Project;
+  tag?: TechTag;
 }
 
 export interface ArchiveProjectTag {
   id: string;
   archiveProjectId: string;
   tagId: string;
+  // Optional relations that might be included in API responses
+  archiveProject?: ArchiveProject;
+  tag?: TechTag;
 }
 
 export interface Links {
@@ -257,7 +291,12 @@ export interface ArchiveProject {
   viewCode: string;
   build: string[];
   portfolioId?: string;
+  // Optional relations that might be included in API responses
+  portfolio?: Portfolio;
+  tagRelations?: ArchiveProjectTag[];
 }
+
+
 
 export interface ConfigData {
   config: Config[];
