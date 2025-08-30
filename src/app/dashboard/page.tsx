@@ -20,9 +20,9 @@ export default function Dashboard() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState("overview");
   const [activeForm, setActiveForm] = useState("overview");
   const hasInitializedAuth = useRef(false);
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
 
   // Check user role on component mount
   useEffect(() => {
@@ -121,8 +121,8 @@ export default function Dashboard() {
     >
       {/* Side Menu - Always Visible */}
       <SideMenu
-        isOpen={true}
-        onClose={() => {}}
+        isOpen={isSideMenuOpen}
+        onClose={() => setIsSideMenuOpen(false)}
         onFormChange={handleFormChange}
         onLogout={() => setIsLogoutModalOpen(true)}
         onThemeToggle={() => {}}

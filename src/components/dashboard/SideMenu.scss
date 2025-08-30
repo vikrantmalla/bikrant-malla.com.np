@@ -11,7 +11,50 @@ $side-menu-border: #e2e8f0;
 $side-menu-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-// Backdrop (removed for permanent sidebar)
+// Mobile Menu Toggle Button
+.side-menu__mobile-toggle {
+  display: block;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1001;
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #1e293b;
+
+  &:hover {
+    color: #3b82f6;
+    transform: scale(1.1);
+  }
+
+  svg {
+    font-size: 1.5rem;
+  }
+
+  @include md {
+    display: none;
+  }
+}
+
+// Mobile Backdrop
+.side-menu__mobile-backdrop {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  backdrop-filter: blur(4px);
+
+  @include md {
+    display: none;
+  }
+}
 
 // Main Side Menu Container
 .side-menu {
@@ -26,8 +69,7 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
   transition: $side-menu-transition;
   box-shadow: $side-menu-shadow;
-  display: flex;
-  flex-direction: column;
+  @include flex(column, flex-start);
 
   &--permanent {
     position: fixed;
@@ -56,33 +98,122 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       background: rgba(255, 255, 255, 0.3);
     }
   }
+
+  // Mobile responsive behavior
+  @include xs-sm {
+    transform: translateX(-100%);
+    width: 100vw;
+    max-width: 320px;
+    
+    &--mobile-open {
+      transform: translateX(0);
+    }
+  }
+
+  @include sm {
+    transform: translateX(-100%);
+    width: 100vw;
+    max-width: 320px;
+    
+    &--mobile-open {
+      transform: translateX(0);
+    }
+  }
+
+  @include md {
+    transform: none;
+    width: $side-menu-width;
+  }
 }
 
 // Header Section
 .side-menu__header-section {
-  @include flex(row, space-between);
   padding: 1.5rem;
   border-bottom: 1px solid $side-menu-border;
   background: #ffffff;
+
+  @include xs-sm {
+    padding: 1rem;
+  }
 }
 
+.side-menu__header-content {
+  @include flex(column, flex-start);
+  gap: 1rem;
+}
 
+.side-menu__header-top {
+  @include flex(row, space-between);
+}
 
-.side-menu__logo {
+.side-menu__back-button {
   @include flex(row, flex-start);
-  gap: 0.75rem;
+  gap: 0.5rem;
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  width: fit-content;
 
-  &-icon {
-    font-size: 1.5rem;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  &:hover {
+    color: #1e293b;
+    background: #f1f5f9;
   }
 
-  &-text {
-    font-size: 1.25rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+  svg {
+    font-size: 1rem;
   }
 }
+
+.side-menu__close-button {
+  display: none;
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: #1e293b;
+    background: #f1f5f9;
+  }
+
+  svg {
+    font-size: 1.25rem;
+  }
+
+  @include xs-sm {
+    display: block;
+  }
+
+  @include sm {
+    display: block;
+  }
+
+  @include md {
+    display: none;
+  }
+}
+
+.side-menu__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  letter-spacing: -0.025em;
+
+  @include xs-sm {
+    font-size: 1.25rem;
+  }
+}
+
+
 
 // Close button removed for permanent sidebar
 
@@ -91,11 +222,22 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 1.5rem;
   border-bottom: 1px solid $side-menu-border;
   background: #ffffff;
+  width: 100%;
+
+  @include xs-sm {
+    padding: 1rem;
+  }
 }
 
 .side-menu__avatar {
   @include flex(row, space-between);
   gap: 1rem;
+
+  @include xs-sm {
+    @include flex(column, center);
+    text-align: center;
+    gap: 0.75rem;
+  }
   &-img {
     width: 50px;
     height: 50px;
@@ -103,6 +245,11 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     object-fit: cover;
     border: 3px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+    @include xs-sm {
+      width: 60px;
+      height: 60px;
+    }
   }
 
   &-placeholder {
@@ -116,6 +263,12 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     color: white;
     border: 3px solid #e2e8f0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    @include xs-sm {
+      width: 60px;
+      height: 60px;
+      font-size: 1rem;
+    }
   }
 }
 
@@ -124,6 +277,10 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 1.1rem;
     font-weight: 600;
     color: $side-menu-text;
+
+    @include xs-sm {
+      font-size: 1rem;
+    }
   }
 }
 
@@ -131,6 +288,11 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 .side-menu__nav {
   flex: 1;
   padding: 1rem 0;
+  width: 100%;
+
+  @include xs-sm {
+    padding: 0.5rem 0;
+  }
 }
 
 .side-menu__nav-list {
@@ -153,6 +315,12 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 0;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+
+  @include xs-sm {
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+  }
 
   &::before {
     content: '';
@@ -187,12 +355,21 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 1.25rem;
     min-width: 24px;
     text-align: center;
+
+    @include xs-sm {
+      font-size: 1.1rem;
+      min-width: 20px;
+    }
   }
 
   &-label {
     font-size: 0.95rem;
     font-weight: 500;
     letter-spacing: 0.3px;
+
+    @include xs-sm {
+      font-size: 0.9rem;
+    }
   }
 
   &-chevron {
@@ -209,6 +386,10 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-top: 1px solid $side-menu-border;
   background: #ffffff;
   margin-top: auto;
+
+  @include xs-sm {
+    padding: 1rem;
+  }
 }
 
 .side-menu__logout-btn {
@@ -241,24 +422,7 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-.side-menu__footer-links {
-  @include flex(row, space-between);
-}
 
-.side-menu__footer-link {
-  color: #64748b;
-  text-decoration: none;
-  font-size: 0.875rem;
-  transition: color 0.2s ease;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-
-  &:hover {
-    color: #1e293b;
-    background: #f1f5f9;
-  }
-}
 
 .side-menu__version {
   text-align: center;
@@ -268,9 +432,43 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 // Responsive Design
-@include sm {
+@include xs-sm {
+  .side-menu__mobile-toggle {
+    display: block;
+  }
+
+  .side-menu__mobile-backdrop {
+    display: block;
+  }
+
   .side-menu {
-    width: $side-menu-width;
+    &__nav-link {
+      padding: 0.75rem 1rem;
+    }
+
+    &__nav-link-label {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+@include sm {
+  .side-menu__mobile-toggle {
+    display: block;
+  }
+
+  .side-menu__mobile-backdrop {
+    display: block;
+  }
+
+  .side-menu {
+    &__nav-link {
+      padding: 0.875rem 1.25rem;
+    }
+
+    &__nav-link-label {
+      font-size: 0.95rem;
+    }
   }
 }
 
@@ -340,9 +538,7 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex(row, center);
   z-index: 9999;
   backdrop-filter: blur(4px);
 }
@@ -380,9 +576,8 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .side-menu__logout-popup-actions {
-  display: flex;
+  @include flex(row, flex-end);
   gap: 0.75rem;
-  justify-content: flex-end;
 }
 
 .side-menu__logout-popup-btn {
