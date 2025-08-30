@@ -1,7 +1,11 @@
 import ArchiveFilterMenu from "@/components/archive/ArchiveFilterMenu";
 import ArchiveList from "@/components/archive/ArchiveList";
+import ArchiveStoreProvider from "@/components/archive/ArchiveStoreProvider";
 import { joseFont, tekoFont } from "@/helpers/lib/font";
-import { fetchProjectData } from "@/service/apiService";
+import {
+  fetchPortfolioDetailsData,
+  fetchTagData,
+} from "@/service/apiService";
 import React from "react";
 
 export async function generateMetadata() {
@@ -25,22 +29,31 @@ export async function generateMetadata() {
 }
 
 const Archive = async () => {
-  const projectData = await fetchProjectData();
-  const { archiveProject, techTag } = projectData;
+  const [portfolioData, techTagData] = await Promise.all([
+    fetchPortfolioDetailsData(),
+    fetchTagData()
+  ]);
+
+  // Extract the data with proper error handling
+  const archiveProjects = portfolioData?.archiveProjects || [];
+  const techTags = techTagData?.techTags || [];
+
   return (
     <>
       <section className="container">
         <div className="archive">
           <h1 className={`heading ${tekoFont} fs-700`}>Archive</h1>
           <p className={`subheading ${joseFont} fs-600`}>
-            A list of things I’ve worked on
+            A list of things I&apos;ve worked on
           </p>
-          <div>
-            <ArchiveFilterMenu project={archiveProject} techTag={techTag} />
-          </div>
-          <div className="archive-lists">
-            <ArchiveList />
-          </div>
+          <ArchiveStoreProvider archiveProjects={archiveProjects}>
+            <div>
+              <ArchiveFilterMenu project={archiveProjects} techTag={techTags} />
+            </div>
+            <div className="archive-lists">
+              <ArchiveList archiveProjects={archiveProjects} />
+            </div>
+          </ArchiveStoreProvider>
         </div>
       </section>
     </>
