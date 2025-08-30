@@ -3,13 +3,14 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { fetchPortfolioDetailsData } from "@/service/apiService";
 import SharedComponent from "@/components/shared/layoutComponent";
+import ClientOnly from "@/components/shared/ClientOnly";
 
 import "../styles/globals.scss";
 import { ZustandProvider } from "@/store/provider";
 
 export async function generateMetadata() {
   const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL || "https://bikrant-malla.com.np";
+    process.env.NEXT_PUBLIC_APP_URL;
   const googleSiteID = process.env.NEXT_PUBLIC_GOOGLE_SITE_ID;
 
   return {
@@ -100,7 +101,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body>
+      <body suppressHydrationWarning={true}>
         <ZustandProvider>
           <Analytics />
           <SpeedInsights />
