@@ -8,7 +8,6 @@ import NavBar from "./header/NavBar";
 import CustomScript from "@/helpers/customScript/customScript";
 
 const SharedComponent = ({ contact }: ContactProps) => {
-  console.log(contact, "contact");
   return (
     <>
       <CustomScript />
