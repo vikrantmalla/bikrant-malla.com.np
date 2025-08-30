@@ -15,16 +15,8 @@ const portfolioSchema = z
     aboutDescription1: z.string().min(1, "About Description 1 is required"),
     aboutDescription2: z.string().min(1, "About Description 2 is required"),
     skills: z
-      .string()
-      .min(1, "Skills are required")
-      .transform((val) =>
-        val
-          ? val
-              .split(",")
-              .map((s) => s.trim())
-              .filter((s) => s)
-          : []
-      ),
+      .array(z.string())
+      .min(1, "At least one skill is required"),
     email: z
       .string()
       .email("Invalid email address")
@@ -88,7 +80,7 @@ const PortfolioForm = () => {
       jobTitle: "",
       aboutDescription1: "",
       aboutDescription2: "",
-      skills: "",
+      skills: [],
       email: "",
       ownerEmail: "",
       linkedIn: "",
@@ -107,7 +99,7 @@ const PortfolioForm = () => {
       setValue("aboutDescription2", currentPortfolio.aboutDescription2);
       setValue(
         "skills",
-        currentPortfolio.skills.join(", ")
+        currentPortfolio.skills
       );
       setValue("email", currentPortfolio.email);
       setValue("ownerEmail", currentPortfolio.ownerEmail);
@@ -152,7 +144,7 @@ const PortfolioForm = () => {
       setValue("aboutDescription2", currentPortfolio.aboutDescription2);
       setValue(
         "skills",
-        currentPortfolio.skills.join(", ")
+        currentPortfolio.skills
       );
       setValue("email", currentPortfolio.email);
       setValue("ownerEmail", currentPortfolio.ownerEmail);
@@ -261,15 +253,29 @@ const PortfolioForm = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="skills" className="form-label form-label--required">
-            Skills (comma-separated)
+          <label className="form-label form-label--required">
+            Skills
           </label>
-          <input
-            {...register("skills")}
-            placeholder="e.g., JavaScript, Python, React"
-            className="form-input"
-            disabled={isFieldDisabled()}
-          />
+          <div className="tools-checkboxes">
+            {[
+              'React', 'Next.js', 'TypeScript', 'Node.js', 'MongoDB',
+              'PostgreSQL', 'Tailwind CSS', 'GraphQL', 'Docker', 'AWS',
+              'Python', 'Django', 'Vue.js', 'Angular', 'Express.js',
+              'Redis', 'Elasticsearch', 'Kubernetes', 'Jenkins', 'Git',
+              'JavaScript', 'HTML', 'CSS', 'Sass', 'PHP', 'Laravel',
+              'Java', 'Spring Boot', 'C#', '.NET', 'Swift', 'Kotlin'
+            ].map((skill) => (
+              <label key={skill} className="tool-checkbox">
+                <input
+                  type="checkbox"
+                  value={skill}
+                  {...register("skills")}
+                  disabled={isFieldDisabled()}
+                />
+                <span className="tool-label">{skill}</span>
+              </label>
+            ))}
+          </div>
           {errors.skills && (
             <span className="form-error">{errors.skills.message}</span>
           )}

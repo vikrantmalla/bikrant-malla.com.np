@@ -17,16 +17,8 @@ const projectSchema = z.object({
   alt: z.string().min(1, "Alt text is required"),
   projectView: z.string().min(1, "Project View is required"),
   tools: z
-    .string()
-    .min(1, "Tools are required")
-    .transform((val) =>
-      val
-        ? val
-            .split(",")
-            .map((s) => s.trim())
-            .filter((s) => s)
-        : []
-    ),
+    .array(z.string())
+    .min(1, "At least one tool is required"),
   platform: z.string().min(1, "Platform is required"),
 });
 
@@ -59,6 +51,7 @@ const ProjectsForm = () => {
     handleSelectItem: handleSelectProject,
     onSubmit,
     resetForm,
+    refreshItems,
     setCurrentItem: setCurrentProject,
     setIsEditing,
   } = useFormManager<ProjectData>("projects", "Project");
@@ -78,7 +71,7 @@ const ProjectsForm = () => {
       imageUrl: "",
       alt: "",
       projectView: "",
-      tools: "",
+      tools: [],
       platform: "",
     },
   });
@@ -99,7 +92,7 @@ const ProjectsForm = () => {
     setValue("imageUrl", project.imageUrl);
     setValue("alt", project.alt);
     setValue("projectView", project.projectView);
-    setValue("tools", project.tools.join(", "));
+    setValue("tools", project.tools);
     setValue("platform", project.platform);
   }, [handleEdit, setValue]);
 
@@ -126,7 +119,7 @@ const ProjectsForm = () => {
       setValue("imageUrl", project.imageUrl);
       setValue("alt", project.alt);
       setValue("projectView", project.projectView);
-      setValue("tools", project.tools.join(", "));
+      setValue("tools", project.tools);
       setValue("platform", project.platform);
     }
   }, [projects, handleSelectProject, setValue]);
@@ -171,6 +164,7 @@ const ProjectsForm = () => {
         onEdit={() => currentProject && handleEditClick(currentProject)}
         onDelete={() => currentProject && handleDelete(currentProject.id)}
         onCreateNew={handleCreateNewClick}
+        onRefresh={refreshItems}
         itemName="Project"
       />
 
@@ -181,6 +175,7 @@ const ProjectsForm = () => {
         renderItem={renderProject}
         title="Existing Projects"
         itemName="Project"
+        isLoading={isLoading}
       />
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="form-layout">
@@ -275,15 +270,27 @@ const ProjectsForm = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="tools" className="form-label form-label--required">
-            Tools (comma-separated)
+          <label className="form-label form-label--required">
+            Tools
           </label>
-          <input
-            {...register("tools")}
-            placeholder="e.g., React, Node.js, MongoDB"
-            className="form-input"
-            disabled={isFieldDisabled()}
-          />
+          <div className="tools-checkboxes">
+            {[
+              'React', 'Next.js', 'TypeScript', 'Node.js', 'MongoDB',
+              'PostgreSQL', 'Tailwind CSS', 'GraphQL', 'Docker', 'AWS',
+              'Python', 'Django', 'Vue.js', 'Angular', 'Express.js',
+              'Redis', 'Elasticsearch', 'Kubernetes', 'Jenkins', 'Git'
+            ].map((tool) => (
+              <label key={tool} className="tool-checkbox">
+                <input
+                  type="checkbox"
+                  value={tool}
+                  {...register("tools")}
+                  disabled={isFieldDisabled()}
+                />
+                <span className="tool-label">{tool}</span>
+              </label>
+            ))}
+          </div>
           {errors.tools && (
             <span className="form-error">{errors.tools.message}</span>
           )}
@@ -293,12 +300,14 @@ const ProjectsForm = () => {
           <label htmlFor="platform" className="form-label form-label--required">
             Platform
           </label>
-          <input
+          <select
             {...register("platform")}
-            placeholder="e.g., Web, Mobile, Desktop"
             className="form-input"
             disabled={isFieldDisabled()}
-          />
+          >
+            <option value="Web">Web</option>
+            <option value="Design">Design</option>
+          </select>
           {errors.platform && (
             <span className="form-error">{errors.platform.message}</span>
           )}
