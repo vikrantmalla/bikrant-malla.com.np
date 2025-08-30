@@ -25,7 +25,6 @@ export async function GET(request: Request) {
     
     // If user doesn't exist, create them
     if (!dbUser) {
-      console.log("Creating new user for:", user.email);
       dbUser = await prisma.user.create({
         data: {
           kindeUserId: `kinde_${Date.now()}`,
@@ -81,7 +80,6 @@ export async function GET(request: Request) {
     }
 
     if (!portfolio) {
-      console.log("No portfolio found for user:", user.email);
       return NextResponse.json({ 
         error: "No portfolio found for user",
         message: "User doesn't have access to any portfolio",

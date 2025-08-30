@@ -106,24 +106,6 @@ export async function POST(req: Request) {
       process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_DEFAULT_APP_URL
     }/login`;
 
-    // Enhanced debug logging
-    console.log("=== EMAIL DEBUG INFO ===");
-    console.log("Environment variables:", {
-      hasResendApiKey: !!process.env.RESEND_API_KEY,
-      resendFromEmail: process.env.RESEND_FROM_EMAIL,
-      appUrl:
-        process.env.NEXT_PUBLIC_APP_URL ||
-        process.env.NEXT_PUBLIC_DEFAULT_APP_URL,
-    });
-    console.log("Email sending details:", {
-      from: process.env.RESEND_FROM_EMAIL || "noreply@bikrant-malla.com.np",
-      to: email,
-      signupUrl,
-      portfolioName: portfolio.name,
-      role,
-    });
-    console.log("========================");
-
     try {
       const emailResult = await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev",
@@ -137,7 +119,6 @@ export async function POST(req: Request) {
         }),
       });
 
-      console.log("✅ Email sent successfully:", emailResult);
     } catch (emailError) {
       console.error("❌ Failed to send invitation email:", emailError);
       console.error("Email error details:", {
@@ -180,10 +161,6 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
-
-    console.log(
-      `Invitation created for ${email} with role ${role} to portfolio ${portfolio.name}`
-    );
 
     return NextResponse.json(
       {
