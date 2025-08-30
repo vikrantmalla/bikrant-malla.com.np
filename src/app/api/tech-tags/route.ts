@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
 
 // GET all tech tags
@@ -23,11 +23,10 @@ export async function GET() {
 
 // POST create new tech tag
 export async function POST(request: Request) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const permissionCheck = await checkEditorPermissions();
+  
+  if (!permissionCheck.success) {
+    return permissionCheck.response;
   }
 
   try {

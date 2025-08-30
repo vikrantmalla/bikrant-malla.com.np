@@ -1,20 +1,12 @@
 import { NextResponse } from "next/server";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
-import { checkPortfolioAccess } from "@/lib/roleUtils";
 
 // GET - Retrieve portfolio data
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
     const portfolio = await prisma.portfolio.findUnique({
       where: { id: params.id },
@@ -23,41 +15,39 @@ export async function GET(
           include: {
             tagRelations: {
               include: {
-                tag: true
-              }
-            }
-          }
+                tag: true,
+              },
+            },
+          },
         },
         archiveProjects: {
           include: {
             tagRelations: {
               include: {
-                tag: true
-              }
-            }
-          }
-        }
-      }
+                tag: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!portfolio) {
-      return NextResponse.json({ error: "Portfolio not found" }, { status: 404 });
-    }
-
-    // Check if user has access to this portfolio
-    const { isEditor, isOwner, hasAccess } = await checkPortfolioAccess(user.email, params.id);
-
-    if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Portfolio not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({
       portfolio,
-      userRole: isOwner ? "owner" : "editor"
     });
   } catch (error) {
     console.error("Error fetching portfolio:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -66,28 +56,33 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const permissionCheck = await checkEditorPermissions();
+  
+  if (!permissionCheck.success) {
+    return permissionCheck.response;
   }
-
+  
+  if (!permissionCheck.kindeUser || !permissionCheck.kindeUser.email) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+  
   try {
-    // Check if user has editor role or is owner
-    const { hasAccess } = await checkPortfolioAccess(user.email, params.id);
-
-    if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied. Editor role required." }, { status: 403 });
-    }
-
     const body = await request.json();
-    
+
     // Validate required fields
-    const requiredFields = ['name', 'jobTitle', 'aboutDescription1', 'email', 'ownerEmail'];
+    const requiredFields = [
+      "name",
+      "jobTitle",
+      "aboutDescription1",
+      "email",
+      "ownerEmail",
+    ];
     for (const field of requiredFields) {
       if (!body[field]) {
-        return NextResponse.json({ error: `${field} is required` }, { status: 400 });
+        return NextResponse.json(
+          { error: `${field} is required` },
+          { status: 400 }
+        );
       }
     }
 
@@ -100,7 +95,6 @@ export async function PUT(
         aboutDescription2: body.aboutDescription2,
         skills: body.skills || [],
         email: body.email,
-        phone: body.phone,
         linkedIn: body.linkedIn,
         gitHub: body.gitHub,
         facebook: body.facebook,
@@ -109,16 +103,19 @@ export async function PUT(
       include: {
         projects: true,
         archiveProjects: true,
-      }
+      },
     });
 
     return NextResponse.json({
       message: "Portfolio updated successfully",
-      portfolio: updatedPortfolio
+      portfolio: updatedPortfolio,
     });
   } catch (error) {
     console.error("Error updating portfolio:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -127,35 +124,48 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const permissionCheck = await checkEditorPermissions();
+  
+  if (!permissionCheck.success) {
+    return permissionCheck.response;
   }
-
+  
+  if (!permissionCheck.kindeUser || !permissionCheck.kindeUser.email) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+  
   try {
-    // Only owners can delete portfolios
-    const { isOwner } = await checkPortfolioAccess(user.email, params.id);
+    // Check if user is the portfolio owner
+    const portfolio = await prisma.portfolio.findUnique({
+      where: { id: params.id },
+    });
 
-    if (!isOwner) {
-      return NextResponse.json({ error: "Access denied. Only portfolio owners can delete portfolios." }, { status: 403 });
+    if (!portfolio || portfolio.ownerEmail !== permissionCheck.kindeUser?.email) {
+      return NextResponse.json(
+        {
+          error: "Access denied. Only portfolio owners can delete portfolios.",
+        },
+        { status: 403 }
+      );
     }
 
     // Delete related data first (due to foreign key constraints)
     await prisma.userPortfolioRole.deleteMany({
-      where: { portfolioId: params.id }
+      where: { portfolioId: params.id },
     });
 
     await prisma.portfolio.delete({
-      where: { id: params.id }
+      where: { id: params.id },
     });
 
     return NextResponse.json({
-      message: "Portfolio deleted successfully"
+      message: "Portfolio deleted successfully",
     });
   } catch (error) {
     console.error("Error deleting portfolio:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
-} 
+}

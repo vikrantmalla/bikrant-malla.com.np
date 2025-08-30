@@ -1,4 +1,75 @@
-import { prisma } from "./prisma";
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
+import { prisma } from './prisma';
+import { NextResponse } from 'next/server';
+
+export async function checkEditorPermissions() {
+  const { getUser } = getKindeServerSession();
+  const kindeUser = await getUser();
+
+  if (!kindeUser || !kindeUser.email) {
+    return { 
+      success: false, 
+      response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }),
+      user: null,
+      kindeUser: null
+    };
+  }
+
+  try {
+    const dbUser = await prisma.user.findUnique({
+      where: { email: kindeUser.email },
+      include: { 
+        roles: {
+          include: {
+            portfolio: true
+          }
+        } 
+      },
+    });
+
+    if (!dbUser) {
+      return { 
+        success: false, 
+        response: NextResponse.json({ error: 'User not found' }, { status: 404 }),
+        user: null,
+        kindeUser: null
+      };
+    }
+
+    // Check if user has editor role or is the portfolio owner
+    const portfolio = await prisma.portfolio.findFirst({
+      where: { ownerEmail: kindeUser.email },
+    });
+    const isOwner = !!portfolio;
+    
+    // Owner automatically gets editor role without invitation
+    const hasEditorRole = dbUser.roles.some((role) => role.role === 'editor') || isOwner;
+
+    if (!hasEditorRole) {
+      return { 
+        success: false, 
+        response: NextResponse.json({ error: 'Insufficient permissions. Editor role required.' }, { status: 403 }),
+        user: dbUser,
+        kindeUser: null
+      };
+    }
+
+    return { 
+      success: true, 
+      response: null,
+      user: dbUser,
+      kindeUser: kindeUser
+    };
+  } catch (error) {
+    console.error('Error checking editor permissions:', error);
+    return { 
+      success: false, 
+      response: NextResponse.json({ error: 'Internal server error' }, { status: 500 }),
+      user: null,
+      kindeUser: null
+    };
+  }
+}
 
 // Helper function to check if user has editor role for a portfolio
 export async function checkEditorRole(userEmail: string, portfolioId: string) {

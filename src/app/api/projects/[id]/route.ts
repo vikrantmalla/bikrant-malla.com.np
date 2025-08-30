@@ -1,20 +1,12 @@
 import { NextResponse } from "next/server";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
-import { checkProjectAccess } from "@/lib/roleUtils";
 
 // GET - Retrieve project data
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
     const project = await prisma.project.findUnique({
       where: { id: params.id },
@@ -22,30 +14,25 @@ export async function GET(
         portfolio: true,
         tagRelations: {
           include: {
-            tag: true
-          }
-        }
-      }
+            tag: true,
+          },
+        },
+      },
     });
 
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    // Check if user has access to this project
-    const { isEditor, isOwner, hasAccess } = await checkProjectAccess(user.email, params.id);
-
-    if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
-    }
-
     return NextResponse.json({
       project,
-      userRole: isOwner ? "owner" : "editor"
     });
   } catch (error) {
     console.error("Error fetching project:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -54,28 +41,23 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const permissionCheck = await checkEditorPermissions();
+  
+  if (!permissionCheck.success) {
+    return permissionCheck.response;
   }
 
   try {
-    // Check if user has editor role or is owner
-    const { hasAccess } = await checkProjectAccess(user.email, params.id);
-
-    if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied. Editor role required." }, { status: 403 });
-    }
-
     const body = await request.json();
-    
+
     // Validate required fields
-    const requiredFields = ['title', 'projectView', 'tools'];
+    const requiredFields = ["title", "projectView", "tools"];
     for (const field of requiredFields) {
       if (!body[field]) {
-        return NextResponse.json({ error: `${field} is required` }, { status: 400 });
+        return NextResponse.json(
+          { error: `${field} is required` },
+          { status: 400 }
+        );
       }
     }
 
@@ -95,19 +77,22 @@ export async function PUT(
         portfolio: true,
         tagRelations: {
           include: {
-            tag: true
-          }
-        }
-      }
+            tag: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json({
       message: "Project updated successfully",
-      project: updatedProject
+      project: updatedProject,
     });
   } catch (error) {
     console.error("Error updating project:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -116,35 +101,30 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const permissionCheck = await checkEditorPermissions();
+  
+  if (!permissionCheck.success) {
+    return permissionCheck.response;
   }
 
   try {
-    // Check if user has editor role or is owner
-    const { hasAccess } = await checkProjectAccess(user.email, params.id);
-
-    if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied. Editor role required." }, { status: 403 });
-    }
-
     // Delete related data first (due to foreign key constraints)
     await prisma.projectTag.deleteMany({
-      where: { projectId: params.id }
+      where: { projectId: params.id },
     });
 
     await prisma.project.delete({
-      where: { id: params.id }
+      where: { id: params.id },
     });
 
     return NextResponse.json({
-      message: "Project deleted successfully"
+      message: "Project deleted successfully",
     });
   } catch (error) {
     console.error("Error deleting project:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
-} 
+}

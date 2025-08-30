@@ -1,29 +1,40 @@
 import { NextResponse } from "next/server";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  const permissionCheck = await checkEditorPermissions();
 
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!permissionCheck.success) {
+    return permissionCheck.response;
   }
 
   try {
     const body = await request.json();
-    
+
     // Validate required fields
-    const requiredFields = ['name', 'jobTitle', 'aboutDescription1', 'email', 'ownerEmail'];
+    const requiredFields = [
+      "name",
+      "jobTitle",
+      "aboutDescription1",
+      "email",
+      "ownerEmail",
+    ];
     for (const field of requiredFields) {
       if (!body[field]) {
-        return NextResponse.json({ error: `${field} is required` }, { status: 400 });
+        return NextResponse.json(
+          { error: `${field} is required` },
+          { status: 400 }
+        );
       }
     }
-
     // Check if user is creating portfolio for themselves
-    if (body.ownerEmail !== user.email) {
-      return NextResponse.json({ error: "You can only create portfolios for yourself" }, { status: 403 });
+    // Check if user is creating portfolio for themselves
+    if (body.ownerEmail !== permissionCheck.kindeUser!.email) {
+      return NextResponse.json(
+        { error: "You can only create portfolios for yourself" },
+        { status: 403 }
+      );
     }
 
     const newPortfolio = await prisma.portfolio.create({
@@ -39,15 +50,21 @@ export async function POST(request: Request) {
         gitHub: body.gitHub,
         facebook: body.facebook,
         instagram: body.instagram,
-      }
+      },
     });
 
-    return NextResponse.json({
-      message: "Portfolio created successfully",
-      portfolio: newPortfolio
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        message: "Portfolio created successfully",
+        portfolio: newPortfolio,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating portfolio:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
-} 
+}
