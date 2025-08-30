@@ -1,20 +1,12 @@
 import { NextResponse } from "next/server";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
-import { checkArchiveProjectAccess } from "@/lib/roleUtils";
 
 // GET - Retrieve archive project data
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
     const archiveProject = await prisma.archiveProject.findUnique({
       where: { id: params.id },
@@ -32,16 +24,8 @@ export async function GET(
       return NextResponse.json({ error: "Archive project not found" }, { status: 404 });
     }
 
-    // Check if user has access to this archive project
-    const { isEditor, isOwner, hasAccess } = await checkArchiveProjectAccess(user.email, params.id);
-
-    if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied" }, { status: 403 });
-    }
-
     return NextResponse.json({
-      archiveProject,
-      userRole: isOwner ? "owner" : "editor"
+      archiveProject
     });
   } catch (error) {
     console.error("Error fetching archive project:", error);
@@ -54,21 +38,13 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const permissionCheck = await checkEditorPermissions();
+  
+  if (!permissionCheck.success) {
+    return permissionCheck.response;
   }
 
   try {
-    // Check if user has editor role or is owner
-    const { isEditor, isOwner, hasAccess } = await checkArchiveProjectAccess(user.email, params.id);
-
-    if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied. Editor role required." }, { status: 403 });
-    }
-
     const body = await request.json();
     
     // Validate required fields
@@ -114,20 +90,13 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const permissionCheck = await checkEditorPermissions();
+  
+  if (!permissionCheck.success) {
+    return permissionCheck.response;
   }
 
   try {
-    // Check if user has editor role or is owner
-    const { hasAccess } = await checkArchiveProjectAccess(user.email, params.id);
-
-    if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied. Editor role required." }, { status: 403 });
-    }
 
     // Delete related data first (due to foreign key constraints)
     await prisma.archiveProjectTag.deleteMany({

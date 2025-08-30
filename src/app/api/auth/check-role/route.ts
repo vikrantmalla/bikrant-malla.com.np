@@ -30,11 +30,13 @@ export async function GET() {
     }
 
     // Check if user has editor role or is the portfolio owner
-    const hasEditorRole = dbUser.roles.some((role) => role.role === 'editor');
     const portfolio = await prisma.portfolio.findFirst({
       where: { ownerEmail: user.email },
     });
     const isOwner = !!portfolio;
+    
+    // Owner automatically gets editor role without invitation
+    const hasEditorRole = dbUser.roles.some((role) => role.role === 'editor') || isOwner;
 
     return NextResponse.json({
       user: {

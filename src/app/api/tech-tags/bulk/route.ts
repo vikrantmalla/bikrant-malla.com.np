@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
 
 // POST bulk create tech tags
 export async function POST(request: Request) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const permissionCheck = await checkEditorPermissions();
+  
+  if (!permissionCheck.success) {
+    return permissionCheck.response;
   }
 
   try {
@@ -92,11 +91,10 @@ export async function POST(request: Request) {
 
 // DELETE bulk delete tech tags
 export async function DELETE(request: Request) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const permissionCheck = await checkEditorPermissions();
+  
+  if (!permissionCheck.success) {
+    return permissionCheck.response;
   }
 
   try {

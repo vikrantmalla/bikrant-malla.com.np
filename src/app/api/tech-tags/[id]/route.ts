@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
 
 // GET tech tag by ID
@@ -45,11 +45,10 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const permissionCheck = await checkEditorPermissions();
+  
+  if (!permissionCheck.success) {
+    return permissionCheck.response;
   }
 
   try {
@@ -111,11 +110,10 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const permissionCheck = await checkEditorPermissions();
+  
+  if (!permissionCheck.success) {
+    return permissionCheck.response;
   }
 
   try {

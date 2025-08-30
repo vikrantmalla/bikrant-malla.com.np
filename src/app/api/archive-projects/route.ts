@@ -1,15 +1,20 @@
 import { NextResponse } from "next/server";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const permissionCheck = await checkEditorPermissions();
+  
+  if (!permissionCheck.success) {
+    return permissionCheck.response;
   }
-
+  
+    const user = permissionCheck.kindeUser;
+  
+  if (!user || !user.email) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+  
   try {
     console.log("User email:", user.email);
     
@@ -24,7 +29,7 @@ export async function GET(request: Request) {
       console.log("Creating new user for:", user.email);
       dbUser = await prisma.user.create({
         data: {
-          kindeUserId: user.id || `kinde_${Date.now()}`,
+          kindeUserId: `kinde_${Date.now()}`,
           email: user.email,
           name: user.given_name || user.family_name || user.email.split('@')[0]
         },
