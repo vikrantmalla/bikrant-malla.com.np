@@ -128,13 +128,8 @@ const PortfolioForm = () => {
 
   const handleFormSubmit = useCallback(
     async (data: any) => {
-      // Validate required fields before submission
-      if (!data.name?.trim() || !data.jobTitle?.trim() || !data.aboutDescription1?.trim() || 
-          !data.aboutDescription2?.trim() || !data.skills?.trim() || !data.email?.trim() || 
-          !data.ownerEmail?.trim() || !data.linkedIn?.trim() || !data.gitHub?.trim() || 
-          !data.facebook?.trim() || !data.instagram?.trim()) {
-        return;
-      }
+      // The schema validation will handle the skills transformation
+      // No need for manual validation here since zodResolver handles it
       await onSubmit(data);
     },
     [onSubmit]

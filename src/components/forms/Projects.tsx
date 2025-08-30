@@ -84,12 +84,8 @@ const ProjectsForm = () => {
   });
 
   const handleFormSubmit = useCallback(async (data: any) => {
-    // Validate required fields before submission
-    if (!data.title?.trim() || !data.subTitle?.trim() || !data.images?.trim() || 
-        !data.imageUrl?.trim() || !data.alt?.trim() || !data.projectView?.trim() || 
-        !data.tools?.trim() || !data.platform?.trim()) {
-      return;
-    }
+    // The schema validation will handle the tools transformation
+    // No need for manual validation here since zodResolver handles it
     await onSubmit(data);
   }, [onSubmit]);
 
