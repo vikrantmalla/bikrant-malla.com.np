@@ -104,9 +104,7 @@ async function main() {
             ),
             platform: faker.helpers.arrayElement([
               "Web",
-              "Mobile",
-              "Desktop",
-              "API",
+              "Design",
             ]),
             portfolioId: portfolio.id,
           },

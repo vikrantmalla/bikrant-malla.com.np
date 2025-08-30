@@ -1,4 +1,4 @@
-import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaSync } from "react-icons/fa";
 
 interface FormHeaderProps {
   title: string;
@@ -8,6 +8,7 @@ interface FormHeaderProps {
   onEdit: () => void;
   onDelete: () => void;
   onCreateNew: () => void;
+  onRefresh?: () => void;
   itemName: string;
 }
 
@@ -19,6 +20,7 @@ const FormHeader: React.FC<FormHeaderProps> = ({
   onEdit,
   onDelete,
   onCreateNew,
+  onRefresh,
   itemName,
 }) => {
   return (
@@ -26,6 +28,17 @@ const FormHeader: React.FC<FormHeaderProps> = ({
       <h1 className="form-title">{title}</h1>
 
       <div className="form-actions">
+        {onRefresh && (
+          <button
+            type="button"
+            onClick={onRefresh}
+            className="form-button form-button--secondary"
+            disabled={isLoading}
+            title={`Refresh ${itemName} List`}
+          >
+            <FaSync className={isLoading ? "fa-spin" : ""} />
+          </button>
+        )}
         {hasCurrentItem && !isEditing && (
           <>
             <button

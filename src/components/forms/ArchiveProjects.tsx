@@ -19,16 +19,9 @@ const archiveProjectSchema = z.object({
   projectView: z.string().min(1, "Project View is required"),
   viewCode: z.string().min(1, "View Code is required"),
   build: z
-    .string()
+    .array(z.string())
     .optional()
-    .transform((val) =>
-      val
-        ? val
-            .split(",")
-            .map((s) => s.trim())
-            .filter((s) => s)
-        : []
-    ),
+    .default([]),
 });
 
 interface ArchiveProjectData {
@@ -58,6 +51,7 @@ const ArchiveProjectsForm = () => {
     handleSelectItem: handleSelectArchiveProject,
     onSubmit,
     resetForm,
+    refreshItems,
     setCurrentItem: setCurrentArchiveProject,
     setIsEditing,
   } = useFormManager<ArchiveProjectData>("archiveProjects", "Archive Project");
@@ -76,7 +70,7 @@ const ArchiveProjectsForm = () => {
       isNew: false,
       projectView: "",
       viewCode: "",
-      build: "",
+      build: [],
     },
   });
 
@@ -100,7 +94,7 @@ const ArchiveProjectsForm = () => {
     setValue("viewCode", archiveProject.viewCode);
     setValue(
       "build",
-      archiveProject.build ? archiveProject.build.join(", ") : ""
+      archiveProject.build || []
     );
   }, [handleEdit, setValue]);
 
@@ -128,7 +122,7 @@ const ArchiveProjectsForm = () => {
       setValue("viewCode", archiveProject.viewCode);
       setValue(
         "build",
-        archiveProject.build ? archiveProject.build.join(", ") : ""
+        archiveProject.build || []
       );
     }
   }, [archiveProjects, handleSelectArchiveProject, setValue]);
@@ -172,6 +166,7 @@ const ArchiveProjectsForm = () => {
         onEdit={() => currentArchiveProject && handleEditClick(currentArchiveProject)}
         onDelete={() => currentArchiveProject && handleDelete(currentArchiveProject.id)}
         onCreateNew={handleCreateNewClick}
+        onRefresh={refreshItems}
         itemName="Archive Project"
       />
 
@@ -182,6 +177,7 @@ const ArchiveProjectsForm = () => {
         renderItem={renderArchiveProject}
         title="Existing Archive Projects"
         itemName="Archive Project"
+        isLoading={isLoading}
       />
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="form-layout">
@@ -206,8 +202,9 @@ const ArchiveProjectsForm = () => {
           <input
             {...register("year")}
             type="number"
-            min="1900"
-            max="2100"
+            min="2019"
+            max={new Date().getFullYear()}
+            defaultValue={new Date().getFullYear()}
             className="form-input"
             disabled={isFieldDisabled()}
           />
@@ -260,15 +257,29 @@ const ArchiveProjectsForm = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="build" className="form-label">
-            Build Tools (comma-separated)
+          <label className="form-label">
+            Build Tools
           </label>
-          <input
-            {...register("build")}
-            placeholder="e.g., React, Node.js, MongoDB"
-            className="form-input"
-            disabled={isFieldDisabled()}
-          />
+          <div className="tools-checkboxes">
+            {[
+              'React', 'Next.js', 'TypeScript', 'Node.js', 'MongoDB',
+              'PostgreSQL', 'Tailwind CSS', 'GraphQL', 'Docker', 'AWS',
+              'Python', 'Django', 'Vue.js', 'Angular', 'Express.js',
+              'Redis', 'Elasticsearch', 'Kubernetes', 'Jenkins', 'Git',
+              'Webpack', 'Vite', 'Babel', 'ESLint', 'Prettier', 'Jest',
+              'Cypress', 'Storybook', 'Rollup', 'Parcel', 'Gulp'
+            ].map((tool) => (
+              <label key={tool} className="tool-checkbox">
+                <input
+                  type="checkbox"
+                  value={tool}
+                  {...register("build")}
+                  disabled={isFieldDisabled()}
+                />
+                <span className="tool-label">{tool}</span>
+              </label>
+            ))}
+          </div>
         </div>
 
         {isEditing && (

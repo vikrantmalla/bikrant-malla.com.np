@@ -366,3 +366,137 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Tools Checkboxes */
+.tools-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--card, #e5e7eb);
+  border-radius: 0.375rem;
+  background-color: var(--background, #fff);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.tool-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease;
+}
+
+.tool-checkbox:hover {
+  background-color: var(--card, #f3f4f6);
+}
+
+.tool-checkbox input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  accent-color: var(--navBackground, #111111);
+}
+
+.tool-label {
+  font-size: 0.875rem;
+  color: var(--text, #000);
+  cursor: pointer;
+  user-select: none;
+}
+
+.tool-checkbox:has(input:checked) {
+  background-color: rgba(17, 17, 17, 0.1);
+}
+
+.tool-checkbox:has(input:checked) .tool-label {
+  font-weight: 600;
+  color: var(--navBackground, #111111);
+}
+
+/* Loading Skeleton and Empty State */
+.project-card--loading {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.project-card--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  text-align: center;
+  color: var(--textMuted, #6b7280);
+  font-style: italic;
+}
+
+.loading-message {
+  text-align: center;
+  padding: 1rem;
+  color: var(--textMuted, #6b7280);
+  font-style: italic;
+}
+
+.loading-skeleton {
+  padding: 1rem;
+}
+
+.skeleton-title {
+  width: 80%;
+  height: 1.25rem;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.skeleton-text {
+  width: 60%;
+  height: 0.875rem;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-text:last-child {
+  width: 40%;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Dark mode support for skeleton */
+@media (prefers-color-scheme: dark) {
+  .skeleton-title,
+  .skeleton-text {
+    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+    background-size: 200% 100%;
+  }
+}
+
+/* Refresh button spinning animation */
+.fa-spin {
+  animation: fa-spin 1s infinite linear;
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

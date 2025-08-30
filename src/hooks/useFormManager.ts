@@ -93,6 +93,21 @@ export function useFormManager<T extends { id: string; portfolioId?: string }>(
     fetchItems();
   }, [apiEndpoint, itemName]);
 
+  // Function to refresh items data
+  const refreshItems = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await clientApi[apiEndpoint].get();
+      // Extract the items array from the API response
+      const itemsData = response.projects || response.archiveProjects || response;
+      setItems(Array.isArray(itemsData) ? itemsData : []);
+    } catch (error) {
+      console.error(`Error refreshing ${itemName}:`, error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [apiEndpoint, itemName]);
+
   const onSubmit = useCallback(async (data: any) => {
     setIsLoading(true);
     setMessage({ text: "", isError: false });
@@ -127,21 +142,14 @@ export function useFormManager<T extends { id: string; portfolioId?: string }>(
         });
 
         if (!isEditing) {
-          // If creating new, reset form
+          // If creating new, reset form and refresh data
           setCurrentItem(null);
           setIsEditing(false);
+          await refreshItems();
         } else {
           // After successful update, refresh items data and exit editing mode
-          try {
-            const response = await clientApi[apiEndpoint].get();
-            // Extract the items array from the API response
-            const itemsData = response.projects || response.archiveProjects || response;
-            setItems(Array.isArray(itemsData) ? itemsData : []);
-            setIsEditing(false); // Exit editing mode after successful update
-          } catch (error) {
-            console.error(`Error refreshing ${itemName}:`, error);
-            setIsEditing(false); // Still exit editing mode even if refresh fails
-          }
+          await refreshItems();
+          setIsEditing(false);
         }
       } else {
         setMessage({
@@ -159,7 +167,7 @@ export function useFormManager<T extends { id: string; portfolioId?: string }>(
     } finally {
       setIsLoading(false);
     }
-  }, [currentItem, getPortfolioId, isEditing, apiEndpoint, itemName]);
+  }, [currentItem, getPortfolioId, isEditing, apiEndpoint, itemName, refreshItems]);
 
   const handleEdit = useCallback((item: T) => {
     setCurrentItem(item);
@@ -194,14 +202,14 @@ export function useFormManager<T extends { id: string; portfolioId?: string }>(
           isError: false,
         });
 
-        // Remove from local state
-        setItems(items.filter((item) => item.id !== id));
-
         // Reset form if we were editing this item
         if (currentItem && currentItem.id === id) {
           setCurrentItem(null);
           setIsEditing(false);
         }
+
+        // Refresh data to ensure consistency
+        await refreshItems();
       } else {
         setMessage({
           text: `Failed to delete ${itemName}`,
@@ -216,7 +224,7 @@ export function useFormManager<T extends { id: string; portfolioId?: string }>(
     } finally {
       setIsLoading(false);
     }
-  }, [currentItem, items, apiEndpoint, itemName]);
+  }, [currentItem, apiEndpoint, itemName, refreshItems]);
 
   const handleCreateNew = useCallback(() => {
     setIsEditing(false);
@@ -256,6 +264,7 @@ export function useFormManager<T extends { id: string; portfolioId?: string }>(
     handleSelectItem,
     onSubmit,
     resetForm,
+    refreshItems,
     
     // Setters
     setMessage,
