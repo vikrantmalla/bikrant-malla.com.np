@@ -3,6 +3,7 @@
 
 $breakpoints: (
   "xs": 0,
+  "xs-sm": 320px,
   "sm": 480px,
   "md": 720px,
   "lg": 960px,
@@ -11,6 +12,12 @@ $breakpoints: (
 
 @mixin xs {
   @media (min-width: map.get($breakpoints, "xs")) {
+    @content;
+  }
+}
+
+@mixin xs-sm {
+  @media (min-width: map.get($breakpoints, "xs-sm")) {
     @content;
   }
 }

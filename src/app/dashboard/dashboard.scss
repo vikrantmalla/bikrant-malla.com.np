@@ -189,15 +189,26 @@ $dashboard-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0
   flex: 1;
   padding: 1.5rem;
 
+  @include xs-sm {
+    padding: 1rem;
+    padding-top: 5rem; // Account for mobile toggle button
+  }
+
+  @include sm {
+    padding: 1.25rem;
+    padding-top: 5rem; // Account for mobile toggle button
+  }
+
   @include md {
     padding: 2rem;
+    padding-top: 2rem; // Reset padding-top for desktop
   }
 
   &--with-sidebar {
-    margin-left: 280px; // Width of the sidebar
+    margin-left: 0; // Remove fixed margin for mobile
     
     @include md {
-      margin-left: 300px;
+      margin-left: 280px; // Width of the sidebar on desktop
     }
     
     @include lg {

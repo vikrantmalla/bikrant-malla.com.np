@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import "./SideMenu.scss";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaBars, FaTimes } from "react-icons/fa";
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -31,7 +31,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
 }) => {
   const { user, userRole } = useAuth();
   const [activeItem, setActiveItem] = useState("dashboard");
-  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const menuItems: MenuItem[] = [
     {
@@ -69,11 +69,18 @@ const SideMenu: React.FC<SideMenuProps> = ({
   const handleItemClick = (itemId: string, formType: string) => {
     setActiveItem(itemId);
     onFormChange?.(formType);
+    // Close mobile menu when item is clicked
+    if (window.innerWidth < 768) {
+      setIsMobileMenuOpen(false);
+    }
   };
 
   const handleLogout = () => {
-    setShowLogoutPopup(false);
     onLogout?.();
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   const getUserInitials = () => {
@@ -88,20 +95,44 @@ const SideMenu: React.FC<SideMenuProps> = ({
 
   return (
     <>
+      {/* Mobile Menu Toggle Button */}
+      <button
+        className="side-menu__mobile-toggle"
+        onClick={toggleMobileMenu}
+        aria-label="Toggle menu"
+      >
+        <FaBars />
+      </button>
+
+      {/* Mobile Backdrop */}
+      {isMobileMenuOpen && (
+        <div
+          className="side-menu__mobile-backdrop"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       <div
         className={`side-menu side-menu--permanent ${
           isOpen ? "side-menu--open" : ""
-        }`}
+        } ${isMobileMenuOpen ? "side-menu--mobile-open" : ""}`}
       >
         {/* Header Section */}
         <div className="side-menu__header-section">
-          <div className="side-menu__footer-links">
-            <Link href="/" className="side-menu__footer-link">
-              <FaArrowLeft />
-            </Link>
-          </div>
-          <div className="side-menu__logo">
-            <span className="side-menu__logo-text">Dashboard</span>
+          <div className="side-menu__header-content">
+            <div className="side-menu__header-top">
+              <Link href="/" className="side-menu__back-button">
+                <FaArrowLeft />
+                <span>Back to Site</span>
+              </Link>
+              <button 
+                className="side-menu__close-button"
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Close menu"
+              >
+                <FaTimes />
+              </button>
+            </div>
           </div>
         </div>
 
