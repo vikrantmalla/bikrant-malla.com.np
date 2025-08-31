@@ -1,0 +1,118 @@
+.dashboard__message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  
+  &--success {
+    background-color: #dcfce7;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+  }
+  
+  &--error {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+  }
+}
+
+.dashboard__form-error {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #dc2626;
+}
+
+// Invite Form Styles
+.dashboard__invite-form {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  max-width: 500px;
+  border: 1px solid #e5e7eb;
+}
+
+.dashboard__form-group {
+  margin-bottom: 1.5rem;
+}
+
+.dashboard__form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard__form-input,
+.dashboard__form-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: #ffffff;
+  color: #111827;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+    font-style: italic;
+  }
+}
+
+.dashboard__invite-btn {
+  background: #111827;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  margin-top: 0.5rem;
+
+  &:hover:not(:disabled) {
+    background: #1f2937;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.7;
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .dashboard__invite-form {
+    border: 2px solid #000000;
+  }
+
+  .dashboard__form-input:focus,
+  .dashboard__form-select:focus {
+    border-width: 3px;
+  }
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .dashboard__invite-btn {
+    transition: none;
+  }
+}

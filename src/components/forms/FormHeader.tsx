@@ -39,6 +39,8 @@ const FormHeader: React.FC<FormHeaderProps> = ({
             <FaSync className={isLoading ? "fa-spin" : ""} />
           </button>
         )}
+        
+        {/* Show Edit/Delete buttons when viewing existing item */}
         {hasCurrentItem && !isEditing && (
           <>
             <button
@@ -60,14 +62,18 @@ const FormHeader: React.FC<FormHeaderProps> = ({
             </button>
           </>
         )}
-        <button
-          type="button"
-          onClick={onCreateNew}
-          className="form-button form-button--secondary"
-          title={`Create New ${itemName}`}
-        >
-          <FaPlus />
-        </button>
+        
+        {/* Only show Create New button when NOT editing existing item */}
+        {!isEditing && (
+          <button
+            type="button"
+            onClick={onCreateNew}
+            className="form-button form-button--secondary"
+            title={`Create New ${itemName}`}
+          >
+            <FaPlus />
+          </button>
+        )}
       </div>
     </div>
   );
