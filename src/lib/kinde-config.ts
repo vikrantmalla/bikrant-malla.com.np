@@ -1,19 +1,72 @@
-// Kinde Auth Configuration
+import { Environment } from "@/types/enum";
+
+// Kinde Auth Configuration based on environment
 export const kindeConfig = {
-  // These should be set in your environment variables
+  // Issuer URL - can be different for dev/prod
   issuer: process.env.KINDE_ISSUER_URL,
-  clientId: process.env.KINDE_CLIENT_ID,
-  clientSecret: process.env.KINDE_CLIENT_SECRET,
-  redirectUrl: process.env.KINDE_REDIRECT_URL || `${process.env.NEXT_PUBLIC_BASE_URL}/callback`,
-  logoutRedirectUrl: process.env.KINDE_LOGOUT_REDIRECT_URL || process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
-  
+
+  // Client ID - can be different for dev/prod
+  clientId:
+    process.env.NODE_ENV === Environment.PRODUCTION
+      ? process.env.KINDE_CLIENT_ID_PROD
+      : process.env.KINDE_CLIENT_ID_DEV,
+
+  // Client Secret - can be different for dev/prod
+  clientSecret:
+    process.env.NODE_ENV === Environment.PRODUCTION
+      ? process.env.KINDE_CLIENT_SECRET_PROD
+      : process.env.KINDE_CLIENT_SECRET_DEV,
+
+  // Redirect URLs - can be different for dev/prod
+  redirectUrl:
+    process.env.KINDE_REDIRECT_URL ||
+    `${process.env.NEXT_PUBLIC_BASE_URL}/callback`,
+
+  logoutRedirectUrl:
+    process.env.KINDE_LOGOUT_REDIRECT_URL || process.env.NEXT_PUBLIC_BASE_URL,
+
   // Custom URLs
   customLoginUrl: "/login",
   customCallbackUrl: "/callback",
-  
+
   // Default redirects
   defaultLoginRedirect: "/dashboard",
   defaultLogoutRedirect: "/",
+};
+
+// Helper function to validate Kinde configuration
+export const validateKindeConfig = () => {
+  const issues = [];
+  const isProduction = process.env.NODE_ENV === Environment.PRODUCTION;
+  const envLabel = isProduction ? "production" : "development";
+
+  if (!kindeConfig.issuer) {
+    issues.push(`Kinde issuer URL is not set for ${envLabel} environment`);
+  }
+
+  if (!kindeConfig.clientId) {
+    issues.push(`Kinde client ID is not set for ${envLabel} environment`);
+  }
+
+  if (!kindeConfig.clientSecret) {
+    issues.push(`Kinde client secret is not set for ${envLabel} environment`);
+  }
+
+  if (!kindeConfig.redirectUrl) {
+    issues.push(`Kinde redirect URL is not set for ${envLabel} environment`);
+  }
+
+  return {
+    isValid: issues.length === 0,
+    issues,
+    environment: envLabel,
+    config: {
+      issuer: kindeConfig.issuer,
+      clientId: kindeConfig.clientId,
+      redirectUrl: kindeConfig.redirectUrl,
+      logoutRedirectUrl: kindeConfig.logoutRedirectUrl,
+    },
+  };
 };
 
 // Helper function to build login URL with redirect
@@ -50,4 +103,4 @@ export const sanitizeRedirectUrl = (url: string): string => {
     return kindeConfig.defaultLoginRedirect;
   }
   return url;
-}; 
+};

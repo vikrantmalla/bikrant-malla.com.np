@@ -8,13 +8,13 @@ import FormMessage from "./FormMessage";
 import "./form.scss";
 import { createProject, updateProject, deleteProject } from "@/app/dashboard/actions";
 import { Project } from "@/types/data";
+import { cloudinaryConfig, validateCloudinaryConfig } from "@/lib/cloudinary";
 
 // Updated schema to match Prisma schema
 const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),
   subTitle: z.string().min(1, "Subtitle is required"),
-  images: z.string().min(1, "Images are required"),
-  imageUrl: z.string().min(1, "Image URL is required"),
+  images: z.array(z.string()).min(1, "At least one image is required"),
   alt: z.string().min(1, "Alt text is required"),
   projectView: z.string().min(1, "Project View is required"),
   tools: z
@@ -27,8 +27,7 @@ interface ProjectData {
   id: string;
   title: string;
   subTitle: string;
-  images: string;
-  imageUrl: string;
+  images: string[];
   alt: string;
   projectView: string;
   tools: string[];
@@ -47,6 +46,9 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
   const [currentProject, setCurrentProject] = useState<ProjectData | null>(null);
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<string>("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const {
     register,
@@ -60,8 +62,7 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
     defaultValues: {
       title: "",
       subTitle: "",
-      images: "",
-      imageUrl: "",
+      images: [],
       alt: "",
       projectView: "",
       tools: [],
@@ -81,6 +82,65 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
     }
   }, [projectsData]);
 
+  // Handle file selection
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  // Handle custom upload
+  const handleUpload = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!selectedFile) return alert("Please select a file");
+
+    setIsUploading(true);
+    setMessage({ text: "", isError: false });
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("upload_preset", cloudinaryConfig.uploadPreset || "");
+
+    try {
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      
+      const data = await res.json();
+      
+      if (data.error) {
+        throw new Error(data.error.message);
+      }
+      
+      console.log("Upload successful:", data);
+      setUploadedImage(data.secure_url);
+      setValue("images", [data.secure_url]);
+      setSelectedFile(null);
+      setMessage({ text: "Image uploaded successfully!", isError: false });
+    } catch (error) {
+      console.error("Upload error:", error);
+      setMessage({ 
+        text: `Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`, 
+        isError: true 
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Remove image
+  const removeImage = () => {
+    console.log("Removing image, current uploadedImage:", uploadedImage);
+    setUploadedImage("");
+    setValue("images", []);
+    console.log("Images array cleared");
+  };
+
   // Server action handlers
   const handleCreateProject = async (data: any) => {
     setIsLoading(true);
@@ -90,6 +150,8 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => {
         if (key === 'tools' && Array.isArray(value)) {
+          formData.append(key, value.join(','));
+        } else if (key === 'images' && Array.isArray(value)) {
           formData.append(key, value.join(','));
         } else {
           formData.append(key, value as string);
@@ -106,6 +168,7 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
           setProjects(prev => [...prev, result.data]);
         }
         reset();
+        setUploadedImage("");
         return { success: true, data: result.data };
       } else {
         setMessage({ text: `Error: ${result.error}`, isError: true });
@@ -129,6 +192,8 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => {
         if (key === 'tools' && Array.isArray(value)) {
+          formData.append(key, value.join(','));
+        } else if (key === 'images' && Array.isArray(value)) {
           formData.append(key, value.join(','));
         } else {
           formData.append(key, value as string);
@@ -176,6 +241,7 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
         // Remove from projects list
         setProjects(prev => prev.filter(p => p.id !== projectId));
         reset();
+        setUploadedImage("");
         return { success: true };
       } else {
         setMessage({ text: `Error: ${result.error}`, isError: true });
@@ -198,17 +264,20 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
     setValue("title", project.title);
     setValue("subTitle", project.subTitle);
     setValue("images", project.images);
-    setValue("imageUrl", project.imageUrl);
     setValue("alt", project.alt);
     setValue("projectView", project.projectView);
     setValue("tools", project.tools);
     setValue("platform", project.platform);
+    
+    // Set uploaded image
+    setUploadedImage(project.images[0] || "");
   };
 
   const handleCancel = () => {
     setIsEditing(false);
     setMessage({ text: "", isError: false });
     reset();
+    setUploadedImage("");
   };
 
   const handleCreateNew = () => {
@@ -217,6 +286,7 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
     setIsEditing(true);
     setMessage({ text: "", isError: false });
     reset();
+    setUploadedImage("");
   };
 
   const handleSelectProject = (projectId: string) => {
@@ -228,11 +298,13 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
       setValue("title", project.title);
       setValue("subTitle", project.subTitle);
       setValue("images", project.images);
-      setValue("imageUrl", project.imageUrl);
       setValue("alt", project.alt);
       setValue("projectView", project.projectView);
       setValue("tools", project.tools);
       setValue("platform", project.platform);
+      
+      // Set uploaded image
+      setUploadedImage(project.images[0] || "");
     }
   };
 
@@ -275,6 +347,9 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
     if (currentProject) return "View Project";
     return "Create Project";
   };
+
+  // Check Cloudinary configuration
+  const cloudinaryValidation = validateCloudinaryConfig();
 
   return (
     <div className="form-container">
@@ -330,32 +405,91 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="images" className="form-label form-label--required">
-            Images (comma-separated URLs)
+          <label className="form-label form-label--required">
+            Project Image
           </label>
-          <input
-            {...register("images")}
-            placeholder="e.g., https://example.com/image1.jpg, https://example.com/image2.jpg"
-            className="form-input"
-            disabled={isFieldDisabled()}
-          />
+          
+          {/* Cloudinary Configuration Error */}
+          {!cloudinaryValidation.isValid && (
+            <div className="cloudinary-config-error">
+              <h4>Cloudinary Configuration Required</h4>
+              <p>Please configure your Cloudinary credentials to upload images:</p>
+              <ul>
+                {cloudinaryValidation.issues.map((issue: string, index: number) => (
+                  <li key={index}>{issue}</li>
+                ))}
+              </ul>
+              <p>
+                <strong>Steps to fix:</strong>
+              </p>
+              <ol>
+                <li>Create a <code>.env.local</code> file in your project root</li>
+                <li>Add your Cloudinary credentials:</li>
+                <li><code>NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name</code></li>
+                <li><code>NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_upload_preset</code></li>
+                <li>Restart your development server</li>
+              </ol>
+              
+              <div className="upload-preset-troubleshooting">
+                <h5>⚠️ Important: Upload Preset Configuration</h5>
+                <p>If you get &quot;Upload preset must be whitelisted for unsigned uploads&quot; error:</p>
+                <ol>
+                  <li>Go to your <a href="https://cloudinary.com/console" target="_blank" rel="noopener noreferrer">Cloudinary Dashboard</a></li>
+                  <li>Navigate to <strong>Settings → Upload → Upload presets</strong></li>
+                  <li>Click on your upload preset</li>
+                  <li>Set <strong>&quot;Signing Mode&quot; to &quot;Unsigned&quot;</strong></li>
+                  <li>Save the changes</li>
+                </ol>
+                <p><strong>Note:</strong> Unsigned uploads are required for client-side image uploads.</p>
+              </div>
+            </div>
+          )}
+          
+          {/* Image Upload Section */}
+          {isEditing && cloudinaryValidation.isValid && (
+            <div className="image-upload-section">
+              {!uploadedImage ? (
+                <div className="custom-upload-container">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="custom-file-input"
+                    disabled={isFieldDisabled() || isUploading}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleUpload}
+                    className="custom-upload-button"
+                    disabled={isFieldDisabled() || isUploading || !selectedFile}
+                  >
+                    {isUploading ? "Uploading..." : "Upload Image"}
+                  </button>
+                </div>
+              ) : (
+                                  <div className="single-image-preview">
+                    <img
+                      src={uploadedImage}
+                      alt="Project image"
+                      width={200}
+                      height={200}
+                      className="preview-image"
+                    />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="remove-image-btn"
+                    disabled={isFieldDisabled()}
+                  >
+                    Remove Image
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+          
           {errors.images && (
             <span className="form-error">{errors.images.message}</span>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="imageUrl" className="form-label form-label--required">
-            Main Image URL
-          </label>
-          <input
-            {...register("imageUrl")}
-            placeholder="https://example.com/main-image.jpg"
-            className="form-input"
-            disabled={isFieldDisabled()}
-          />
-          {errors.imageUrl && (
-            <span className="form-error">{errors.imageUrl.message}</span>
           )}
         </div>
 
@@ -365,7 +499,7 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
           </label>
           <input
             {...register("alt")}
-            placeholder="Description of the image"
+            placeholder="Description of the project image"
             className="form-input"
             disabled={isFieldDisabled()}
           />

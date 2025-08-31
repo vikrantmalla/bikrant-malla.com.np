@@ -3,8 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import InvitationEmail from "@/components/emails/InvitationEmail";
+import { resendConfig } from "@/lib/resend-config";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(resendConfig.apiKey);
 
 export async function POST(req: Request) {
   const permissionCheck = await checkEditorPermissions();
@@ -102,13 +103,11 @@ export async function POST(req: Request) {
     }
 
     // Send email notification to the invited user using Resend
-    const signupUrl = `${
-      process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_DEFAULT_APP_URL
-    }/login`;
+    const signupUrl = `${resendConfig.appUrl}/login`;
 
     try {
       const emailResult = await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev",
+        from: resendConfig.fromEmail,
         to: email,
         subject: `You have been invited to collaborate on ${portfolio.name}`,
         react: InvitationEmail({
@@ -139,8 +138,8 @@ export async function POST(req: Request) {
             solution:
               "Update RESEND_FROM_EMAIL to use a verified domain (e.g., onboarding@resend.dev for testing)",
             debug: {
-              hasApiKey: !!process.env.RESEND_API_KEY,
-              fromEmail: process.env.RESEND_FROM_EMAIL,
+              hasApiKey: !!resendConfig.apiKey,
+              fromEmail: resendConfig.fromEmail,
             },
           },
           { status: 400 }
@@ -154,8 +153,8 @@ export async function POST(req: Request) {
           details:
             emailError instanceof Error ? emailError.message : "Unknown error",
           debug: {
-            hasApiKey: !!process.env.RESEND_API_KEY,
-            fromEmail: process.env.RESEND_FROM_EMAIL,
+            hasApiKey: !!resendConfig.apiKey,
+            fromEmail: resendConfig.fromEmail,
           },
         },
         { status: 500 }

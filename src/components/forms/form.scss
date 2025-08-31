@@ -501,3 +501,218 @@
     transform: rotate(360deg);
   }
 }
+
+// Image Upload Styles
+.image-upload-section {
+  margin-bottom: 1rem;
+}
+
+.upload-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-block;
+  text-decoration: none;
+  margin-bottom: 1rem;
+
+  &:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+  }
+
+  span {
+    color: white;
+  }
+}
+
+.single-image-preview {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.preview-image {
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+}
+
+.remove-image-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #dc2626;
+  }
+
+  &:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+  }
+}
+
+// Cloudinary Configuration Error
+.cloudinary-config-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  
+  h4 {
+    color: #dc2626;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  p {
+    color: #374151;
+    margin: 0.5rem 0;
+    font-size: 0.875rem;
+  }
+  
+  ul, ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+    
+    li {
+      color: #374151;
+      font-size: 0.875rem;
+      margin: 0.25rem 0;
+    }
+  }
+  
+  code {
+    background: #f3f4f6;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.75rem;
+    color: #1f2937;
+  }
+}
+
+// Upload Preset Troubleshooting
+.upload-preset-troubleshooting {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  
+  h5 {
+    color: #d97706;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  p {
+    color: #92400e;
+    margin: 0.5rem 0;
+    font-size: 0.875rem;
+  }
+  
+  ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+    
+    li {
+      color: #92400e;
+      font-size: 0.875rem;
+      margin: 0.25rem 0;
+    }
+  }
+  
+  a {
+    color: #d97706;
+    text-decoration: underline;
+    
+    &:hover {
+      color: #b45309;
+    }
+  }
+}
+
+// Custom Upload Styles
+.custom-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.custom-file-input {
+  width: 100%;
+  max-width: 300px;
+  padding: 0.75rem;
+  border: 2px dashed #d1d5db;
+  border-radius: 0.5rem;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: #3b82f6;
+    background: #f0f9ff;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  &::file-selector-button {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-right: 1rem;
+    
+    &:hover {
+      background: #2563eb;
+    }
+  }
+}
+
+.custom-upload-button {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 150px;
+  
+  &:hover:not(:disabled) {
+    background: #059669;
+    transform: translateY(-1px);
+  }
+  
+  &:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
