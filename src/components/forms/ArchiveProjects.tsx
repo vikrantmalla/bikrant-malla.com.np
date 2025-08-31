@@ -90,11 +90,11 @@ const ArchiveProjectsForm = ({ archiveProjectsData }: ArchiveProjectsFormProps) 
         if (key === 'build' && Array.isArray(value)) {
           formData.append(key, value.join(','));
         } else if (key === 'year') {
-          formData.append(key, value.toString());
+          formData.append(key, String(value));
         } else if (key === 'isNew') {
-          formData.append(key, value.toString());
+          formData.append(key, String(value));
         } else {
-          formData.append(key, value as string);
+          formData.append(key, String(value));
         }
       });
 
@@ -133,11 +133,11 @@ const ArchiveProjectsForm = ({ archiveProjectsData }: ArchiveProjectsFormProps) 
         if (key === 'build' && Array.isArray(value)) {
           formData.append(key, value.join(','));
         } else if (key === 'year') {
-          formData.append(key, value.toString());
+          formData.append(key, String(value)); // Safely convert unknown value to string
         } else if (key === 'isNew') {
-          formData.append(key, value.toString());
+          formData.append(key, String(value)); // Safely convert unknown value to string
         } else {
-          formData.append(key, value as string);
+          formData.append(key, String(value)); // Safely convert unknown value to string
         }
       });
 

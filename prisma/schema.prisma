@@ -67,7 +67,6 @@ model Project {
   title        String
   subTitle     String
   images       String
-  imageUrl     String
   alt          String
   projectView  String
   tools        String[]
@@ -107,6 +106,5 @@ model ArchiveProjectTag {
 }
 
 model Config {
-  id                String  @id @default(auto()) @map("_id") @db.ObjectId
-  allowBackupImages Boolean
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 }

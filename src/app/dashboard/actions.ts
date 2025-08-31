@@ -144,8 +144,7 @@ export async function createProject(formData: FormData) {
     const projectData = {
       title: formData.get("title") as string,
       subTitle: formData.get("subTitle") as string,
-      images: formData.get("images") as string,
-      imageUrl: formData.get("imageUrl") as string,
+      images: (formData.get("images") as string).split(",").map(s => s.trim()),
       alt: formData.get("alt") as string,
       projectView: formData.get("projectView") as string,
       tools: (formData.get("tools") as string).split(",").map(s => s.trim()),
@@ -177,8 +176,7 @@ export async function updateProject(id: string, formData: FormData) {
     const projectData = {
       title: formData.get("title") as string,
       subTitle: formData.get("subTitle") as string,
-      images: formData.get("images") as string,
-      imageUrl: formData.get("imageUrl") as string,
+      images: (formData.get("images") as string).split(",").map(s => s.trim()),
       alt: formData.get("alt") as string,
       projectView: formData.get("projectView") as string,
       tools: (formData.get("tools") as string).split(",").map(s => s.trim()),

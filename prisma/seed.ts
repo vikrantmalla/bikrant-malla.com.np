@@ -83,10 +83,6 @@ async function main() {
             title: faker.company.catchPhrase(),
             subTitle: faker.lorem.sentence(),
             images: `project${String(index + 1).padStart(2, "0")}.jpg`,
-            imageUrl: `/images/project${String(index + 1).padStart(
-              2,
-              "0"
-            )}.jpg`,
             alt: faker.lorem.words(3),
             projectView: faker.internet.url({ protocol: "https" }),
             tools: faker.helpers.arrayElements(
@@ -167,13 +163,6 @@ async function main() {
     });
 
     console.log("✅ User portfolio role created - user is portfolio owner");
-
-    // Create config
-    await prisma.config.create({
-      data: {
-        allowBackupImages: true,
-      },
-    });
 
     console.log("✅ Config created");
 

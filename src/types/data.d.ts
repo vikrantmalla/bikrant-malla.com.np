@@ -169,8 +169,7 @@ export interface Project {
   id: string;
   title: string;
   subTitle: string; // Required in Prisma schema
-  images: string; // Required in Prisma schema
-  imageUrl: string; // Required in Prisma schema
+  images: string[]; // Required in Prisma schema - Array of Cloudinary URLs
   alt: string; // Required in Prisma schema
   projectView: string;
   tools: string[];
