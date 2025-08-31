@@ -1,12 +1,13 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useCallback } from "react";
-import { useFormManager } from "@/hooks/useFormManager";
+import { useEffect, useState } from "react";
 import FormHeader from "./FormHeader";
 import ItemsList from "./ItemsList";
 import FormMessage from "./FormMessage";
 import "./form.scss";
+import { createProject, updateProject, deleteProject } from "@/app/dashboard/actions";
+import { Project } from "@/types/data";
 
 // Updated schema to match Prisma schema
 const projectSchema = z.object({
@@ -35,26 +36,17 @@ interface ProjectData {
   portfolioId?: string;
 }
 
-const ProjectsForm = () => {
-  const {
-    message,
-    isEditing,
-    currentItem: currentProject,
-    isLoading,
-    items: projects,
-    selectedItemId: selectedProjectId,
-    isFieldDisabled,
-    handleEdit,
-    handleCancel,
-    handleDelete,
-    handleCreateNew,
-    handleSelectItem: handleSelectProject,
-    onSubmit,
-    resetForm,
-    refreshItems,
-    setCurrentItem: setCurrentProject,
-    setIsEditing,
-  } = useFormManager<ProjectData>("projects", "Project");
+interface ProjectsFormProps {
+  projectsData?: Project[] | null;
+}
+
+const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<{ text: string; isError: boolean }>({ text: "", isError: false });
+  const [currentProject, setCurrentProject] = useState<ProjectData | null>(null);
+  const [projects, setProjects] = useState<ProjectData[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
   const {
     register,
@@ -62,6 +54,7 @@ const ProjectsForm = () => {
     formState: { errors },
     reset,
     setValue,
+    watch,
   } = useForm({
     resolver: zodResolver(projectSchema),
     defaultValues: {
@@ -76,14 +69,130 @@ const ProjectsForm = () => {
     },
   });
 
-  const handleFormSubmit = useCallback(async (data: any) => {
-    // The schema validation will handle the tools transformation
-    // No need for manual validation here since zodResolver handles it
-    await onSubmit(data);
-  }, [onSubmit]);
+  // Watch tools field to handle checkbox selection
+  const toolsValue = watch("tools");
 
-  const handleEditClick = useCallback((project: ProjectData) => {
-    handleEdit(project);
+  // Load existing projects data from props when component mounts or data changes
+  useEffect(() => {
+    if (projectsData && Array.isArray(projectsData)) {
+      setProjects(projectsData);
+    } else {
+      setProjects([]);
+    }
+  }, [projectsData]);
+
+  // Server action handlers
+  const handleCreateProject = async (data: any) => {
+    setIsLoading(true);
+    setMessage({ text: "", isError: false });
+    
+    try {
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === 'tools' && Array.isArray(value)) {
+          formData.append(key, value.join(','));
+        } else {
+          formData.append(key, value as string);
+        }
+      });
+
+      const result = await createProject(formData);
+      if (result.success) {
+        setMessage({ text: "Project created successfully!", isError: false });
+        setCurrentProject(result.data);
+        setIsEditing(false);
+        // Refresh projects list
+        if (result.data) {
+          setProjects(prev => [...prev, result.data]);
+        }
+        reset();
+        return { success: true, data: result.data };
+      } else {
+        setMessage({ text: `Error: ${result.error}`, isError: true });
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      setMessage({ text: "Failed to create project", isError: true });
+      return { success: false, error: "Failed to create project" };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdateProject = async (data: any) => {
+    if (!currentProject?.id) return { success: false, error: "No project ID" };
+    
+    setIsLoading(true);
+    setMessage({ text: "", isError: false });
+    
+    try {
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === 'tools' && Array.isArray(value)) {
+          formData.append(key, value.join(','));
+        } else {
+          formData.append(key, value as string);
+        }
+      });
+
+      const result = await updateProject(currentProject.id, formData);
+      if (result.success) {
+        setMessage({ text: "Project updated successfully!", isError: false });
+        setCurrentProject(result.data);
+        setIsEditing(false);
+        // Update projects list
+        if (result.data) {
+          setProjects(prev => prev.map(p => p.id === result.data.id ? result.data : p));
+        }
+        return { success: true, data: result.data };
+      } else {
+        setMessage({ text: `Error: ${result.error}`, isError: true });
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      setMessage({ text: "Failed to update project", isError: true });
+      return { success: false, error: "Failed to update project" };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    if (!projectId) return { success: false, error: "No project ID" };
+    
+    if (!confirm("Are you sure you want to delete this project?")) {
+      return { success: false, error: "Deletion cancelled" };
+    }
+    
+    setIsLoading(true);
+    setMessage({ text: "", isError: false });
+    
+    try {
+      const result = await deleteProject(projectId);
+      if (result.success) {
+        setMessage({ text: "Project deleted successfully!", isError: false });
+        setCurrentProject(null);
+        setSelectedProjectId(null);
+        // Remove from projects list
+        setProjects(prev => prev.filter(p => p.id !== projectId));
+        reset();
+        return { success: true };
+      } else {
+        setMessage({ text: `Error: ${result.error}`, isError: true });
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      setMessage({ text: "Failed to delete project", isError: true });
+      return { success: false, error: "Failed to delete project" };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEdit = (project: ProjectData) => {
+    setCurrentProject(project);
+    setIsEditing(true);
+    setMessage({ text: "", isError: false });
     
     // Populate form with project data
     setValue("title", project.title);
@@ -94,24 +203,27 @@ const ProjectsForm = () => {
     setValue("projectView", project.projectView);
     setValue("tools", project.tools);
     setValue("platform", project.platform);
-  }, [handleEdit, setValue]);
+  };
 
-  const handleCancelClick = useCallback(() => {
-    handleCancel();
+  const handleCancel = () => {
+    setIsEditing(false);
+    setMessage({ text: "", isError: false });
     reset();
-  }, [handleCancel, reset]);
+  };
 
-  const handleCreateNewClick = useCallback(() => {
-    handleCreateNew();
+  const handleCreateNew = () => {
+    setCurrentProject(null);
+    setSelectedProjectId(null);
+    setIsEditing(true);
+    setMessage({ text: "", isError: false });
     reset();
-  }, [handleCreateNew, reset]);
+  };
 
-  const handleSelectProjectClick = useCallback((projectId: string) => {
-    handleSelectProject(projectId);
-    const project = projects.find(
-      (p: ProjectData) => p.id === projectId
-    );
+  const handleSelectProject = (projectId: string) => {
+    setSelectedProjectId(projectId);
+    const project = projects.find(p => p.id === projectId);
     if (project) {
+      setCurrentProject(project);
       // Populate form for viewing
       setValue("title", project.title);
       setValue("subTitle", project.subTitle);
@@ -122,9 +234,19 @@ const ProjectsForm = () => {
       setValue("tools", project.tools);
       setValue("platform", project.platform);
     }
-  }, [projects, handleSelectProject, setValue]);
+  };
 
-  const renderProject = useCallback((project: ProjectData) => (
+  const refreshItems = () => {
+    // This would typically refresh from the server
+    // For now, we're using the props data
+    setMessage({ text: "Projects refreshed", isError: false });
+  };
+
+  const isFieldDisabled = () => {
+    return !isEditing || isLoading;
+  };
+
+  const renderProject = (project: ProjectData) => (
     <>
       <h4>{project.title}</h4>
       {project.subTitle && (
@@ -146,7 +268,7 @@ const ProjectsForm = () => {
         </p>
       )}
     </>
-  ), []);
+  );
 
   const getTitle = () => {
     if (isEditing) return "Edit Project";
@@ -161,9 +283,9 @@ const ProjectsForm = () => {
         isEditing={isEditing}
         hasCurrentItem={!!currentProject}
         isLoading={isLoading}
-        onEdit={() => currentProject && handleEditClick(currentProject)}
-        onDelete={() => currentProject && handleDelete(currentProject.id)}
-        onCreateNew={handleCreateNewClick}
+        onEdit={() => currentProject && handleEdit(currentProject)}
+        onDelete={() => currentProject && handleDeleteProject(currentProject.id)}
+        onCreateNew={handleCreateNew}
         onRefresh={refreshItems}
         itemName="Project"
       />
@@ -171,14 +293,14 @@ const ProjectsForm = () => {
       <ItemsList
         items={projects}
         selectedItemId={selectedProjectId}
-        onSelectItem={handleSelectProjectClick}
+        onSelectItem={handleSelectProject}
         renderItem={renderProject}
         title="Existing Projects"
         itemName="Project"
         isLoading={isLoading}
       />
 
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="form-layout">
+      <form onSubmit={handleSubmit(isEditing ? handleUpdateProject : handleCreateProject)} className="form-layout">
         <div className="form-group">
           <label htmlFor="title" className="form-label form-label--required">
             Project Title
@@ -284,8 +406,17 @@ const ProjectsForm = () => {
                 <input
                   type="checkbox"
                   value={tool}
-                  {...register("tools")}
+                  checked={Array.isArray(toolsValue) && toolsValue.includes(tool)}
+                  onChange={(e) => {
+                    const currentTools = Array.isArray(toolsValue) ? toolsValue : [];
+                    if (e.target.checked) {
+                      setValue("tools", [...currentTools, tool]);
+                    } else {
+                      setValue("tools", currentTools.filter(t => t !== tool));
+                    }
+                  }}
                   disabled={isFieldDisabled()}
+                  className="form-checkbox"
                 />
                 <span className="tool-label">{tool}</span>
               </label>
@@ -324,7 +455,7 @@ const ProjectsForm = () => {
             </button>
             <button
               type="button"
-              onClick={handleCancelClick}
+              onClick={handleCancel}
               className="form-button form-button--secondary"
               disabled={isLoading}
             >

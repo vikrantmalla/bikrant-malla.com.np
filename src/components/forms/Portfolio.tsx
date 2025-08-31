@@ -1,11 +1,12 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useCallback, useEffect } from "react";
-import { useSingleItemFormManager } from "@/hooks/useSingleItemFormManager";
+import { useEffect, useState } from "react";
 import FormHeader from "./FormHeader";
 import FormMessage from "./FormMessage";
 import "./form.scss";
+import { createPortfolio, updatePortfolio, deletePortfolio } from "@/app/dashboard/actions";
+import { PortfolioDetails } from "@/types/data";
 
 // Updated schema to match Prisma schema
 const portfolioSchema = z
@@ -50,22 +51,20 @@ interface PortfolioData {
   instagram: string;
 }
 
-const PortfolioForm = () => {
-  const {
-    message,
-    isEditing,
-    currentItem: currentPortfolio,
-    isLoading,
-    isFieldDisabled,
-    handleEdit,
-    handleCancel,
-    handleDelete,
-    handleCreateNew,
-    onSubmit,
-    resetForm,
-    setCurrentItem: setCurrentPortfolio,
-    setIsEditing,
-  } = useSingleItemFormManager<PortfolioData>("portfolio", "Portfolio");
+interface FormMessageType {
+  text: string;
+  isError: boolean;
+}
+
+interface PortfolioFormProps {
+  portfolioData?: PortfolioDetails | null;
+}
+
+const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<FormMessageType>({ text: "", isError: false });
+  const [currentPortfolio, setCurrentPortfolio] = useState<PortfolioData | null>(null);
 
   const {
     register,
@@ -73,6 +72,7 @@ const PortfolioForm = () => {
     formState: { errors },
     reset,
     setValue,
+    watch,
   } = useForm({
     resolver: zodResolver(portfolioSchema),
     defaultValues: {
@@ -90,86 +90,184 @@ const PortfolioForm = () => {
     },
   });
 
-  // Fetch existing portfolio data and populate form
+  // Watch skills field to handle checkbox selection
+  const skillsValue = watch("skills");
+
+  // Load existing portfolio data from props when component mounts or data changes
   useEffect(() => {
-    if (currentPortfolio) {
-      setValue("name", currentPortfolio.name);
-      setValue("jobTitle", currentPortfolio.jobTitle);
-      setValue("aboutDescription1", currentPortfolio.aboutDescription1);
-      setValue("aboutDescription2", currentPortfolio.aboutDescription2);
-      setValue(
-        "skills",
-        currentPortfolio.skills
-      );
-      setValue("email", currentPortfolio.email);
-      setValue("ownerEmail", currentPortfolio.ownerEmail);
-      setValue("linkedIn", currentPortfolio.linkedIn);
-      setValue("gitHub", currentPortfolio.gitHub);
-      setValue("facebook", currentPortfolio.facebook);
-      setValue("instagram", currentPortfolio.instagram);
+    if (portfolioData && portfolioData.id) {
+      setCurrentPortfolio(portfolioData);
+      setIsEditing(false); // Start in view mode
+      
+      // Populate form with existing data
+      setValue("name", portfolioData.name || "");
+      setValue("jobTitle", portfolioData.jobTitle || "");
+      setValue("aboutDescription1", portfolioData.aboutDescription1 || "");
+      setValue("aboutDescription2", portfolioData.aboutDescription2 || "");
+      setValue("skills", portfolioData.skills || []);
+      setValue("email", portfolioData.email || "");
+      setValue("ownerEmail", portfolioData.ownerEmail || "");
+      setValue("linkedIn", portfolioData.linkedIn || "");
+      setValue("gitHub", portfolioData.gitHub || "");
+      setValue("facebook", portfolioData.facebook || "");
+      setValue("instagram", portfolioData.instagram || "");
+    } else {
+      // No existing portfolio, start in create mode
+      setCurrentPortfolio(null);
+      setIsEditing(true);
+      reset();
     }
-  }, [currentPortfolio, setValue]);
+  }, [portfolioData, setValue, reset]);
 
-  // Ensure form fields are properly disabled when not in editing mode
-  useEffect(() => {
-    if (!isEditing && currentPortfolio) {
-      // Force form to be in view mode by ensuring all fields are disabled
-      // This is a safety measure to ensure the form behaves correctly
+  // Server action handlers
+  const handleCreatePortfolio = async (data: any) => {
+    setIsLoading(true);
+    setMessage({ text: "", isError: false });
+    
+    try {
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === 'skills' && Array.isArray(value)) {
+          formData.append(key, value.join(','));
+        } else {
+          formData.append(key, value as string);
+        }
+      });
+
+      const result = await createPortfolio(formData);
+      if (result.success) {
+        setMessage({ text: "Portfolio created successfully!", isError: false });
+        setCurrentPortfolio(result.data);
+        setIsEditing(false);
+        return { success: true, data: result.data };
+      } else {
+        setMessage({ text: `Error: ${result.error}`, isError: true });
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      setMessage({ text: "Failed to create portfolio", isError: true });
+      return { success: false, error: "Failed to create portfolio" };
+    } finally {
+      setIsLoading(false);
     }
-  }, [isEditing, currentPortfolio]);
+  };
 
-  const handleFormSubmit = useCallback(
-    async (data: any) => {
-      // The schema validation will handle the skills transformation
-      // No need for manual validation here since zodResolver handles it
-      await onSubmit(data);
-    },
-    [onSubmit]
-  );
+  const handleUpdatePortfolio = async (data: any) => {
+    if (!currentPortfolio?.id) return { success: false, error: "No portfolio ID" };
+    
+    setIsLoading(true);
+    setMessage({ text: "", isError: false });
+    
+    try {
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === 'skills' && Array.isArray(value)) {
+          formData.append(key, value.join(','));
+        } else {
+          formData.append(key, value as string);
+        }
+      });
 
-  const handleEditClick = useCallback(() => {
-    if (currentPortfolio) {
-      handleEdit();
+      const result = await updatePortfolio(currentPortfolio.id, formData);
+      if (result.success) {
+        setMessage({ text: "Portfolio updated successfully!", isError: false });
+        setCurrentPortfolio(result.data);
+        setIsEditing(false);
+        return { success: true, data: result.data };
+      } else {
+        setMessage({ text: `Error: ${result.error}`, isError: true });
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      setMessage({ text: "Failed to update portfolio", isError: true });
+      return { success: false, error: "Failed to update portfolio" };
+    } finally {
+      setIsLoading(false);
     }
-  }, [handleEdit, currentPortfolio]);
+  };
 
-  const handleCancelClick = useCallback(() => {
-    handleCancel();
+  const handleDeletePortfolio = async () => {
+    if (!currentPortfolio?.id) return { success: false, error: "No portfolio ID" };
+    
+    if (!confirm("Are you sure you want to delete this portfolio?")) {
+      return { success: false, error: "Deletion cancelled" };
+    }
+    
+    setIsLoading(true);
+    setMessage({ text: "", isError: false });
+    
+    try {
+      const result = await deletePortfolio(currentPortfolio.id);
+      if (result.success) {
+        setMessage({ text: "Portfolio deleted successfully!", isError: false });
+        setCurrentPortfolio(null);
+        reset();
+        return { success: true };
+      } else {
+        setMessage({ text: `Error: ${result.error}`, isError: true });
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      setMessage({ text: "Failed to delete portfolio", isError: true });
+      return { success: false, error: "Failed to delete portfolio" };
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  const handleEdit = () => {
+    setIsEditing(true);
+    setMessage({ text: "", isError: false });
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setMessage({ text: "", isError: false });
+    
     // Reset form to current portfolio data
     if (currentPortfolio) {
-      setValue("name", currentPortfolio.name);
-      setValue("jobTitle", currentPortfolio.jobTitle);
-      setValue("aboutDescription1", currentPortfolio.aboutDescription1);
-      setValue("aboutDescription2", currentPortfolio.aboutDescription2);
-      setValue(
-        "skills",
-        currentPortfolio.skills
-      );
-      setValue("email", currentPortfolio.email);
-      setValue("ownerEmail", currentPortfolio.ownerEmail);
-      setValue("linkedIn", currentPortfolio.linkedIn);
-      setValue("gitHub", currentPortfolio.gitHub);
-      setValue("facebook", currentPortfolio.facebook);
-      setValue("instagram", currentPortfolio.instagram);
+      setValue("name", currentPortfolio.name || "");
+      setValue("jobTitle", currentPortfolio.jobTitle || "");
+      setValue("aboutDescription1", currentPortfolio.aboutDescription1 || "");
+      setValue("aboutDescription2", currentPortfolio.aboutDescription2 || "");
+      setValue("skills", currentPortfolio.skills || []);
+      setValue("email", currentPortfolio.email || "");
+      setValue("ownerEmail", currentPortfolio.ownerEmail || "");
+      setValue("linkedIn", currentPortfolio.linkedIn || "");
+      setValue("gitHub", currentPortfolio.gitHub || "");
+      setValue("facebook", currentPortfolio.facebook || "");
+      setValue("instagram", currentPortfolio.instagram || "");
     }
-  }, [currentPortfolio, handleCancel, setValue]);
+  };
 
-  const handleCreateNewClick = useCallback(() => {
-    handleCreateNew();
+  const handleCreateNew = () => {
+    setCurrentPortfolio(null);
+    setIsEditing(true);
+    setMessage({ text: "", isError: false });
     reset();
-  }, [handleCreateNew, reset]);
+  };
 
-  const handleDeleteClick = useCallback(() => {
-    if (currentPortfolio) {
-      handleDelete();
+  // Form submission handler
+  const handleFormSubmit = async (data: any) => {
+    if (isEditing) {
+      if (currentPortfolio) {
+        return await handleUpdatePortfolio(data);
+      } else {
+        return await handleCreatePortfolio(data);
+      }
+    } else {
+      return await handleCreatePortfolio(data);
     }
-  }, [handleDelete, currentPortfolio]);
+  };
 
   const getTitle = () => {
     if (isEditing) return "Edit Portfolio";
     if (currentPortfolio) return "View Portfolio";
     return "Create Portfolio";
+  };
+
+  const isFieldDisabled = () => {
+    return !isEditing || isLoading;
   };
 
   return (
@@ -179,11 +277,13 @@ const PortfolioForm = () => {
         isEditing={isEditing}
         hasCurrentItem={!!currentPortfolio}
         isLoading={isLoading}
-        onEdit={handleEditClick}
-        onDelete={handleDeleteClick}
-        onCreateNew={handleCreateNewClick}
+        onEdit={handleEdit}
+        onDelete={handleDeletePortfolio}
+        onCreateNew={handleCreateNew}
         itemName="Portfolio"
       />
+
+      <FormMessage message={message} />
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="form-layout">
         <div className="form-group">
@@ -193,6 +293,8 @@ const PortfolioForm = () => {
           <input
             {...register("name")}
             className="form-input"
+            type="text"
+            id="name"
             disabled={isFieldDisabled()}
           />
           {errors.name && (
@@ -207,6 +309,8 @@ const PortfolioForm = () => {
           <input
             {...register("jobTitle")}
             className="form-input"
+            type="text"
+            id="jobTitle"
             disabled={isFieldDisabled()}
           />
           {errors.jobTitle && (
@@ -224,7 +328,9 @@ const PortfolioForm = () => {
           <textarea
             {...register("aboutDescription1")}
             className="form-textarea"
+            id="aboutDescription1"
             disabled={isFieldDisabled()}
+            rows={3}
           />
           {errors.aboutDescription1 && (
             <span className="form-error">
@@ -243,7 +349,9 @@ const PortfolioForm = () => {
           <textarea
             {...register("aboutDescription2")}
             className="form-textarea"
+            id="aboutDescription2"
             disabled={isFieldDisabled()}
+            rows={3}
           />
           {errors.aboutDescription2 && (
             <span className="form-error">
@@ -269,8 +377,17 @@ const PortfolioForm = () => {
                 <input
                   type="checkbox"
                   value={skill}
-                  {...register("skills")}
+                  checked={Array.isArray(skillsValue) && skillsValue.includes(skill)}
+                  onChange={(e) => {
+                    const currentSkills = Array.isArray(skillsValue) ? skillsValue : [];
+                    if (e.target.checked) {
+                      setValue("skills", [...currentSkills, skill]);
+                    } else {
+                      setValue("skills", currentSkills.filter(s => s !== skill));
+                    }
+                  }}
                   disabled={isFieldDisabled()}
+                  className="form-checkbox"
                 />
                 <span className="tool-label">{skill}</span>
               </label>
@@ -287,8 +404,9 @@ const PortfolioForm = () => {
           </label>
           <input
             {...register("email")}
-            type="email"
             className="form-input"
+            type="email"
+            id="email"
             disabled={isFieldDisabled()}
           />
           {errors.email && (
@@ -305,12 +423,15 @@ const PortfolioForm = () => {
           </label>
           <input
             {...register("ownerEmail")}
-            type="email"
             className="form-input"
+            type="email"
+            id="ownerEmail"
             disabled={isFieldDisabled()}
           />
           {errors.ownerEmail && (
-            <span className="form-error">{errors.ownerEmail.message}</span>
+            <span className="form-error">
+              {errors.ownerEmail.message}
+            </span>
           )}
         </div>
 
@@ -320,8 +441,9 @@ const PortfolioForm = () => {
           </label>
           <input
             {...register("linkedIn")}
-            type="url"
             className="form-input"
+            type="url"
+            id="linkedIn"
             disabled={isFieldDisabled()}
           />
           {errors.linkedIn && (
@@ -335,8 +457,9 @@ const PortfolioForm = () => {
           </label>
           <input
             {...register("gitHub")}
-            type="url"
             className="form-input"
+            type="url"
+            id="gitHub"
             disabled={isFieldDisabled()}
           />
           {errors.gitHub && (
@@ -350,8 +473,9 @@ const PortfolioForm = () => {
           </label>
           <input
             {...register("facebook")}
-            type="url"
             className="form-input"
+            type="url"
+            id="facebook"
             disabled={isFieldDisabled()}
           />
           {errors.facebook && (
@@ -365,8 +489,9 @@ const PortfolioForm = () => {
           </label>
           <input
             {...register("instagram")}
-            type="url"
             className="form-input"
+            type="url"
+            id="instagram"
             disabled={isFieldDisabled()}
           />
           {errors.instagram && (
@@ -385,7 +510,7 @@ const PortfolioForm = () => {
             </button>
             <button
               type="button"
-              onClick={handleCancelClick}
+              onClick={handleCancel}
               className="form-button form-button--secondary"
               disabled={isLoading}
             >
@@ -404,8 +529,6 @@ const PortfolioForm = () => {
           </button>
         )}
       </form>
-
-      <FormMessage message={message} />
     </div>
   );
 };

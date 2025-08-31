@@ -149,85 +149,14 @@ class ApiClient {
     return this.makeRequest<Portfolio>("/api/portfolio");
   }
 
-  async createPortfolio(data: PortfolioCreateData): Promise<Portfolio> {
-    return this.makeRequest<Portfolio>("/api/portfolio/create", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-  }
-
-  async updatePortfolio(
-    id: string,
-    data: Partial<PortfolioCreateData>
-  ): Promise<Portfolio> {
-    return this.makeRequest<Portfolio>(`/api/portfolio/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-  }
-
-  async deletePortfolio(id: string): Promise<boolean> {
-    return this.makeRequest<boolean>(`/api/portfolio/${id}`, {
-      method: "DELETE",
-    });
-  }
-
   // Projects API
   async getProjects(): Promise<Project[]> {
     return this.makeRequest<Project[]>("/api/projects");
   }
 
-  async createProject(data: ProjectCreateData): Promise<Project> {
-    return this.makeRequest<Project>("/api/projects/create", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-  }
-
-  async updateProject(
-    id: string,
-    data: Partial<ProjectCreateData>
-  ): Promise<Project> {
-    return this.makeRequest<Project>(`/api/projects/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-  }
-
-  async deleteProject(id: string): Promise<boolean> {
-    return this.makeRequest<boolean>(`/api/projects/${id}`, {
-      method: "DELETE",
-    });
-  }
-
   // Archive Projects API
   async getArchiveProjects(): Promise<ArchiveProject[]> {
     return this.makeRequest<ArchiveProject[]>("/api/archive-projects");
-  }
-
-  async createArchiveProject(
-    data: ArchiveProjectCreateData
-  ): Promise<ArchiveProject> {
-    return this.makeRequest<ArchiveProject>("/api/archive-projects/create", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-  }
-
-  async updateArchiveProject(
-    id: string,
-    data: Partial<ArchiveProjectCreateData>
-  ): Promise<ArchiveProject> {
-    return this.makeRequest<ArchiveProject>(`/api/archive-projects/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-  }
-
-  async deleteArchiveProject(id: string): Promise<boolean> {
-    return this.makeRequest<boolean>(`/api/archive-projects/${id}`, {
-      method: "DELETE",
-    });
   }
 
   // Auth API
@@ -238,26 +167,6 @@ class ApiClient {
   // Generic methods for any endpoint
   async get(endpoint: string): Promise<any> {
     return this.makeRequest(endpoint);
-  }
-
-  async post(endpoint: string, data: any): Promise<any> {
-    return this.makeRequest(endpoint, {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-  }
-
-  async put(endpoint: string, data: any): Promise<any> {
-    return this.makeRequest(endpoint, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-  }
-
-  async delete(endpoint: string): Promise<any> {
-    return this.makeRequest(endpoint, {
-      method: "DELETE",
-    });
   }
 
   // Clear cache for specific endpoint
@@ -296,25 +205,12 @@ export const apiClient = new ApiClient();
 export const clientApi = {
   portfolio: {
     get: () => apiClient.getPortfolio(),
-    create: (data: PortfolioCreateData) => apiClient.createPortfolio(data),
-    update: (id: string, data: Partial<PortfolioCreateData>) =>
-      apiClient.updatePortfolio(id, data),
-    delete: (id: string) => apiClient.deletePortfolio(id),
   },
   projects: {
     get: () => apiClient.getProjects(),
-    create: (data: ProjectCreateData) => apiClient.createProject(data),
-    update: (id: string, data: Partial<ProjectCreateData>) =>
-      apiClient.updateProject(id, data),
-    delete: (id: string) => apiClient.deleteProject(id),
   },
   archiveProjects: {
     get: () => apiClient.getArchiveProjects(),
-    create: (data: ArchiveProjectCreateData) =>
-      apiClient.createArchiveProject(data),
-    update: (id: string, data: Partial<ArchiveProjectCreateData>) =>
-      apiClient.updateArchiveProject(id, data),
-    delete: (id: string) => apiClient.deleteArchiveProject(id),
   },
   auth: {
     checkRole: () => apiClient.checkUserRole(),
