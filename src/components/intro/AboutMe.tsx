@@ -11,7 +11,7 @@ const AboutMe = ({ aboutme }: { aboutme: Aboutme }) => {
           <h1 className={`name ${joseFont} fs-600`}>
             My Name is
             <br />
-            <span className={`${tekoFont} fs-800`}>{aboutme.title}</span>
+            <span className={`title ${tekoFont} fs-800`}>{aboutme.title}</span>
           </h1>
           <h2 className={`profession ${tekoFont} fs-800`}>
             {aboutme.subTitle}

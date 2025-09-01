@@ -32,11 +32,13 @@ async function main() {
       data: {
         name: portfolioName,
         jobTitle: jobTitle,
-        aboutDescription1: "Passionate developer with expertise in modern web technologies. Building scalable and user-friendly applications that make a difference.",
-        aboutDescription2: "Specializing in React, Next.js, and full-stack development with a focus on performance and user experience.",
+        aboutDescription1:
+          "Passionate developer with expertise in modern web technologies. Building scalable and user-friendly applications that make a difference.",
+        aboutDescription2:
+          "Specializing in React, Next.js, and full-stack development with a focus on performance and user experience.",
         skills: [
           "React",
-          "Next.js", 
+          "Next.js",
           "Node.js",
           "TypeScript",
           "MongoDB",
@@ -44,7 +46,7 @@ async function main() {
           "Tailwind CSS",
           "GraphQL",
           "Docker",
-          "AWS"
+          "AWS",
         ],
         email: devEmail,
         ownerEmail: devEmail, // Same email as owner
@@ -82,7 +84,7 @@ async function main() {
           data: {
             title: faker.company.catchPhrase(),
             subTitle: faker.lorem.sentence(),
-            images: `project${String(index + 1).padStart(2, "0")}.jpg`,
+            images: `https://res.cloudinary.com/dctz4tgkb/image/upload/v1721838410/behance01_kv3lcv.png`,
             alt: faker.lorem.words(3),
             projectView: faker.internet.url({ protocol: "https" }),
             tools: faker.helpers.arrayElements(
@@ -98,10 +100,7 @@ async function main() {
               ],
               { min: 2, max: 5 }
             ),
-            platform: faker.helpers.arrayElement([
-              "Web",
-              "Design",
-            ]),
+            platform: faker.helpers.arrayElement(["Web", "Design"]),
             portfolioId: portfolio.id,
           },
         });
@@ -180,7 +179,7 @@ async function main() {
     console.log("👤 User email:", user.email);
     console.log("🔗 Portfolio ID:", portfolio.id);
     console.log("🔗 User ID:", user.id);
-    
+
     if (isProduction) {
       console.log("⚠️  Remember: This data was created in PRODUCTION mode");
     }

@@ -7,12 +7,8 @@ import { ProjectHighlightsCard } from "@/types/data";
 import ExternalLink from "../shared/externalLink";
 
 const ProjectCard = ({ project }: ProjectHighlightsCard) => {
-  const { images, alt, title, build, projectview } = project as any;
+  const { id, images, alt, title, subTitle, tools, projectView } = project;
   const { setCursorType } = useMouseStore();
-
-  // Check if Cloudinary is configured
-  const isCloudinaryConfigured = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_DEV || 
-                                process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_PROD;
 
   const cursorChangeHandler = (cursorType: string) => {
     setCursorType(cursorType);
@@ -20,44 +16,34 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
 
   return (
     <div className="card">
-      {/* <div className="card-img">
+      <div className="card-img">
         <div
           className="image-wrapper"
           onMouseEnter={() => cursorChangeHandler("hovered")}
           onMouseLeave={() => cursorChangeHandler("")}
         >
           <ExternalLink
-            href={projectview}
+            href={projectView}
             label={`${title} project (opens in a new tab)`}
             gtagAction="project_highlight_image_clicked"
             gtagCategory="image_interaction"
             gtagLabel="click_through_link"
           >
-            {isCloudinaryConfigured ? (
-              <CldImage
-                width="500"
-                height="800"
-                src={`${images}`}
-                alt={alt}
-                priority={false}
-              />
-            ) : (
-              <Image
-                src={images}
-                alt={alt}
-                width={500}
-                height={800}
-                priority={false}
-                className="w-full h-auto"
-              />
-            )}
+            <Image
+              src={images}
+              alt={alt}
+              width={500}
+              height={800}
+              priority={false}
+              className="w-full h-auto"
+            />
           </ExternalLink>
         </div>
-      </div> */}
+      </div>
       <div className="card-details">
         <div className="card-head">
           <h2 className={`${joseFont} fs-400`}>{title}</h2>
-          <p className={`${joseFont} fs-300`}>{build}</p>
+          <p className={`${joseFont} fs-300`}>{tools.join(", ")}</p>
         </div>
         <div className="card-body">
           <div
@@ -65,7 +51,7 @@ const ProjectCard = ({ project }: ProjectHighlightsCard) => {
             onMouseLeave={() => cursorChangeHandler("")}
           >
             <ExternalLink
-              href={projectview}
+              href={projectView}
               label={`${title} project (opens in a new tab)`}
               gtagAction="project_highlight_clicked"
               gtagCategory="project_interaction"
