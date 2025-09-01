@@ -38,9 +38,10 @@ interface ArchiveProjectData {
 
 interface ArchiveProjectsFormProps {
   archiveProjectsData?: ArchiveProject[] | null;
+  portfolioId?: string;
 }
 
-const ArchiveProjectsForm = ({ archiveProjectsData }: ArchiveProjectsFormProps) => {
+const ArchiveProjectsForm = ({ archiveProjectsData, portfolioId }: ArchiveProjectsFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string; isError: boolean }>({ text: "", isError: false });
@@ -97,6 +98,11 @@ const ArchiveProjectsForm = ({ archiveProjectsData }: ArchiveProjectsFormProps) 
           formData.append(key, String(value));
         }
       });
+      
+      // Add portfolioId if available
+      if (portfolioId) {
+        formData.append('portfolioId', portfolioId);
+      }
 
       const result = await createArchiveProject(formData);
       if (result.success) {
@@ -140,6 +146,11 @@ const ArchiveProjectsForm = ({ archiveProjectsData }: ArchiveProjectsFormProps) 
           formData.append(key, String(value)); // Safely convert unknown value to string
         }
       });
+      
+      // Add portfolioId if available
+      if (portfolioId) {
+        formData.append('portfolioId', portfolioId);
+      }
 
       const result = await updateArchiveProject(currentArchiveProject.id, formData);
       if (result.success) {
@@ -245,7 +256,9 @@ const ArchiveProjectsForm = ({ archiveProjectsData }: ArchiveProjectsFormProps) 
   };
 
   const isFieldDisabled = () => {
-    return !isEditing || isLoading;
+    // Allow editing when isEditing is true (either creating new or editing existing)
+    // Disable only when loading
+    return isLoading;
   };
 
   const renderArchiveProject = (archiveProject: ArchiveProjectData) => (
@@ -301,7 +314,7 @@ const ArchiveProjectsForm = ({ archiveProjectsData }: ArchiveProjectsFormProps) 
         isLoading={isLoading}
       />
 
-      <form onSubmit={handleSubmit(isEditing ? handleUpdateArchiveProject : handleCreateArchiveProject)} className="form-layout">
+      <form onSubmit={handleSubmit(isEditing && currentArchiveProject ? handleUpdateArchiveProject : handleCreateArchiveProject)} className="form-layout">
         <div className="form-group">
           <label htmlFor="title" className="form-label form-label--required">
             Project Title
@@ -412,7 +425,7 @@ const ArchiveProjectsForm = ({ archiveProjectsData }: ArchiveProjectsFormProps) 
           </div>
         </div>
 
-        {isEditing && (
+        {isEditing && currentArchiveProject && (
           <div className="form-actions-container">
             <button
               type="submit"
@@ -432,7 +445,7 @@ const ArchiveProjectsForm = ({ archiveProjectsData }: ArchiveProjectsFormProps) 
           </div>
         )}
 
-        {!currentArchiveProject && (
+        {isEditing && !currentArchiveProject && (
           <button
             type="submit"
             className="form-button form-button--primary"

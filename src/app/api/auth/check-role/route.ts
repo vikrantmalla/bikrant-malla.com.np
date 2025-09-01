@@ -1,6 +1,7 @@
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { Role } from '@/types/enum';
 
 export async function GET() {
   const { getUser } = getKindeServerSession();
@@ -36,7 +37,7 @@ export async function GET() {
     const isOwner = !!portfolio;
     
     // Owner automatically gets editor role without invitation
-    const hasEditorRole = dbUser.roles.some((role) => role.role === 'editor') || isOwner;
+    const hasEditorRole = dbUser.roles.some((role) => role.role === Role.EDITOR) || isOwner;
 
     return NextResponse.json({
       user: {

@@ -9,6 +9,11 @@ export enum ApiEndpoint {
   TECH_TAGS_ENDPOINT = "api/tech-tags",
 }
 
+export enum Platform {
+  Web = "Web",
+  Design = "Design",
+}
+
 export enum TagsCategory {
   ALL = "All",
   FEATURE = "Feature",
@@ -82,7 +87,7 @@ export enum NavItemLabel {
 export enum Role {
   OWNER = "OWNER",
   EDITOR = "EDITOR",
-  USER = "USER",
+  VIEWER = "VIEWER",
 }
 
 export enum Theme {

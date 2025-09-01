@@ -6,10 +6,13 @@ import { useMouseStore } from "@/store/feature/mouseStore";
 import { ProjectHighlightsCard } from "@/types/data";
 import ExternalLink from "../shared/externalLink";
 
-const ProjectCard = ({ project, config }: ProjectHighlightsCard) => {
-  const { images, imageUrl, alt, title, build, projectview } = project as any;
-  const { allowBackupImages } = config;
+const ProjectCard = ({ project }: ProjectHighlightsCard) => {
+  const { images, alt, title, build, projectview } = project as any;
   const { setCursorType } = useMouseStore();
+
+  // Check if Cloudinary is configured
+  const isCloudinaryConfigured = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_DEV || 
+                                process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_PROD;
 
   const cursorChangeHandler = (cursorType: string) => {
     setCursorType(cursorType);
@@ -17,7 +20,7 @@ const ProjectCard = ({ project, config }: ProjectHighlightsCard) => {
 
   return (
     <div className="card">
-      <div className="card-img">
+      {/* <div className="card-img">
         <div
           className="image-wrapper"
           onMouseEnter={() => cursorChangeHandler("hovered")}
@@ -30,26 +33,27 @@ const ProjectCard = ({ project, config }: ProjectHighlightsCard) => {
             gtagCategory="image_interaction"
             gtagLabel="click_through_link"
           >
-            {allowBackupImages ? (
+            {isCloudinaryConfigured ? (
               <CldImage
                 width="500"
                 height="800"
-                src={`${imageUrl}`}
+                src={`${images}`}
                 alt={alt}
                 priority={false}
               />
             ) : (
               <Image
-                src={`/${images}`}
+                src={images}
                 alt={alt}
                 width={500}
-                height={500}
-                className="responsive-image"
+                height={800}
+                priority={false}
+                className="w-full h-auto"
               />
             )}
           </ExternalLink>
         </div>
-      </div>
+      </div> */}
       <div className="card-details">
         <div className="card-head">
           <h2 className={`${joseFont} fs-400`}>{title}</h2>

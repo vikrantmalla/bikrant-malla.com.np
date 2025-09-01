@@ -6,15 +6,15 @@ import FormHeader from "./FormHeader";
 import ItemsList from "./ItemsList";
 import FormMessage from "./FormMessage";
 import "./form.scss";
-import { createProject, updateProject, deleteProject } from "@/app/dashboard/actions";
+import { createProject, updateProject, deleteProject, getProjectLimits } from "@/app/dashboard/actions";
 import { Project } from "@/types/data";
-import { cloudinaryConfig, validateCloudinaryConfig } from "@/lib/cloudinary";
+import { Platform } from "@/types/enum";
 
 // Updated schema to match Prisma schema
 const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),
   subTitle: z.string().min(1, "Subtitle is required"),
-  images: z.array(z.string()).min(1, "At least one image is required"),
+  images: z.string().url("Please enter a valid URL").min(1, "Image URL is required"),
   alt: z.string().min(1, "Alt text is required"),
   projectView: z.string().min(1, "Project View is required"),
   tools: z
@@ -27,7 +27,7 @@ interface ProjectData {
   id: string;
   title: string;
   subTitle: string;
-  images: string[];
+  images: string | string[]; // Can be either string or array
   alt: string;
   projectView: string;
   tools: string[];
@@ -35,20 +35,25 @@ interface ProjectData {
   portfolioId?: string;
 }
 
-interface ProjectsFormProps {
-  projectsData?: Project[] | null;
+interface ProjectLimits {
+  maxWebProjects: number;
+  maxDesignProjects: number;
+  maxTotalProjects: number;
 }
 
-const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
+interface ProjectsFormProps {
+  projectsData?: Project[] | null;
+  portfolioId?: string;
+}
+
+const ProjectsForm = ({ projectsData, portfolioId }: ProjectsFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string; isError: boolean }>({ text: "", isError: false });
   const [currentProject, setCurrentProject] = useState<ProjectData | null>(null);
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [uploadedImage, setUploadedImage] = useState<string>("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [projectLimits, setProjectLimits] = useState<ProjectLimits | null>(null);
 
   const {
     register,
@@ -62,13 +67,34 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
     defaultValues: {
       title: "",
       subTitle: "",
-      images: [],
+      images: "",
       alt: "",
       projectView: "",
       tools: [],
       platform: "",
     },
   });
+
+  // Watch platform field for validation
+  const platformValue = watch("platform");
+
+  // Load project limits on component mount
+  useEffect(() => {
+    const loadProjectLimits = async () => {
+      const result = await getProjectLimits();
+      if (result.success) {
+        setProjectLimits(result.data);
+      }
+    };
+    loadProjectLimits();
+  }, []);
+
+  // Debug form errors
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      console.log("Form validation errors:", errors);
+    }
+  }, [errors]);
 
   // Watch tools field to handle checkbox selection
   const toolsValue = watch("tools");
@@ -82,64 +108,15 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
     }
   }, [projectsData]);
 
-  // Handle file selection
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-    }
-  };
+  // Calculate current project counts
+  const currentWebProjects = projects.filter(p => p.platform === Platform.Web).length;
+  const currentDesignProjects = projects.filter(p => p.platform === Platform.Design).length;
+  const currentTotalProjects = projects.length;
 
-  // Handle custom upload
-  const handleUpload = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!selectedFile) return alert("Please select a file");
-
-    setIsUploading(true);
-    setMessage({ text: "", isError: false });
-
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    formData.append("upload_preset", cloudinaryConfig.uploadPreset || "");
-
-    try {
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      
-      const data = await res.json();
-      
-      if (data.error) {
-        throw new Error(data.error.message);
-      }
-      
-      console.log("Upload successful:", data);
-      setUploadedImage(data.secure_url);
-      setValue("images", [data.secure_url]);
-      setSelectedFile(null);
-      setMessage({ text: "Image uploaded successfully!", isError: false });
-    } catch (error) {
-      console.error("Upload error:", error);
-      setMessage({ 
-        text: `Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`, 
-        isError: true 
-      });
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  // Remove image
-  const removeImage = () => {
-    console.log("Removing image, current uploadedImage:", uploadedImage);
-    setUploadedImage("");
-    setValue("images", []);
-    console.log("Images array cleared");
-  };
+  // Check if can create more projects
+  const canCreateWebProjects = projectLimits ? currentWebProjects < projectLimits.maxWebProjects : true;
+  const canCreateDesignProjects = projectLimits ? currentDesignProjects < projectLimits.maxDesignProjects : true;
+  const canCreateTotalProjects = projectLimits ? currentTotalProjects < projectLimits.maxTotalProjects : true;
 
   // Server action handlers
   const handleCreateProject = async (data: any) => {
@@ -151,12 +128,15 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
       Object.entries(data).forEach(([key, value]) => {
         if (key === 'tools' && Array.isArray(value)) {
           formData.append(key, value.join(','));
-        } else if (key === 'images' && Array.isArray(value)) {
-          formData.append(key, value.join(','));
         } else {
           formData.append(key, value as string);
         }
       });
+      
+      // Add portfolioId if available
+      if (portfolioId) {
+        formData.append('portfolioId', portfolioId);
+      }
 
       const result = await createProject(formData);
       if (result.success) {
@@ -168,7 +148,6 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
           setProjects(prev => [...prev, result.data]);
         }
         reset();
-        setUploadedImage("");
         return { success: true, data: result.data };
       } else {
         setMessage({ text: `Error: ${result.error}`, isError: true });
@@ -183,6 +162,9 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
   };
 
   const handleUpdateProject = async (data: any) => {
+    console.log("handleUpdateProject called with data:", data);
+    console.log("currentProject:", currentProject);
+    
     if (!currentProject?.id) return { success: false, error: "No project ID" };
     
     setIsLoading(true);
@@ -193,12 +175,15 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
       Object.entries(data).forEach(([key, value]) => {
         if (key === 'tools' && Array.isArray(value)) {
           formData.append(key, value.join(','));
-        } else if (key === 'images' && Array.isArray(value)) {
-          formData.append(key, value.join(','));
         } else {
           formData.append(key, value as string);
         }
       });
+      
+      // Add portfolioId if available
+      if (portfolioId) {
+        formData.append('portfolioId', portfolioId);
+      }
 
       const result = await updateProject(currentProject.id, formData);
       if (result.success) {
@@ -241,7 +226,6 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
         // Remove from projects list
         setProjects(prev => prev.filter(p => p.id !== projectId));
         reset();
-        setUploadedImage("");
         return { success: true };
       } else {
         setMessage({ text: `Error: ${result.error}`, isError: true });
@@ -263,30 +247,34 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
     // Populate form with project data
     setValue("title", project.title);
     setValue("subTitle", project.subTitle);
-    setValue("images", project.images);
+    setValue("images", Array.isArray(project.images) ? project.images[0] : project.images);
     setValue("alt", project.alt);
     setValue("projectView", project.projectView);
     setValue("tools", project.tools);
     setValue("platform", project.platform);
-    
-    // Set uploaded image
-    setUploadedImage(project.images[0] || "");
   };
 
   const handleCancel = () => {
     setIsEditing(false);
     setMessage({ text: "", isError: false });
     reset();
-    setUploadedImage("");
   };
 
   const handleCreateNew = () => {
+    // Check if we can create more projects
+    if (!canCreateTotalProjects) {
+      setMessage({ 
+        text: `Cannot create more projects. Maximum total projects limit reached (${projectLimits?.maxTotalProjects || 12}).`, 
+        isError: true 
+      });
+      return;
+    }
+
     setCurrentProject(null);
     setSelectedProjectId(null);
     setIsEditing(true);
     setMessage({ text: "", isError: false });
     reset();
-    setUploadedImage("");
   };
 
   const handleSelectProject = (projectId: string) => {
@@ -297,14 +285,11 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
       // Populate form for viewing
       setValue("title", project.title);
       setValue("subTitle", project.subTitle);
-      setValue("images", project.images);
+      setValue("images", Array.isArray(project.images) ? project.images[0] : project.images);
       setValue("alt", project.alt);
       setValue("projectView", project.projectView);
       setValue("tools", project.tools);
       setValue("platform", project.platform);
-      
-      // Set uploaded image
-      setUploadedImage(project.images[0] || "");
     }
   };
 
@@ -315,7 +300,9 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
   };
 
   const isFieldDisabled = () => {
-    return !isEditing || isLoading;
+    // Allow editing when isEditing is true (either creating new or editing existing)
+    // Disable only when loading
+    return isLoading;
   };
 
   const renderProject = (project: ProjectData) => (
@@ -348,9 +335,6 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
     return "Create Project";
   };
 
-  // Check Cloudinary configuration
-  const cloudinaryValidation = validateCloudinaryConfig();
-
   return (
     <div className="form-container">
       <FormHeader
@@ -365,6 +349,38 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
         itemName="Project"
       />
 
+      {/* Project Limits Display */}
+      {projectLimits && (
+        <div className="project-limits">
+          <h3>Project Limits</h3>
+          <div className="limits-grid">
+            <div className="limit-item">
+              <span className="limit-label">Total Projects:</span>
+              <span className={`limit-count ${!canCreateTotalProjects ? 'limit-reached' : ''}`}>
+                {currentTotalProjects} / {projectLimits.maxTotalProjects}
+              </span>
+            </div>
+            <div className="limit-item">
+              <span className="limit-label">Web Projects:</span>
+              <span className={`limit-count ${!canCreateWebProjects ? 'limit-reached' : ''}`}>
+                {currentWebProjects} / {projectLimits.maxWebProjects}
+              </span>
+            </div>
+            <div className="limit-item">
+              <span className="limit-label">Design Projects:</span>
+              <span className={`limit-count ${!canCreateDesignProjects ? 'limit-reached' : ''}`}>
+                {currentDesignProjects} / {projectLimits.maxDesignProjects}
+              </span>
+            </div>
+          </div>
+          {!canCreateTotalProjects && (
+            <div className="limit-warning">
+              Maximum total projects limit reached. Cannot create more projects.
+            </div>
+          )}
+        </div>
+      )}
+
       <ItemsList
         items={projects}
         selectedItemId={selectedProjectId}
@@ -375,7 +391,7 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
         isLoading={isLoading}
       />
 
-      <form onSubmit={handleSubmit(isEditing ? handleUpdateProject : handleCreateProject)} className="form-layout">
+      <form onSubmit={handleSubmit(isEditing && currentProject ? handleUpdateProject : handleCreateProject)} className="form-layout">
         <div className="form-group">
           <label htmlFor="title" className="form-label form-label--required">
             Project Title
@@ -405,89 +421,16 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
         </div>
 
         <div className="form-group">
-          <label className="form-label form-label--required">
-            Project Image
+          <label htmlFor="images" className="form-label form-label--required">
+            Project Image URL
           </label>
-          
-          {/* Cloudinary Configuration Error */}
-          {!cloudinaryValidation.isValid && (
-            <div className="cloudinary-config-error">
-              <h4>Cloudinary Configuration Required</h4>
-              <p>Please configure your Cloudinary credentials to upload images:</p>
-              <ul>
-                {cloudinaryValidation.issues.map((issue: string, index: number) => (
-                  <li key={index}>{issue}</li>
-                ))}
-              </ul>
-              <p>
-                <strong>Steps to fix:</strong>
-              </p>
-              <ol>
-                <li>Create a <code>.env.local</code> file in your project root</li>
-                <li>Add your Cloudinary credentials:</li>
-                <li><code>NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name</code></li>
-                <li><code>NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_upload_preset</code></li>
-                <li>Restart your development server</li>
-              </ol>
-              
-              <div className="upload-preset-troubleshooting">
-                <h5>⚠️ Important: Upload Preset Configuration</h5>
-                <p>If you get &quot;Upload preset must be whitelisted for unsigned uploads&quot; error:</p>
-                <ol>
-                  <li>Go to your <a href="https://cloudinary.com/console" target="_blank" rel="noopener noreferrer">Cloudinary Dashboard</a></li>
-                  <li>Navigate to <strong>Settings → Upload → Upload presets</strong></li>
-                  <li>Click on your upload preset</li>
-                  <li>Set <strong>&quot;Signing Mode&quot; to &quot;Unsigned&quot;</strong></li>
-                  <li>Save the changes</li>
-                </ol>
-                <p><strong>Note:</strong> Unsigned uploads are required for client-side image uploads.</p>
-              </div>
-            </div>
-          )}
-          
-          {/* Image Upload Section */}
-          {isEditing && cloudinaryValidation.isValid && (
-            <div className="image-upload-section">
-              {!uploadedImage ? (
-                <div className="custom-upload-container">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                    className="custom-file-input"
-                    disabled={isFieldDisabled() || isUploading}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleUpload}
-                    className="custom-upload-button"
-                    disabled={isFieldDisabled() || isUploading || !selectedFile}
-                  >
-                    {isUploading ? "Uploading..." : "Upload Image"}
-                  </button>
-                </div>
-              ) : (
-                                  <div className="single-image-preview">
-                    <img
-                      src={uploadedImage}
-                      alt="Project image"
-                      width={200}
-                      height={200}
-                      className="preview-image"
-                    />
-                  <button
-                    type="button"
-                    onClick={removeImage}
-                    className="remove-image-btn"
-                    disabled={isFieldDisabled()}
-                  >
-                    Remove Image
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-          
+          <input
+            {...register("images")}
+            type="url"
+            placeholder="https://example.com/image.jpg"
+            className="form-input"
+            disabled={isFieldDisabled()}
+          />
           {errors.images && (
             <span className="form-error">{errors.images.message}</span>
           )}
@@ -570,15 +513,26 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
             className="form-input"
             disabled={isFieldDisabled()}
           >
-            <option value="Web">Web</option>
-            <option value="Design">Design</option>
+            <option value="">Select Platform</option>
+            <option value={Platform.Web} disabled={!canCreateWebProjects}>
+              Web {!canCreateWebProjects ? `(Limit reached: ${currentWebProjects}/${projectLimits?.maxWebProjects})` : ''}
+            </option>
+            <option value={Platform.Design} disabled={!canCreateDesignProjects}>
+              Design {!canCreateDesignProjects ? `(Limit reached: ${currentDesignProjects}/${projectLimits?.maxDesignProjects})` : ''}
+            </option>
           </select>
           {errors.platform && (
             <span className="form-error">{errors.platform.message}</span>
           )}
+          {platformValue && platformValue === Platform.Web && !canCreateWebProjects && (
+            <span className="form-error">Maximum Web projects limit reached. Cannot create more Web projects.</span>
+          )}
+          {platformValue && platformValue === Platform.Design && !canCreateDesignProjects && (
+            <span className="form-error">Maximum Design projects limit reached. Cannot create more Design projects.</span>
+          )}
         </div>
 
-        {isEditing && (
+        {isEditing && currentProject && (
           <div className="form-actions-container">
             <button
               type="submit"
@@ -598,7 +552,7 @@ const ProjectsForm = ({ projectsData }: ProjectsFormProps) => {
           </div>
         )}
 
-        {!currentProject && (
+        {isEditing && !currentProject && (
           <button
             type="submit"
             className="form-button form-button--primary"

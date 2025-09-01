@@ -4,15 +4,15 @@ import { Project, ProjectHighlightData } from "../../types/data";
 import ProjectCard from "./ProjectCard";
 import { joseFont } from "@/helpers/lib/font";
 
-const ProjectHighlight = ({ project, configData }: ProjectHighlightData) => {
+const ProjectHighlight = ({ projects }: ProjectHighlightData) => {
   return (
     <>
       <section className="project" id="project">
         <h2 className={`headingleft ${joseFont} fs-600`}>Projects</h2>
         <div className="projectItem">
-          {project.map((project: Project, index: number) => {
+          {projects.map((project: Project, index: number) => {
             return (
-              <ProjectCard key={index} project={project} config={configData} />
+              <ProjectCard key={index} project={project} />
             );
           })}
         </div>

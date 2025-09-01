@@ -5,6 +5,7 @@ import Contact from "@/components/shared/footer/Contact";
 import ProjectHighlight from "@/components/project/ProjectHighlight";
 import { fetchPortfolioDetailsData } from "@/service/apiService";
 import { Project } from "@/types/data";
+import { Platform } from "@/types/enum";
 
 const Home = async () => {
   const portfolioDetail = await fetchPortfolioDetailsData();
@@ -22,18 +23,17 @@ const Home = async () => {
     instagram: portfolioDetail.instagram,
   };
   const behance = portfolioDetail.projects.filter(
-    (project: Project) => project.platform === "Design"
+    (project: Project) => project.platform === Platform.Design
   );
   const projecthighlight = portfolioDetail.projects.filter(
-    (project: Project) => project.platform === "Web"
+    (project: Project) => project.platform === Platform.Web
   );
-  const configData = { allowBackupImages: false };
   return (
     <main>
       <article className="container">
         <AboutMe aboutme={aboutme} />
-        <ProjectHighlight project={projecthighlight} configData={configData} />
-        <Behance behance={behance} configData={configData} />
+        <ProjectHighlight projects={projecthighlight}/>
+        <Behance projects={behance} />
         <Contact contact={contact} />
       </article>
     </main>
