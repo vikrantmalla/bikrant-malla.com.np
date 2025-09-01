@@ -15,8 +15,12 @@
       color: var(--textRev);
     }
   }
+  .title {
+    text-transform: uppercase;
+  }
   .profession {
     color: var(--text);
+    text-transform: uppercase;
   }
 }
 

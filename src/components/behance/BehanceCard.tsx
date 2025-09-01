@@ -8,13 +8,8 @@ import { CldImage } from "next-cloudinary";
 import { useMouseStore } from "@/store/feature/mouseStore";
 
 const BehanceCard = ({ project }: ProjectHighlightsCard) => {
-  const { id, images, alt, title, subTitle, tools, projectView } =
-    project;
+  const { id, images, alt, title, subTitle, tools, projectView } = project;
   const { setCursorType } = useMouseStore();
-
-  // Check if Cloudinary is configured
-  const isCloudinaryConfigured = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_DEV || 
-                                process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_PROD;
 
   const cursorChangeHandler = (cursorType: string) => {
     setCursorType(cursorType);
@@ -22,7 +17,7 @@ const BehanceCard = ({ project }: ProjectHighlightsCard) => {
 
   return (
     <div className="card" key={id}>
-      {/* <div className="card-img">
+      <div className="card-img">
         <div
           className="image-wrapper"
           onMouseEnter={() => cursorChangeHandler("hovered")}
@@ -35,27 +30,17 @@ const BehanceCard = ({ project }: ProjectHighlightsCard) => {
             gtagCategory="image_interaction"
             gtagLabel="click_through_link"
           >
-            {isCloudinaryConfigured ? (
-              <CldImage
-                width="500"
-                height="800"
-                src={images || ""}
-                alt={alt || ""}
-                priority={false}
-              />
-            ) : (
-              <Image
-                src={images || ""}
-                alt={alt || ""}
-                width={500}
-                height={800}
-                priority={false}
-                className="w-full h-auto"
-              />
-            )}
+            <Image
+              src={images}
+              alt={alt}
+              width={500}
+              height={800}
+              priority={false}
+              className="w-full h-auto"
+            />
           </ExternalLink>
         </div>
-      </div> */}
+      </div>
       <div className="card-details">
         <div className="card-head">
           <h2 className={`${joseFont} fs-400`}>

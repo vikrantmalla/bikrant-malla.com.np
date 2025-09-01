@@ -55,6 +55,15 @@ const ProjectsForm = ({ projectsData, portfolioId }: ProjectsFormProps) => {
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [projectLimits, setProjectLimits] = useState<ProjectLimits | null>(null);
+  const [imageLoadingStatus, setImageLoadingStatus] = useState<{
+    isLoading: boolean;
+    hasError: boolean;
+    errorMessage: string;
+  }>({
+    isLoading: false,
+    hasError: false,
+    errorMessage: "",
+  });
 
   const {
     register,
@@ -99,6 +108,33 @@ const ProjectsForm = ({ projectsData, portfolioId }: ProjectsFormProps) => {
 
   // Watch tools field to handle checkbox selection
   const toolsValue = watch("tools");
+
+  // URL validation function
+  const validateImageUrl = (url: string) => {
+    if (!url) return { isValid: false, message: "URL is required" };
+    
+    try {
+      const urlObj = new URL(url);
+      const validProtocols = ['http:', 'https:'];
+      const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp'];
+      
+      if (!validProtocols.includes(urlObj.protocol)) {
+        return { isValid: false, message: "URL must use HTTP or HTTPS protocol" };
+      }
+      
+      const hasValidExtension = validExtensions.some(ext => 
+        urlObj.pathname.toLowerCase().includes(ext)
+      );
+      
+      if (!hasValidExtension) {
+        return { isValid: false, message: "URL should end with a valid image extension" };
+      }
+      
+      return { isValid: true, message: "URL looks valid" };
+    } catch (error) {
+      return { isValid: false, message: "Invalid URL format" };
+    }
+  };
 
   // Load existing projects data from props when component mounts or data changes
   useEffect(() => {
@@ -440,18 +476,143 @@ const ProjectsForm = ({ projectsData, portfolioId }: ProjectsFormProps) => {
           {watch("images") && (
             <div className="image-preview">
               <label className="form-label">Image Preview:</label>
-              <div className="preview-container">
-                <Image
-                  src={watch("images")}
-                  alt="Project preview"
-                  width={300}
-                  height={200}
-                  className="preview-image"
-                  onError={(e) => {
-                    console.error("Image failed to load:", watch("images"));
-                  }}
-                />
-              </div>
+              
+              {/* Loading state */}
+              {imageLoadingStatus.isLoading && (
+                <div className="preview-container">
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '200px',
+                    background: '#f9fafb',
+                    border: '2px dashed #d1d5db',
+                    borderRadius: '8px',
+                    color: '#6b7280'
+                  }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '24px', marginBottom: '8px' }}>⏳</div>
+                      <div>Loading image...</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Error state */}
+              {imageLoadingStatus.hasError && (
+                <div className="preview-container">
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '200px',
+                    background: '#fef2f2',
+                    border: '2px dashed #fecaca',
+                    borderRadius: '8px',
+                    color: '#dc2626',
+                    padding: '20px',
+                    textAlign: 'center'
+                  }}>
+                    <div>
+                      <div style={{ fontSize: '24px', marginBottom: '8px' }}>🖼️</div>
+                      <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Image failed to load</div>
+                      <div style={{ fontSize: '12px', marginBottom: '8px' }}>{imageLoadingStatus.errorMessage}</div>
+                      <button
+                        onClick={() => {
+                          setImageLoadingStatus({
+                            isLoading: false,
+                            hasError: false,
+                            errorMessage: ""
+                          });
+                        }}
+                        style={{
+                          background: '#dc2626',
+                          color: 'white',
+                          border: 'none',
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          fontSize: '12px',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Try Again
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Success state - Next.js Image */}
+              {!imageLoadingStatus.isLoading && !imageLoadingStatus.hasError && (
+                <div className="preview-container">
+                  <Image
+                    src={watch("images")}
+                    alt="Project preview"
+                    width={300}
+                    height={200}
+                    className="preview-image"
+                    onLoadStart={() => {
+                      setImageLoadingStatus({
+                        isLoading: true,
+                        hasError: false,
+                        errorMessage: ""
+                      });
+                    }}
+                    onLoad={() => {
+                      setImageLoadingStatus({
+                        isLoading: false,
+                        hasError: false,
+                        errorMessage: ""
+                      });
+                    }}
+                    onError={(e) => {
+                      console.error("Image failed to load:", watch("images"));
+                      setImageLoadingStatus({
+                        isLoading: false,
+                        hasError: true,
+                        errorMessage: "Please check if the URL is valid and accessible"
+                      });
+                    }}
+                    unoptimized={true}
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                  />
+                </div>
+              )}
+              
+              {/* URL validation info */}
+              {(() => {
+                const validation = validateImageUrl(watch("images"));
+                return (
+                  <div style={{ 
+                    marginTop: '8px', 
+                    fontSize: '12px', 
+                    color: validation.isValid ? '#059669' : '#dc2626',
+                    padding: '8px',
+                    background: validation.isValid ? '#f0fdf4' : '#fef2f2',
+                    borderRadius: '4px',
+                    border: `1px solid ${validation.isValid ? '#bbf7d0' : '#fecaca'}`
+                  }}>
+                    <strong>URL:</strong> {watch("images")}
+                    <br />
+                    <small>
+                      {validation.isValid ? (
+                        <>
+                          ✅ {validation.message}
+                          <br />
+                          💡 Tip: Make sure the URL is publicly accessible
+                        </>
+                      ) : (
+                        <>
+                          ❌ {validation.message}
+                          <br />
+                          💡 Tip: Try using a direct link to an image file (.jpg, .png, .gif, etc.)
+                        </>
+                      )}
+                    </small>
+                  </div>
+                );
+              })()}
             </div>
           )}
         </div>

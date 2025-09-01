@@ -2,9 +2,9 @@
 import { useState, useEffect, useRef } from "react";
 import AuthModal from "@/components/authModal/authModal";
 import { useAuth } from "@/hooks/useAuth";
-import PortfolioForm from "@/components/forms/Portfolio";
-import ProjectsForm from "@/components/forms/Projects";
-import ArchiveProjectsForm from "@/components/forms/ArchiveProjects";
+import PortfolioForm from "@/components/dashboard/Portfolio";
+import ProjectsForm from "@/components/dashboard/Projects";
+import ArchiveProjectsForm from "@/components/dashboard/ArchiveProjects";
 import SideMenu from "@/components/dashboard/SideMenu";
 import { useThemeStore } from "@/store/feature/themeStore";
 import { toCSSVars } from "@/helpers/utils";
@@ -28,7 +28,6 @@ export default function DashboardClient({
     useAuth();
   const { isDarkTheme, themes } = useThemeStore();
   const currentTheme = isDarkTheme ? themes.dark : themes.light;
-  const [inviteData, setInviteData] = useState({ email: "", role: "EDITOR" });
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
