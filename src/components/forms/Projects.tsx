@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import FormHeader from "./FormHeader";
 import ItemsList from "./ItemsList";
 import FormMessage from "./FormMessage";
@@ -433,6 +434,25 @@ const ProjectsForm = ({ projectsData, portfolioId }: ProjectsFormProps) => {
           />
           {errors.images && (
             <span className="form-error">{errors.images.message}</span>
+          )}
+          
+          {/* Image Preview */}
+          {watch("images") && (
+            <div className="image-preview">
+              <label className="form-label">Image Preview:</label>
+              <div className="preview-container">
+                <Image
+                  src={watch("images")}
+                  alt="Project preview"
+                  width={300}
+                  height={200}
+                  className="preview-image"
+                  onError={(e) => {
+                    console.error("Image failed to load:", watch("images"));
+                  }}
+                />
+              </div>
+            </div>
           )}
         </div>
 

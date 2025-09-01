@@ -144,7 +144,7 @@ export async function createProject(formData: FormData) {
     const projectData = {
       title: formData.get("title") as string,
       subTitle: formData.get("subTitle") as string,
-      images: (formData.get("images") as string).split(",").map(s => s.trim()),
+      images: formData.get("images") as string, // Single image as string
       alt: formData.get("alt") as string,
       projectView: formData.get("projectView") as string,
       tools: (formData.get("tools") as string).split(",").map(s => s.trim()),
@@ -176,7 +176,7 @@ export async function updateProject(id: string, formData: FormData) {
     const projectData = {
       title: formData.get("title") as string,
       subTitle: formData.get("subTitle") as string,
-      images: (formData.get("images") as string).split(",").map(s => s.trim()),
+      images: formData.get("images") as string, // Single image as string
       alt: formData.get("alt") as string,
       projectView: formData.get("projectView") as string,
       tools: (formData.get("tools") as string).split(",").map(s => s.trim()),
@@ -301,5 +301,52 @@ export async function deleteArchiveProject(id: string) {
   } catch (error) {
     console.error("Error deleting archive project:", error);
     return { success: false, error: error instanceof Error ? error.message : "Failed to delete archive project" };
+  }
+}
+
+// Get project limits configuration
+export async function getProjectLimits() {
+  try {
+    const fetchOptions = await getAuthenticatedFetchOptions("GET");
+    
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/config`, fetchOptions);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to get project limits: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("Error getting project limits:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Failed to get project limits" };
+  }
+}
+
+// Update project limits configuration
+export async function updateProjectLimits(formData: FormData) {
+  try {
+    const limitsData = {
+      maxWebProjects: parseInt(formData.get("maxWebProjects") as string),
+      maxDesignProjects: parseInt(formData.get("maxDesignProjects") as string),
+      maxTotalProjects: parseInt(formData.get("maxTotalProjects") as string),
+    };
+
+    const fetchOptions = await getAuthenticatedFetchOptions("PUT", limitsData);
+    
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/config`, fetchOptions);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to update project limits: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    revalidatePath("/dashboard");
+    return { success: true, data: result };
+  } catch (error) {
+    console.error("Error updating project limits:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Failed to update project limits" };
   }
 }

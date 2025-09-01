@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import InvitationEmail from "@/components/emails/InvitationEmail";
 import { resendConfig } from "@/lib/resend-config";
+import { Role } from "@/types/enum";
 
 const resend = new Resend(resendConfig.apiKey);
 
@@ -30,9 +31,9 @@ export async function POST(req: Request) {
       );
     }
 
-    if (role !== "editor" && role !== "viewer") {
+    if (role !== Role.EDITOR && role !== Role.VIEWER) {
       return NextResponse.json(
-        { error: 'Invalid role. Must be "editor" or "viewer"' },
+        { error: `Invalid role. Must be "${Role.EDITOR}" or "${Role.VIEWER}"` },
         { status: 400 }
       );
     }

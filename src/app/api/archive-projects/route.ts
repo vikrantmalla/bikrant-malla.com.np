@@ -70,7 +70,7 @@ export async function GET(request: Request) {
         data: {
           userId: dbUser.id,
           portfolioId: firstPortfolio.id,
-          role: "owner"
+          role: "OWNER"
         }
       });
       

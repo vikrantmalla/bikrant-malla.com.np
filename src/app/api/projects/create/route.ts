@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { checkEditorPermissions, checkPortfolioAccess } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
+import { Platform } from "@/types/enum";
 
 export async function POST(request: Request) {
     const permissionCheck = await checkEditorPermissions();
@@ -43,12 +44,54 @@ export async function POST(request: Request) {
       );
     }
 
+    // Get config for project limits
+    let config = await prisma.config.findFirst();
+    if (!config) {
+      config = await prisma.config.create({
+        data: {
+          maxWebProjects: 6,
+          maxDesignProjects: 6,
+          maxTotalProjects: 12,
+        },
+      });
+    }
+
+    // Count existing projects for this portfolio
+    const existingProjects = await prisma.project.findMany({
+      where: { portfolioId: body.portfolioId },
+    });
+
+    const totalProjects = existingProjects.length;
+    const webProjects = existingProjects.filter(p => p.platform === Platform.Web).length;
+    const designProjects = existingProjects.filter(p => p.platform === Platform.Design).length;
+
+    // Validate project limits
+    if (totalProjects >= config.maxTotalProjects) {
+      return NextResponse.json(
+        { error: `Maximum total projects limit reached (${config.maxTotalProjects}). Cannot create more projects.` },
+        { status: 400 }
+      );
+    }
+
+    if (body.platform === Platform.Web && webProjects >= config.maxWebProjects) {
+      return NextResponse.json(
+        { error: `Maximum Web projects limit reached (${config.maxWebProjects}). Cannot create more Web projects.` },
+        { status: 400 }
+      );
+    }
+
+    if (body.platform === Platform.Design && designProjects >= config.maxDesignProjects) {
+      return NextResponse.json(
+        { error: `Maximum Design projects limit reached (${config.maxDesignProjects}). Cannot create more Design projects.` },
+        { status: 400 }
+      );
+    }
+
     const newProject = await prisma.project.create({
       data: {
         title: body.title,
         subTitle: body.subTitle,
         images: body.images,
-        imageUrl: body.imageUrl,
         alt: body.alt,
         projectView: body.projectView,
         tools: body.tools,

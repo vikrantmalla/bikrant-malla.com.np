@@ -23,15 +23,17 @@ function ItemsList<T extends { id: string }>({
       <div className="projects-list">
         <h3>{title}</h3>
         <div className="projects-grid">
-          {[1, 2, 3].map((index) => (
-            <div key={index} className="project-card project-card--loading">
-              <div className="loading-skeleton">
-                <div className="skeleton-title"></div>
-                <div className="skeleton-text"></div>
-                <div className="skeleton-text"></div>
+          {[1, 2, 3].map((index) => {
+            return (
+              <div key={`loading-${index}`} className="project-card project-card--loading">
+                <div className="loading-skeleton">
+                  <div className="skeleton-title"></div>
+                  <div className="skeleton-text"></div>
+                  <div className="skeleton-text"></div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <div className="loading-message">
           <p>Loading {itemName.toLowerCase()}...</p>
@@ -58,17 +60,19 @@ function ItemsList<T extends { id: string }>({
     <div className="projects-list">
       <h3>{title}</h3>
       <div className="projects-grid">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className={`project-card ${
-              selectedItemId === item.id ? "project-card--selected" : ""
-            }`}
-            onClick={() => onSelectItem(item.id)}
-          >
-            {renderItem(item)}
-          </div>
-        ))}
+        {items.map((item) => {
+          return (
+            <div
+              key={item.id}
+              className={`project-card ${
+                selectedItemId === item.id ? "project-card--selected" : ""
+              }`}
+              onClick={() => onSelectItem(item.id)}
+            >
+              {renderItem(item)}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

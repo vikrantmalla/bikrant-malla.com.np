@@ -158,13 +158,22 @@ async function main() {
       data: {
         userId: user.id,
         portfolioId: portfolio.id,
-        role: "owner", // This user owns the portfolio
+        role: "OWNER", // This user owns the portfolio
       },
     });
 
     console.log("✅ User portfolio role created - user is portfolio owner");
 
-    console.log("✅ Config created");
+    // Create default config
+    const config = await prisma.config.create({
+      data: {
+        maxWebProjects: 6,
+        maxDesignProjects: 6,
+        maxTotalProjects: 12,
+      },
+    });
+
+    console.log("✅ Config created with default limits");
 
     console.log("🎉 Database seeding completed successfully!");
     console.log("📧 Portfolio owner email:", devEmail);
