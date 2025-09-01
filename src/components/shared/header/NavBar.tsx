@@ -51,6 +51,24 @@ export function MenuIcon() {
 export function Navigation({ contact }: NavBarProps) {
   const { toggleMenu, activeLink, setToggleMenu } = useAppStore();
   const pathname = usePathname();
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  // Check screen width on mount and resize
+  React.useEffect(() => {
+    const checkScreenWidth = () => {
+      setIsMobile(window.innerWidth < 677);
+    };
+
+    // Check on mount
+    checkScreenWidth();
+
+    // Add event listener for resize
+    window.addEventListener('resize', checkScreenWidth);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenWidth);
+  }, []);
+
   const handleToggleMenu = () => {
     setToggleMenu(!toggleMenu);
   };
@@ -90,20 +108,22 @@ export function Navigation({ contact }: NavBarProps) {
             onMenuClick={handleToggleMenu}
           />
         ))}
-        <li
-          className="social-media mobile-nav-social-media"
-          style={{ margin: "1rem 0" }}
-        >
-          {isContactDefined && (
-            <SocialMedia
-              gitHub={contact.gitHub}
-              linkedIn={contact.linkedIn}
-              facebook={contact.facebook}
-              instagram={contact.instagram}
-              visibleCount={2}
-            />
-          )}
-        </li>
+        {isMobile && (
+          <li
+            className="social-media mobile-nav-social-media"
+            style={{ margin: "1rem 0" }}
+          >
+            {isContactDefined && (
+              <SocialMedia
+                gitHub={contact.gitHub}
+                linkedIn={contact.linkedIn}
+                facebook={contact.facebook}
+                instagram={contact.instagram}
+                visibleCount={2}
+              />
+            )}
+          </li>
+        )}
       </ul>
     </nav>
   );

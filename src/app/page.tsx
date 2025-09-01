@@ -32,8 +32,10 @@ const Home = async () => {
     <main>
       <article className="container">
         <AboutMe aboutme={aboutme} />
-        <ProjectHighlight projects={projecthighlight}/>
-        <Behance projects={behance} />
+        {projecthighlight.length > 0 && (
+          <ProjectHighlight projects={projecthighlight} />
+        )}
+        {behance.length > 0 && <Behance projects={behance} />}
         <Contact contact={contact} />
       </article>
     </main>
