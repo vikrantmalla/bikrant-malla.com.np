@@ -40,7 +40,7 @@ export async function GET(
 
     return NextResponse.json({
       archiveProject,
-      userRole: isOwner ? "owner" : "editor"
+      userRole: isOwner ? "OWNER" : "EDITOR"
     });
   } catch (error) {
     console.error("Error fetching archive project:", error);

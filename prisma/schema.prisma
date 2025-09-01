@@ -15,6 +15,17 @@ datasource db {
   url      = env("DB_DEV_MONGODB_URI")
 }
 
+enum Platform {
+  Web
+  Design
+}
+
+enum Role {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
 model User {
   id           String              @id @default(auto()) @map("_id") @db.ObjectId
   kindeUserId  String              @unique // Kinde user ID
@@ -31,7 +42,7 @@ model UserPortfolioRole {
   userId      String    @db.ObjectId
   portfolio   Portfolio @relation("PortfolioRoles", fields: [portfolioId], references: [id])
   portfolioId String    @db.ObjectId
-  role        String // e.g., "editor", "viewer"
+  role        Role
   invitedAt   DateTime  @default(now())
 
   @@unique([userId, portfolioId], name: "userId_portfolioId")
@@ -70,7 +81,7 @@ model Project {
   alt          String
   projectView  String
   tools        String[]
-  platform     String
+  platform     Platform
   portfolio    Portfolio?   @relation("PortfolioProjects", fields: [portfolioId], references: [id])
   portfolioId  String?      @db.ObjectId
   tagRelations ProjectTag[] @relation("ProjectToTag")
@@ -106,5 +117,10 @@ model ArchiveProjectTag {
 }
 
 model Config {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id                    String @id @default(auto()) @map("_id") @db.ObjectId
+  maxWebProjects        Int    @default(6)
+  maxDesignProjects     Int    @default(6)
+  maxTotalProjects      Int    @default(12)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }

@@ -52,7 +52,7 @@ export async function GET(
 
     return NextResponse.json({
       portfolio,
-      userRole: isOwner ? "owner" : "editor"
+      userRole: isOwner ? "OWNER" : "EDITOR"
     });
   } catch (error) {
     console.error("Error fetching portfolio:", error);
