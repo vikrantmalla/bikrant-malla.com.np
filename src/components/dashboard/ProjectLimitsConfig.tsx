@@ -11,7 +11,10 @@ interface ProjectLimits {
 const ProjectLimitsConfig = () => {
   const [limits, setLimits] = useState<ProjectLimits | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<{ text: string; isError: boolean }>({ text: "", isError: false });
+  const [message, setMessage] = useState<{ text: string; isError: boolean }>({
+    text: "",
+    isError: false,
+  });
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
@@ -33,11 +36,14 @@ const ProjectLimitsConfig = () => {
     setMessage({ text: "", isError: false });
 
     const formData = new FormData(e.currentTarget);
-    
+
     try {
       const result = await updateProjectLimits(formData);
       if (result.success) {
-        setMessage({ text: "Project limits updated successfully!", isError: false });
+        setMessage({
+          text: "Project limits updated successfully!",
+          isError: false,
+        });
         setLimits(result.data);
         setIsEditing(false);
       } else {
@@ -118,7 +124,7 @@ const ProjectLimitsConfig = () => {
               />
             </div>
           </div>
-          
+
           <div className="config-actions">
             <button
               type="submit"
@@ -157,7 +163,13 @@ const ProjectLimitsConfig = () => {
       )}
 
       {message.text && (
-        <div className={`config-message ${message.isError ? 'config-message--error' : 'config-message--success'}`}>
+        <div
+          className={`config-message ${
+            message.isError
+              ? "config-message--error"
+              : "config-message--success"
+          }`}
+        >
           {message.text}
         </div>
       )}
