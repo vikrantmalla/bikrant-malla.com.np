@@ -3,11 +3,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useThemeStore } from "@/store/feature/themeStore";
+import { Role } from "@/types/enum";
 import "./Invite.scss";
 
 const inviteSchema = z.object({
   email: z.string().email("Invalid email address").min(1, "Email is required"),
-  role: z.enum(["editor", "viewer"]),
+  role: z.enum([Role.EDITOR, Role.VIEWER]),
 });
 
 type InviteFormData = z.infer<typeof inviteSchema>;
@@ -27,7 +28,7 @@ export const Invite = () => {
     resolver: zodResolver(inviteSchema),
     defaultValues: {
       email: "",
-      role: "editor",
+      role: Role.EDITOR,
     },
   });
 
@@ -109,8 +110,8 @@ export const Invite = () => {
             {...register("role")}
             className="dashboard__form-select"
           >
-            <option value="editor">Editor</option>
-            <option value="viewer">Viewer</option>
+            <option value={Role.EDITOR}>Editor</option>
+            <option value={Role.VIEWER}>Viewer</option>
           </select>
           {errors.role && (
             <span className="dashboard__form-error">

@@ -97,14 +97,12 @@ export interface AboutMe {
 }
 
 export interface BehanceData {
-  behance: BehanceProject[];
-  configData: BackupConfig;
+  project: Project[];
 }
 
 export interface BehanceCard {
   key: number;
-  project: BehanceProject;
-  config: BackupConfig;
+  project: Project;
 }
 
 export interface BehanceProject {
@@ -112,7 +110,6 @@ export interface BehanceProject {
   title: string;
   subTitle?: string;
   images?: string;
-  imageUrl?: string;
   alt?: string;
   tools: string[];
   projectView: string;
@@ -155,25 +152,23 @@ export interface MetaData {
 }
 
 export interface ProjectHighlightData {
-  project: Project[];
-  configData: BackupConfig;
+  projects: Project[];
 }
 
 export interface ProjectHighlightsCard {
   key: number;
   project: Project;
-  config: BackupConfig;
 }
 
 export interface Project {
   id: string;
   title: string;
   subTitle: string; // Required in Prisma schema
-  images: string[]; // Required in Prisma schema - Array of Cloudinary URLs
+  images: string; // Required in Prisma schema - Array of Cloudinary URLs
   alt: string; // Required in Prisma schema
   projectView: string;
   tools: string[];
-  platform: string; // Required in Prisma schema
+  platform: "Web" | "Design"; // Required in Prisma schema - using Platform enum values
   portfolioId?: string;
   // Optional relations that might be included in API responses
   portfolio?: Portfolio;
@@ -209,7 +204,7 @@ export interface UserPortfolioRole {
   id: string;
   userId: string;
   portfolioId: string;
-  role: string;
+  role: "OWNER" | "EDITOR" | "VIEWER"; // Using Role enum values
   invitedAt: Date;
   // Optional relations that might be included in API responses
   user?: User;
@@ -294,8 +289,6 @@ export interface ArchiveProject {
   portfolio?: Portfolio;
   tagRelations?: ArchiveProjectTag[];
 }
-
-
 
 export interface ConfigData {
   config: Config[];

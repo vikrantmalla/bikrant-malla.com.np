@@ -1,25 +1,28 @@
 "use client";
 import Image from "next/image";
-import { BehanceCard as BehanceCardDataType } from "../../types/data";
+import { ProjectHighlightsCard } from "../../types/data";
 import { FaChevronRight } from "react-icons/fa";
 import { joseFont } from "@/helpers/lib/font";
 import ExternalLink from "../shared/externalLink";
 import { CldImage } from "next-cloudinary";
 import { useMouseStore } from "@/store/feature/mouseStore";
 
-const BehanceCard = ({ project, config }: BehanceCardDataType) => {
-  const { id, images, imageUrl, alt, title, subTitle, tools, projectView } =
+const BehanceCard = ({ project }: ProjectHighlightsCard) => {
+  const { id, images, alt, title, subTitle, tools, projectView } =
     project;
-  const { allowBackupImages } = config;
   const { setCursorType } = useMouseStore();
 
+  // Check if Cloudinary is configured
+  const isCloudinaryConfigured = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_DEV || 
+                                process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME_PROD;
+
   const cursorChangeHandler = (cursorType: string) => {
-    setCursorType(cursorType)
+    setCursorType(cursorType);
   };
 
   return (
     <div className="card" key={id}>
-      <div className="card-img">
+      {/* <div className="card-img">
         <div
           className="image-wrapper"
           onMouseEnter={() => cursorChangeHandler("hovered")}
@@ -32,30 +35,34 @@ const BehanceCard = ({ project, config }: BehanceCardDataType) => {
             gtagCategory="image_interaction"
             gtagLabel="click_through_link"
           >
-            {allowBackupImages ? (
+            {isCloudinaryConfigured ? (
               <CldImage
                 width="500"
                 height="800"
-                src={imageUrl || ""}
+                src={images || ""}
                 alt={alt || ""}
                 priority={false}
               />
             ) : (
               <Image
-                src={`/${images || ""}`}
+                src={images || ""}
                 alt={alt || ""}
                 width={500}
-                height={500}
-                className="responsive-image"
+                height={800}
+                priority={false}
+                className="w-full h-auto"
               />
             )}
           </ExternalLink>
         </div>
-      </div>
+      </div> */}
       <div className="card-details">
         <div className="card-head">
           <h2 className={`${joseFont} fs-400`}>
-            {title} {subTitle && <span className={`${joseFont} fs-300`}>{subTitle}</span>}
+            {title}{" "}
+            {subTitle && (
+              <span className={`${joseFont} fs-300`}>{subTitle}</span>
+            )}
           </h2>
           <p className={`${joseFont} fs-300`}>{tools.join(", ")}</p>
         </div>

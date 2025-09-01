@@ -1,6 +1,7 @@
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { prisma } from './prisma';
 import { NextResponse } from 'next/server';
+import { Role } from '@/types/enum';
 
 export async function checkEditorPermissions() {
   const { getUser } = getKindeServerSession();
@@ -43,7 +44,7 @@ export async function checkEditorPermissions() {
     const isOwner = !!portfolio;
     
     // Owner automatically gets editor role without invitation
-    const hasEditorRole = dbUser.roles.some((role) => role.role === 'editor') || isOwner;
+    const hasEditorRole = dbUser.roles.some((role) => role.role === Role.EDITOR) || isOwner;
 
     if (!hasEditorRole) {
       return { 
@@ -79,7 +80,7 @@ export async function checkEditorRole(userEmail: string, portfolioId: string) {
       roles: {
         where: {
           portfolioId: portfolioId,
-          role: "editor"
+          role: Role.EDITOR
         }
       }
     }
@@ -110,7 +111,7 @@ export async function checkProjectEditorRole(userEmail: string, projectId: strin
           userRoles: {
             where: {
               user: { email: userEmail },
-              role: "editor"
+              role: Role.EDITOR
             }
           }
         }
@@ -143,7 +144,7 @@ export async function checkArchiveProjectEditorRole(userEmail: string, archivePr
           userRoles: {
             where: {
               user: { email: userEmail },
-              role: "editor"
+              role: Role.EDITOR
             }
           }
         }

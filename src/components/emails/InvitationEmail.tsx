@@ -10,6 +10,7 @@ import {
   Button,
   Hr,
 } from '@react-email/components';
+import { Role } from '@/types/enum';
 
 interface InvitationEmailProps {
   inviterName: string;
@@ -45,7 +46,7 @@ export const InvitationEmail = ({
                 What you can do as a {role}:
               </Text>
               <Text style={{ color: '#174ea6', fontSize: 14, whiteSpace: 'pre-line' }}>
-                {role === 'editor'
+                {role === Role.EDITOR
                   ? '• Edit and manage portfolio content\n• Add and modify projects\n• Update portfolio information'
                   : '• View portfolio content\n• Access shared resources\n• Provide feedback and suggestions'}
               </Text>

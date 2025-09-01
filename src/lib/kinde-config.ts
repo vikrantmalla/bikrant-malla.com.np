@@ -6,16 +6,10 @@ export const kindeConfig = {
   issuer: process.env.KINDE_ISSUER_URL,
 
   // Client ID - can be different for dev/prod
-  clientId:
-    process.env.NODE_ENV === Environment.PRODUCTION
-      ? process.env.KINDE_CLIENT_ID_PROD
-      : process.env.KINDE_CLIENT_ID_DEV,
+  clientId: process.env.KINDE_CLIENT_ID,
 
   // Client Secret - can be different for dev/prod
-  clientSecret:
-    process.env.NODE_ENV === Environment.PRODUCTION
-      ? process.env.KINDE_CLIENT_SECRET_PROD
-      : process.env.KINDE_CLIENT_SECRET_DEV,
+  clientSecret: process.env.KINDE_CLIENT_SECRET,
 
   // Redirect URLs - can be different for dev/prod
   redirectUrl:
@@ -33,7 +27,8 @@ export const kindeConfig = {
   defaultLoginRedirect: "/dashboard",
   defaultLogoutRedirect: "/",
 };
-
+console.log(kindeConfig);
+console.log(process.env.KINDE_CLIENT_ID_DEV);
 // Helper function to validate Kinde configuration
 export const validateKindeConfig = () => {
   const issues = [];

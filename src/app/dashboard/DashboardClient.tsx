@@ -10,6 +10,7 @@ import { useThemeStore } from "@/store/feature/themeStore";
 import { toCSSVars } from "@/helpers/utils";
 import "./dashboard.scss";
 import { Invite } from "@/components/dashboard/Invite";
+import ProjectLimitsConfig from "@/components/dashboard/ProjectLimitsConfig";
 import { PortfolioDetails } from "@/types/data";
 
 interface DashboardClientProps {
@@ -20,13 +21,14 @@ interface DashboardClientProps {
   };
 }
 
-export default function DashboardClient({ initialPortfolioData }: DashboardClientProps) {
-  console.log(initialPortfolioData);
+export default function DashboardClient({
+  initialPortfolioData,
+}: DashboardClientProps) {
   const { user, isAuthenticated, userRole, isCheckingRole, checkUserRole } =
     useAuth();
   const { isDarkTheme, themes } = useThemeStore();
   const currentTheme = isDarkTheme ? themes.dark : themes.light;
-  const [inviteData, setInviteData] = useState({ email: "", role: "editor" });
+  const [inviteData, setInviteData] = useState({ email: "", role: "EDITOR" });
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -104,7 +106,9 @@ export default function DashboardClient({ initialPortfolioData }: DashboardClien
   }
 
   // Get portfolio data for stats
-  const portfolioData = initialPortfolioData.success ? initialPortfolioData.data : null;
+  const portfolioData = initialPortfolioData.success
+    ? initialPortfolioData.data
+    : null;
   const totalProjects = portfolioData?.projects?.length || 0;
   const totalPortfolioItems = portfolioData ? 1 : 0; // Portfolio itself counts as 1
   const totalArchived = portfolioData?.archiveProjects?.length || 0;
@@ -211,7 +215,8 @@ export default function DashboardClient({ initialPortfolioData }: DashboardClien
               {portfolioData && (
                 <div className="dashboard__current-data">
                   <p style={{ color: currentTheme?.text || "#000" }}>
-                    Current Portfolio: <strong>{portfolioData.name}</strong> - {portfolioData.jobTitle}
+                    Current Portfolio: <strong>{portfolioData.name}</strong> -{" "}
+                    {portfolioData.jobTitle}
                   </p>
                 </div>
               )}
@@ -230,11 +235,15 @@ export default function DashboardClient({ initialPortfolioData }: DashboardClien
               {portfolioData?.projects && portfolioData.projects.length > 0 && (
                 <div className="dashboard__current-data">
                   <p style={{ color: currentTheme?.text || "#000" }}>
-                    Total Projects: <strong>{portfolioData.projects.length}</strong>
+                    Total Projects:{" "}
+                    <strong>{portfolioData.projects.length}</strong>
                   </p>
                 </div>
               )}
-              <ProjectsForm projectsData={portfolioData?.projects} />
+              <ProjectsForm
+                projectsData={portfolioData?.projects}
+                portfolioId={portfolioData?.id}
+              />
             </div>
           )}
 
@@ -246,14 +255,19 @@ export default function DashboardClient({ initialPortfolioData }: DashboardClien
               >
                 Archive Management
               </h2>
-              {portfolioData?.archiveProjects && portfolioData.archiveProjects.length > 0 && (
-                <div className="dashboard__current-data">
-                  <p style={{ color: currentTheme?.text || "#000" }}>
-                    Total Archived Projects: <strong>{portfolioData.archiveProjects.length}</strong>
-                  </p>
-                </div>
-              )}
-              <ArchiveProjectsForm archiveProjectsData={portfolioData?.archiveProjects} />
+              {portfolioData?.archiveProjects &&
+                portfolioData.archiveProjects.length > 0 && (
+                  <div className="dashboard__current-data">
+                    <p style={{ color: currentTheme?.text || "#000" }}>
+                      Total Archived Projects:{" "}
+                      <strong>{portfolioData.archiveProjects.length}</strong>
+                    </p>
+                  </div>
+                )}
+              <ArchiveProjectsForm
+                archiveProjectsData={portfolioData?.archiveProjects}
+                portfolioId={portfolioData?.id}
+              />
             </div>
           )}
 
@@ -265,19 +279,7 @@ export default function DashboardClient({ initialPortfolioData }: DashboardClien
               >
                 Settings
               </h2>
-              <div
-                className="dashboard__form-placeholder"
-                style={{
-                  background: currentTheme?.card || "#ffffff",
-                  padding: "2rem",
-                  borderRadius: "0.75rem",
-                  textAlign: "center",
-                  color: currentTheme?.text || "#000",
-                }}
-              >
-                <h3>Settings Form Coming Soon</h3>
-                <p>This form will be implemented to manage settings.</p>
-              </div>
+              <ProjectLimitsConfig />
             </div>
           )}
         </div>
