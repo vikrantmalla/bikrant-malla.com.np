@@ -6,7 +6,11 @@ import FormHeader from "./FormHeader";
 import ItemsList from "./ItemsList";
 import FormMessage from "./FormMessage";
 import "./form.scss";
-import { createArchiveProject, updateArchiveProject, deleteArchiveProject } from "@/app/dashboard/actions";
+import {
+  createArchiveProject,
+  updateArchiveProject,
+  deleteArchiveProject,
+} from "@/app/dashboard/actions";
 import { ArchiveProject } from "@/types/data";
 
 // Updated schema to match Prisma schema
@@ -19,10 +23,7 @@ const archiveProjectSchema = z.object({
   isNew: z.boolean().default(false),
   projectView: z.string().min(1, "Project View is required"),
   viewCode: z.string().min(1, "View Code is required"),
-  build: z
-    .array(z.string())
-    .optional()
-    .default([]),
+  build: z.array(z.string()).optional().default([]),
 });
 
 interface ArchiveProjectData {
@@ -41,13 +42,24 @@ interface ArchiveProjectsFormProps {
   portfolioId?: string;
 }
 
-const ArchiveProjectsForm = ({ archiveProjectsData, portfolioId }: ArchiveProjectsFormProps) => {
+const ArchiveProjectsForm = ({
+  archiveProjectsData,
+  portfolioId,
+}: ArchiveProjectsFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<{ text: string; isError: boolean }>({ text: "", isError: false });
-  const [currentArchiveProject, setCurrentArchiveProject] = useState<ArchiveProjectData | null>(null);
-  const [archiveProjects, setArchiveProjects] = useState<ArchiveProjectData[]>([]);
-  const [selectedArchiveProjectId, setSelectedArchiveProjectId] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ text: string; isError: boolean }>({
+    text: "",
+    isError: false,
+  });
+  const [currentArchiveProject, setCurrentArchiveProject] =
+    useState<ArchiveProjectData | null>(null);
+  const [archiveProjects, setArchiveProjects] = useState<ArchiveProjectData[]>(
+    []
+  );
+  const [selectedArchiveProjectId, setSelectedArchiveProjectId] = useState<
+    string | null
+  >(null);
 
   const {
     register,
@@ -84,34 +96,37 @@ const ArchiveProjectsForm = ({ archiveProjectsData, portfolioId }: ArchiveProjec
   const handleCreateArchiveProject = async (data: any) => {
     setIsLoading(true);
     setMessage({ text: "", isError: false });
-    
+
     try {
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => {
-        if (key === 'build' && Array.isArray(value)) {
-          formData.append(key, value.join(','));
-        } else if (key === 'year') {
+        if (key === "build" && Array.isArray(value)) {
+          formData.append(key, value.join(","));
+        } else if (key === "year") {
           formData.append(key, String(value));
-        } else if (key === 'isNew') {
+        } else if (key === "isNew") {
           formData.append(key, String(value));
         } else {
           formData.append(key, String(value));
         }
       });
-      
+
       // Add portfolioId if available
       if (portfolioId) {
-        formData.append('portfolioId', portfolioId);
+        formData.append("portfolioId", portfolioId);
       }
 
       const result = await createArchiveProject(formData);
       if (result.success) {
-        setMessage({ text: "Archive project created successfully!", isError: false });
+        setMessage({
+          text: "Archive project created successfully!",
+          isError: false,
+        });
         setCurrentArchiveProject(result.data);
         setIsEditing(false);
         // Refresh archive projects list
         if (result.data) {
-          setArchiveProjects(prev => [...prev, result.data]);
+          setArchiveProjects((prev) => [...prev, result.data]);
         }
         reset();
         return { success: true, data: result.data };
@@ -128,38 +143,47 @@ const ArchiveProjectsForm = ({ archiveProjectsData, portfolioId }: ArchiveProjec
   };
 
   const handleUpdateArchiveProject = async (data: any) => {
-    if (!currentArchiveProject?.id) return { success: false, error: "No archive project ID" };
-    
+    if (!currentArchiveProject?.id)
+      return { success: false, error: "No archive project ID" };
+
     setIsLoading(true);
     setMessage({ text: "", isError: false });
-    
+
     try {
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => {
-        if (key === 'build' && Array.isArray(value)) {
-          formData.append(key, value.join(','));
-        } else if (key === 'year') {
+        if (key === "build" && Array.isArray(value)) {
+          formData.append(key, value.join(","));
+        } else if (key === "year") {
           formData.append(key, String(value)); // Safely convert unknown value to string
-        } else if (key === 'isNew') {
+        } else if (key === "isNew") {
           formData.append(key, String(value)); // Safely convert unknown value to string
         } else {
           formData.append(key, String(value)); // Safely convert unknown value to string
         }
       });
-      
+
       // Add portfolioId if available
       if (portfolioId) {
-        formData.append('portfolioId', portfolioId);
+        formData.append("portfolioId", portfolioId);
       }
 
-      const result = await updateArchiveProject(currentArchiveProject.id, formData);
+      const result = await updateArchiveProject(
+        currentArchiveProject.id,
+        formData
+      );
       if (result.success) {
-        setMessage({ text: "Archive project updated successfully!", isError: false });
+        setMessage({
+          text: "Archive project updated successfully!",
+          isError: false,
+        });
         setCurrentArchiveProject(result.data);
         setIsEditing(false);
         // Update archive projects list
         if (result.data) {
-          setArchiveProjects(prev => prev.map(p => p.id === result.data.id ? result.data : p));
+          setArchiveProjects((prev) =>
+            prev.map((p) => (p.id === result.data.id ? result.data : p))
+          );
         }
         return { success: true, data: result.data };
       } else {
@@ -176,22 +200,25 @@ const ArchiveProjectsForm = ({ archiveProjectsData, portfolioId }: ArchiveProjec
 
   const handleDeleteArchiveProject = async (projectId: string) => {
     if (!projectId) return { success: false, error: "No archive project ID" };
-    
+
     if (!confirm("Are you sure you want to delete this archive project?")) {
       return { success: false, error: "Deletion cancelled" };
     }
-    
+
     setIsLoading(true);
     setMessage({ text: "", isError: false });
-    
+
     try {
       const result = await deleteArchiveProject(projectId);
       if (result.success) {
-        setMessage({ text: "Archive project deleted successfully!", isError: false });
+        setMessage({
+          text: "Archive project deleted successfully!",
+          isError: false,
+        });
         setCurrentArchiveProject(null);
         setSelectedArchiveProjectId(null);
         // Remove from archive projects list
-        setArchiveProjects(prev => prev.filter(p => p.id !== projectId));
+        setArchiveProjects((prev) => prev.filter((p) => p.id !== projectId));
         reset();
         return { success: true };
       } else {
@@ -210,7 +237,7 @@ const ArchiveProjectsForm = ({ archiveProjectsData, portfolioId }: ArchiveProjec
     setCurrentArchiveProject(archiveProject);
     setIsEditing(true);
     setMessage({ text: "", isError: false });
-    
+
     // Populate form with archive project data
     setValue("title", archiveProject.title);
     setValue("year", archiveProject.year.toString());
@@ -236,7 +263,9 @@ const ArchiveProjectsForm = ({ archiveProjectsData, portfolioId }: ArchiveProjec
 
   const handleSelectArchiveProject = (archiveProjectId: string) => {
     setSelectedArchiveProjectId(archiveProjectId);
-    const archiveProject = archiveProjects.find(p => p.id === archiveProjectId);
+    const archiveProject = archiveProjects.find(
+      (p) => p.id === archiveProjectId
+    );
     if (archiveProject) {
       setCurrentArchiveProject(archiveProject);
       // Populate form for viewing
@@ -297,8 +326,13 @@ const ArchiveProjectsForm = ({ archiveProjectsData, portfolioId }: ArchiveProjec
         isEditing={isEditing}
         hasCurrentItem={!!currentArchiveProject}
         isLoading={isLoading}
-        onEdit={() => currentArchiveProject && handleEdit(currentArchiveProject)}
-        onDelete={() => currentArchiveProject && handleDeleteArchiveProject(currentArchiveProject.id)}
+        onEdit={() =>
+          currentArchiveProject && handleEdit(currentArchiveProject)
+        }
+        onDelete={() =>
+          currentArchiveProject &&
+          handleDeleteArchiveProject(currentArchiveProject.id)
+        }
         onCreateNew={handleCreateNew}
         onRefresh={refreshItems}
         itemName="Archive Project"
@@ -314,7 +348,14 @@ const ArchiveProjectsForm = ({ archiveProjectsData, portfolioId }: ArchiveProjec
         isLoading={isLoading}
       />
 
-      <form onSubmit={handleSubmit(isEditing && currentArchiveProject ? handleUpdateArchiveProject : handleCreateArchiveProject)} className="form-layout">
+      <form
+        onSubmit={handleSubmit(
+          isEditing && currentArchiveProject
+            ? handleUpdateArchiveProject
+            : handleCreateArchiveProject
+        )}
+        className="form-layout"
+      >
         <div className="form-group">
           <label htmlFor="title" className="form-label form-label--required">
             Project Title
@@ -391,29 +432,59 @@ const ArchiveProjectsForm = ({ archiveProjectsData, portfolioId }: ArchiveProjec
         </div>
 
         <div className="form-group">
-          <label className="form-label">
-            Build Tools
-          </label>
+          <label className="form-label">Build Tools</label>
           <div className="tools-checkboxes">
             {[
-              'React', 'Next.js', 'TypeScript', 'Node.js', 'MongoDB',
-              'PostgreSQL', 'Tailwind CSS', 'GraphQL', 'Docker', 'AWS',
-              'Python', 'Django', 'Vue.js', 'Angular', 'Express.js',
-              'Redis', 'Elasticsearch', 'Kubernetes', 'Jenkins', 'Git',
-              'Webpack', 'Vite', 'Babel', 'ESLint', 'Prettier', 'Jest',
-              'Cypress', 'Storybook', 'Rollup', 'Parcel', 'Gulp'
+              "React",
+              "Next.js",
+              "TypeScript",
+              "Node.js",
+              "MongoDB",
+              "PostgreSQL",
+              "Tailwind CSS",
+              "GraphQL",
+              "Docker",
+              "AWS",
+              "Python",
+              "Django",
+              "Vue.js",
+              "Angular",
+              "Express.js",
+              "Redis",
+              "Elasticsearch",
+              "Kubernetes",
+              "Jenkins",
+              "Git",
+              "Webpack",
+              "Vite",
+              "Babel",
+              "ESLint",
+              "Prettier",
+              "Jest",
+              "Cypress",
+              "Storybook",
+              "Rollup",
+              "Parcel",
+              "Gulp",
             ].map((tool) => (
               <label key={tool} className="tool-checkbox">
                 <input
                   type="checkbox"
                   value={tool}
-                  checked={Array.isArray(buildValue) && buildValue.includes(tool)}
+                  checked={
+                    Array.isArray(buildValue) && buildValue.includes(tool)
+                  }
                   onChange={(e) => {
-                    const currentBuild = Array.isArray(buildValue) ? buildValue : [];
+                    const currentBuild = Array.isArray(buildValue)
+                      ? buildValue
+                      : [];
                     if (e.target.checked) {
                       setValue("build", [...currentBuild, tool]);
                     } else {
-                      setValue("build", currentBuild.filter(t => t !== tool));
+                      setValue(
+                        "build",
+                        currentBuild.filter((t) => t !== tool)
+                      );
                     }
                   }}
                   disabled={isFieldDisabled()}

@@ -125,7 +125,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 <FaArrowLeft />
                 <span>Back to Site</span>
               </Link>
-              <button 
+              <button
                 className="side-menu__close-button"
                 onClick={() => setIsMobileMenuOpen(false)}
                 aria-label="Close menu"

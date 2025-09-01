@@ -25,7 +25,10 @@ function ItemsList<T extends { id: string }>({
         <div className="projects-grid">
           {[1, 2, 3].map((index) => {
             return (
-              <div key={`loading-${index}`} className="project-card project-card--loading">
+              <div
+                key={`loading-${index}`}
+                className="project-card project-card--loading"
+              >
                 <div className="loading-skeleton">
                   <div className="skeleton-title"></div>
                   <div className="skeleton-text"></div>

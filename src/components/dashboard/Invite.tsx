@@ -17,7 +17,10 @@ export const Invite = () => {
   const { isDarkTheme, themes } = useThemeStore();
   const currentTheme = isDarkTheme ? themes.dark : themes.light;
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<{ text: string; isError: boolean }>({ text: "", isError: false });
+  const [message, setMessage] = useState<{ text: string; isError: boolean }>({
+    text: "",
+    isError: false,
+  });
 
   const {
     register,
@@ -35,21 +38,27 @@ export const Invite = () => {
   const onSubmit = async (data: InviteFormData) => {
     setIsLoading(true);
     setMessage({ text: "", isError: false });
-    
+
     try {
       const response = await fetch("/api/invite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      
+
       const result = await response.json();
-      
+
       if (response.ok) {
-        setMessage({ text: result.message || "Invitation sent successfully!", isError: false });
+        setMessage({
+          text: result.message || "Invitation sent successfully!",
+          isError: false,
+        });
         reset(); // Reset form on success
       } else {
-        setMessage({ text: `Error: ${result.error || "Failed to send invitation"}`, isError: true });
+        setMessage({
+          text: `Error: ${result.error || "Failed to send invitation"}`,
+          isError: true,
+        });
       }
     } catch (error) {
       console.error("Invite error:", error);
@@ -67,21 +76,25 @@ export const Invite = () => {
       >
         Invite Collaborator
       </h2>
-      
+
       {message.text && (
         <div
-          className={`dashboard__message ${message.isError ? 'dashboard__message--error' : 'dashboard__message--success'}`}
+          className={`dashboard__message ${
+            message.isError
+              ? "dashboard__message--error"
+              : "dashboard__message--success"
+          }`}
         >
           {message.text}
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="dashboard__invite-form">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="dashboard__invite-form"
+      >
         <div className="dashboard__form-group">
-          <label
-            htmlFor="invite-email"
-            className="dashboard__form-label"
-          >
+          <label htmlFor="invite-email" className="dashboard__form-label">
             Email Address
           </label>
           <input
@@ -99,10 +112,7 @@ export const Invite = () => {
         </div>
 
         <div className="dashboard__form-group">
-          <label
-            htmlFor="invite-role"
-            className="dashboard__form-label"
-          >
+          <label htmlFor="invite-role" className="dashboard__form-label">
             Role
           </label>
           <select
@@ -114,9 +124,7 @@ export const Invite = () => {
             <option value={Role.VIEWER}>Viewer</option>
           </select>
           {errors.role && (
-            <span className="dashboard__form-error">
-              {errors.role.message}
-            </span>
+            <span className="dashboard__form-error">{errors.role.message}</span>
           )}
         </div>
 

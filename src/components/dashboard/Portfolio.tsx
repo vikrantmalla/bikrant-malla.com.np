@@ -5,7 +5,11 @@ import { useEffect, useState } from "react";
 import FormHeader from "../dashboard/FormHeader";
 import FormMessage from "../dashboard/FormMessage";
 import "./form.scss";
-import { createPortfolio, updatePortfolio, deletePortfolio } from "@/app/dashboard/actions";
+import {
+  createPortfolio,
+  updatePortfolio,
+  deletePortfolio,
+} from "@/app/dashboard/actions";
 import { PortfolioDetails } from "@/types/data";
 
 // Updated schema to match Prisma schema
@@ -15,9 +19,7 @@ const portfolioSchema = z
     jobTitle: z.string().min(1, "Job Title is required"),
     aboutDescription1: z.string().min(1, "About Description 1 is required"),
     aboutDescription2: z.string().min(1, "About Description 2 is required"),
-    skills: z
-      .array(z.string())
-      .min(1, "At least one skill is required"),
+    skills: z.array(z.string()).min(1, "At least one skill is required"),
     email: z
       .string()
       .email("Invalid email address")
@@ -26,10 +28,22 @@ const portfolioSchema = z
       .string()
       .email("Invalid owner email address")
       .min(1, "Owner Email is required"),
-    linkedIn: z.string().url("Invalid LinkedIn URL").min(1, "LinkedIn URL is required"),
-    gitHub: z.string().url("Invalid GitHub URL").min(1, "GitHub URL is required"),
-    facebook: z.string().url("Invalid Facebook URL").min(1, "Facebook URL is required"),
-    instagram: z.string().url("Invalid Instagram URL").min(1, "Instagram URL is required"),
+    linkedIn: z
+      .string()
+      .url("Invalid LinkedIn URL")
+      .min(1, "LinkedIn URL is required"),
+    gitHub: z
+      .string()
+      .url("Invalid GitHub URL")
+      .min(1, "GitHub URL is required"),
+    facebook: z
+      .string()
+      .url("Invalid Facebook URL")
+      .min(1, "Facebook URL is required"),
+    instagram: z
+      .string()
+      .url("Invalid Instagram URL")
+      .min(1, "Instagram URL is required"),
   })
   .refine((data) => data.email === data.ownerEmail, {
     message: "Owner Email must match Email",
@@ -63,8 +77,12 @@ interface PortfolioFormProps {
 const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<FormMessageType>({ text: "", isError: false });
-  const [currentPortfolio, setCurrentPortfolio] = useState<PortfolioData | null>(null);
+  const [message, setMessage] = useState<FormMessageType>({
+    text: "",
+    isError: false,
+  });
+  const [currentPortfolio, setCurrentPortfolio] =
+    useState<PortfolioData | null>(null);
 
   const {
     register,
@@ -98,7 +116,7 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
     if (portfolioData && portfolioData.id) {
       setCurrentPortfolio(portfolioData);
       setIsEditing(false); // Start in view mode
-      
+
       // Populate form with existing data
       setValue("name", portfolioData.name || "");
       setValue("jobTitle", portfolioData.jobTitle || "");
@@ -123,12 +141,12 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
   const handleCreatePortfolio = async (data: any) => {
     setIsLoading(true);
     setMessage({ text: "", isError: false });
-    
+
     try {
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => {
-        if (key === 'skills' && Array.isArray(value)) {
-          formData.append(key, value.join(','));
+        if (key === "skills" && Array.isArray(value)) {
+          formData.append(key, value.join(","));
         } else {
           formData.append(key, value as string);
         }
@@ -153,16 +171,17 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
   };
 
   const handleUpdatePortfolio = async (data: any) => {
-    if (!currentPortfolio?.id) return { success: false, error: "No portfolio ID" };
-    
+    if (!currentPortfolio?.id)
+      return { success: false, error: "No portfolio ID" };
+
     setIsLoading(true);
     setMessage({ text: "", isError: false });
-    
+
     try {
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => {
-        if (key === 'skills' && Array.isArray(value)) {
-          formData.append(key, value.join(','));
+        if (key === "skills" && Array.isArray(value)) {
+          formData.append(key, value.join(","));
         } else {
           formData.append(key, value as string);
         }
@@ -187,15 +206,16 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
   };
 
   const handleDeletePortfolio = async () => {
-    if (!currentPortfolio?.id) return { success: false, error: "No portfolio ID" };
-    
+    if (!currentPortfolio?.id)
+      return { success: false, error: "No portfolio ID" };
+
     if (!confirm("Are you sure you want to delete this portfolio?")) {
       return { success: false, error: "Deletion cancelled" };
     }
-    
+
     setIsLoading(true);
     setMessage({ text: "", isError: false });
-    
+
     try {
       const result = await deletePortfolio(currentPortfolio.id);
       if (result.success) {
@@ -223,7 +243,7 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
   const handleCancel = () => {
     setIsEditing(false);
     setMessage({ text: "", isError: false });
-    
+
     // Reset form to current portfolio data
     if (currentPortfolio) {
       setValue("name", currentPortfolio.name || "");
@@ -361,29 +381,60 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
         </div>
 
         <div className="form-group">
-          <label className="form-label form-label--required">
-            Skills
-          </label>
+          <label className="form-label form-label--required">Skills</label>
           <div className="tools-checkboxes">
             {[
-              'React', 'Next.js', 'TypeScript', 'Node.js', 'MongoDB',
-              'PostgreSQL', 'Tailwind CSS', 'GraphQL', 'Docker', 'AWS',
-              'Python', 'Django', 'Vue.js', 'Angular', 'Express.js',
-              'Redis', 'Elasticsearch', 'Kubernetes', 'Jenkins', 'Git',
-              'JavaScript', 'HTML', 'CSS', 'Sass', 'PHP', 'Laravel',
-              'Java', 'Spring Boot', 'C#', '.NET', 'Swift', 'Kotlin'
+              "React",
+              "Next.js",
+              "TypeScript",
+              "Node.js",
+              "MongoDB",
+              "PostgreSQL",
+              "Tailwind CSS",
+              "GraphQL",
+              "Docker",
+              "AWS",
+              "Python",
+              "Django",
+              "Vue.js",
+              "Angular",
+              "Express.js",
+              "Redis",
+              "Elasticsearch",
+              "Kubernetes",
+              "Jenkins",
+              "Git",
+              "JavaScript",
+              "HTML",
+              "CSS",
+              "Sass",
+              "PHP",
+              "Laravel",
+              "Java",
+              "Spring Boot",
+              "C#",
+              ".NET",
+              "Swift",
+              "Kotlin",
             ].map((skill) => (
               <label key={skill} className="tool-checkbox">
                 <input
                   type="checkbox"
                   value={skill}
-                  checked={Array.isArray(skillsValue) && skillsValue.includes(skill)}
+                  checked={
+                    Array.isArray(skillsValue) && skillsValue.includes(skill)
+                  }
                   onChange={(e) => {
-                    const currentSkills = Array.isArray(skillsValue) ? skillsValue : [];
+                    const currentSkills = Array.isArray(skillsValue)
+                      ? skillsValue
+                      : [];
                     if (e.target.checked) {
                       setValue("skills", [...currentSkills, skill]);
                     } else {
-                      setValue("skills", currentSkills.filter(s => s !== skill));
+                      setValue(
+                        "skills",
+                        currentSkills.filter((s) => s !== skill)
+                      );
                     }
                   }}
                   disabled={isFieldDisabled()}
@@ -429,9 +480,7 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
             disabled={isFieldDisabled()}
           />
           {errors.ownerEmail && (
-            <span className="form-error">
-              {errors.ownerEmail.message}
-            </span>
+            <span className="form-error">{errors.ownerEmail.message}</span>
           )}
         </div>
 
@@ -484,7 +533,10 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="instagram" className="form-label form-label--required">
+          <label
+            htmlFor="instagram"
+            className="form-label form-label--required"
+          >
             Instagram URL
           </label>
           <input
