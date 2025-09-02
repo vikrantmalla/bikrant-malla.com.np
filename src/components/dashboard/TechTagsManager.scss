@@ -1,0 +1,290 @@
+.tech-tags-manager {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--background, #fff);
+  border: 1px solid var(--card, #e5e7eb);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+
+  .tech-tags-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--card, #e5e7eb);
+
+    h3 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .add-button {
+      background: var(--navBackground, #111111);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: var(--navBackgroundShadow, #000);
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .message {
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+
+    &.success {
+      background: #f0fdf4;
+      color: #059669;
+      border: 1px solid #bbf7d0;
+    }
+
+    &.error {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+  }
+
+  .tech-tag-form {
+    background: var(--card, #f9fafb);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--card, #e5e7eb);
+
+    .form-group {
+      margin-bottom: 1rem;
+
+      label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--text, #000);
+      }
+
+      input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid var(--card, #e5e7eb);
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        background: var(--background, #fff);
+        color: var(--text, #000);
+
+        &:focus {
+          outline: none;
+          border-color: var(--navBackground, #111111);
+          box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+
+      button {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:first-child {
+          background: var(--navBackground, #111111);
+          color: white;
+
+          &:hover:not(:disabled) {
+            background: var(--navBackgroundShadow, #000);
+          }
+        }
+
+        &:last-child {
+          background: var(--card, #f9fafb);
+          color: var(--text, #000);
+          border: 1px solid var(--card, #e5e7eb);
+
+          &:hover:not(:disabled) {
+            background: var(--card, #e5e7eb);
+          }
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  .tech-tags-list {
+    .loading-skeleton {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+
+      .skeleton-item {
+        background: var(--background, #fff);
+        border: 1px solid var(--card, #e5e7eb);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .skeleton-tag {
+          width: 120px;
+          height: 1.25rem;
+          background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+          background-size: 200% 100%;
+          animation: loading 1.5s infinite;
+          border-radius: 0.25rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .skeleton-usage {
+          width: 100px;
+          height: 1rem;
+          background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+          background-size: 200% 100%;
+          animation: loading 1.5s infinite;
+          border-radius: 0.25rem;
+        }
+
+        .skeleton-actions {
+          display: flex;
+          gap: 0.5rem;
+
+          .skeleton-button {
+            width: 60px;
+            height: 32px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 0.25rem;
+          }
+        }
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text, #6b7280);
+      font-style: italic;
+      background: var(--card, #f9fafb);
+      border-radius: 0.5rem;
+      border: 1px dashed var(--card, #e5e7eb);
+    }
+
+    .tech-tag-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border: 1px solid var(--card, #e5e7eb);
+      border-radius: 0.5rem;
+      margin-bottom: 0.75rem;
+      background: var(--background, #fff);
+      transition: all 0.2s ease;
+
+      &:hover {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .tag-info {
+        flex: 1;
+
+        h4 {
+          margin: 0 0 0.25rem 0;
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--text, #000);
+        }
+
+        .usage-count {
+          display: inline-block;
+          background: var(--card, #e5e7eb);
+          color: var(--text, #6b7280);
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.25rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+        }
+      }
+
+      .tag-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+
+        .edit-button, .delete-button {
+          padding: 0.375rem 0.75rem;
+          border: none;
+          border-radius: 0.25rem;
+          font-size: 0.75rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        }
+
+        .edit-button {
+          background: #3b82f6;
+          color: white;
+
+          &:hover:not(:disabled) {
+            background: #2563eb;
+          }
+        }
+
+        .delete-button {
+          background: #ef4444;
+          color: white;
+
+          &:hover:not(:disabled) {
+            background: #dc2626;
+          }
+
+          &:disabled {
+            background: #9ca3af;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Loading animation keyframes
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

@@ -94,6 +94,7 @@ export interface AboutMe {
   subTitle: string;
   aboutDescription1: string;
   aboutDescription2: string;
+  skills: string[];
 }
 
 export interface BehanceData {
