@@ -174,6 +174,54 @@ async function main() {
 
     console.log("✅ Config created with default limits");
 
+    // Create initial tech options
+    const techOptions = [
+      // Frontend
+      { name: 'React', category: 'Frontend', description: 'JavaScript library for building user interfaces' },
+      { name: 'Next.js', category: 'Frontend', description: 'React framework for production' },
+      { name: 'Vue.js', category: 'Frontend', description: 'Progressive JavaScript framework' },
+      { name: 'TypeScript', category: 'Frontend', description: 'Typed superset of JavaScript' },
+      { name: 'Tailwind CSS', category: 'Frontend', description: 'Utility-first CSS framework' },
+      
+      // Backend
+      { name: 'Node.js', category: 'Backend', description: 'JavaScript runtime for server-side development' },
+      { name: 'Express.js', category: 'Backend', description: 'Web application framework for Node.js' },
+      { name: 'Python', category: 'Backend', description: 'High-level programming language' },
+      { name: 'Django', category: 'Backend', description: 'High-level Python web framework' },
+      
+      // Database
+      { name: 'MongoDB', category: 'Database', description: 'NoSQL document database' },
+      { name: 'PostgreSQL', category: 'Database', description: 'Advanced open source database' },
+      { name: 'Redis', category: 'Database', description: 'In-memory data structure store' },
+      
+      // DevOps
+      { name: 'Docker', category: 'DevOps', description: 'Containerization platform' },
+      { name: 'AWS', category: 'DevOps', description: 'Cloud computing platform' },
+      { name: 'GitHub Actions', category: 'DevOps', description: 'CI/CD platform' },
+      
+      // Testing
+      { name: 'Jest', category: 'Testing', description: 'JavaScript testing framework' },
+      { name: 'Cypress', category: 'Testing', description: 'End-to-end testing framework' },
+      
+      // Build Tools
+      { name: 'Webpack', category: 'Build Tools', description: 'Module bundler' },
+      { name: 'Vite', category: 'Build Tools', description: 'Build tool and dev server' },
+      { name: 'Sass', category: 'Build Tools', description: 'CSS preprocessor' },
+      
+      // Other
+      { name: 'Git', category: 'Other', description: 'Version control system' },
+      { name: 'REST API', category: 'Other', description: 'Architectural style for APIs' },
+      { name: 'GraphQL', category: 'Other', description: 'Query language for APIs' }
+    ];
+
+    for (const option of techOptions) {
+      await prisma.techOption.create({
+        data: option
+      });
+    }
+
+    console.log("✅ Tech options created:", techOptions.length);
+
     console.log("🎉 Database seeding completed successfully!");
     console.log("📧 Portfolio owner email:", devEmail);
     console.log("👤 User email:", user.email);

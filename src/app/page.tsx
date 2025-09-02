@@ -14,6 +14,7 @@ const Home = async () => {
     subTitle: portfolioDetail.jobTitle,
     aboutDescription1: portfolioDetail.aboutDescription1,
     aboutDescription2: portfolioDetail.aboutDescription2,
+    skills: portfolioDetail.skills,
   };
   const contact = {
     email: portfolioDetail.email,

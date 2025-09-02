@@ -60,6 +60,7 @@ const ArchiveProjectsForm = ({
   const [selectedArchiveProjectId, setSelectedArchiveProjectId] = useState<
     string | null
   >(null);
+  const [techOptions, setTechOptions] = useState<Array<{ id: string; name: string; category: string }>>([]);
 
   const {
     register,
@@ -83,7 +84,7 @@ const ArchiveProjectsForm = ({
   // Watch build field to handle checkbox selection
   const buildValue = watch("build");
 
-  // Load existing archive projects data from props when component mounts or data changes
+  // Load existing archive projects data and tech options when component mounts or data changes
   useEffect(() => {
     if (archiveProjectsData && Array.isArray(archiveProjectsData)) {
       setArchiveProjects(archiveProjectsData);
@@ -91,6 +92,24 @@ const ArchiveProjectsForm = ({
       setArchiveProjects([]);
     }
   }, [archiveProjectsData]);
+
+  // Load tech options from API
+  useEffect(() => {
+    const loadTechOptions = async () => {
+      try {
+        const { getTechOptions } = await import('@/app/dashboard/actions');
+        const result = await getTechOptions();
+        
+        if (result.success) {
+          setTechOptions(result.data);
+        }
+      } catch (error) {
+        console.error('Failed to load tech options:', error);
+      }
+    };
+
+    loadTechOptions();
+  }, []);
 
   // Server action handlers
   const handleCreateArchiveProject = async (data: any) => {
@@ -434,65 +453,37 @@ const ArchiveProjectsForm = ({
         <div className="form-group">
           <label className="form-label">Build Tools</label>
           <div className="tools-checkboxes">
-            {[
-              "React",
-              "Next.js",
-              "TypeScript",
-              "Node.js",
-              "MongoDB",
-              "PostgreSQL",
-              "Tailwind CSS",
-              "GraphQL",
-              "Docker",
-              "AWS",
-              "Python",
-              "Django",
-              "Vue.js",
-              "Angular",
-              "Express.js",
-              "Redis",
-              "Elasticsearch",
-              "Kubernetes",
-              "Jenkins",
-              "Git",
-              "Webpack",
-              "Vite",
-              "Babel",
-              "ESLint",
-              "Prettier",
-              "Jest",
-              "Cypress",
-              "Storybook",
-              "Rollup",
-              "Parcel",
-              "Gulp",
-            ].map((tool) => (
-              <label key={tool} className="tool-checkbox">
-                <input
-                  type="checkbox"
-                  value={tool}
-                  checked={
-                    Array.isArray(buildValue) && buildValue.includes(tool)
-                  }
-                  onChange={(e) => {
-                    const currentBuild = Array.isArray(buildValue)
-                      ? buildValue
-                      : [];
-                    if (e.target.checked) {
-                      setValue("build", [...currentBuild, tool]);
-                    } else {
-                      setValue(
-                        "build",
-                        currentBuild.filter((t) => t !== tool)
-                      );
+            {techOptions.length > 0 ? (
+              techOptions.map((option) => (
+                <label key={option.id} className="tool-checkbox">
+                  <input
+                    type="checkbox"
+                    value={option.name}
+                    checked={
+                      Array.isArray(buildValue) && buildValue.includes(option.name)
                     }
-                  }}
-                  disabled={isFieldDisabled()}
-                  className="form-checkbox"
-                />
-                <span className="tool-label">{tool}</span>
-              </label>
-            ))}
+                    onChange={(e) => {
+                      const currentBuild = Array.isArray(buildValue)
+                        ? buildValue
+                        : [];
+                      if (e.target.checked) {
+                        setValue("build", [...currentBuild, option.name]);
+                      } else {
+                        setValue(
+                          "build",
+                          currentBuild.filter((t) => t !== option.name)
+                        );
+                      }
+                    }}
+                    disabled={isFieldDisabled()}
+                    className="form-checkbox"
+                  />
+                  <span className="tool-label">{option.name}</span>
+                </label>
+              ))
+            ) : (
+              <div className="loading-tools">Loading build tools...</div>
+            )}
           </div>
         </div>
 

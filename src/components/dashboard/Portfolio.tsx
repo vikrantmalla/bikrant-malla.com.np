@@ -83,6 +83,7 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
   });
   const [currentPortfolio, setCurrentPortfolio] =
     useState<PortfolioData | null>(null);
+  const [techOptions, setTechOptions] = useState<Array<{ id: string; name: string; category: string }>>([]);
 
   const {
     register,
@@ -136,6 +137,24 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
       reset();
     }
   }, [portfolioData, setValue, reset]);
+
+  // Load tech options from API
+  useEffect(() => {
+    const loadTechOptions = async () => {
+      try {
+        const { getTechOptions } = await import('@/app/dashboard/actions');
+        const result = await getTechOptions();
+        
+        if (result.success) {
+          setTechOptions(result.data);
+        }
+      } catch (error) {
+        console.error('Failed to load tech options:', error);
+      }
+    };
+
+    loadTechOptions();
+  }, []);
 
   // Server action handlers
   const handleCreatePortfolio = async (data: any) => {
@@ -381,68 +400,41 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
         </div>
 
         <div className="form-group">
-          <label className="form-label form-label--required">Skills</label>
+          <label className="form-label form-label--required">Skills (Max 10)</label>
           <div className="tools-checkboxes">
-            {[
-              "React",
-              "Next.js",
-              "TypeScript",
-              "Node.js",
-              "MongoDB",
-              "PostgreSQL",
-              "Tailwind CSS",
-              "GraphQL",
-              "Docker",
-              "AWS",
-              "Python",
-              "Django",
-              "Vue.js",
-              "Angular",
-              "Express.js",
-              "Redis",
-              "Elasticsearch",
-              "Kubernetes",
-              "Jenkins",
-              "Git",
-              "JavaScript",
-              "HTML",
-              "CSS",
-              "Sass",
-              "PHP",
-              "Laravel",
-              "Java",
-              "Spring Boot",
-              "C#",
-              ".NET",
-              "Swift",
-              "Kotlin",
-            ].map((skill) => (
-              <label key={skill} className="tool-checkbox">
-                <input
-                  type="checkbox"
-                  value={skill}
-                  checked={
-                    Array.isArray(skillsValue) && skillsValue.includes(skill)
-                  }
-                  onChange={(e) => {
-                    const currentSkills = Array.isArray(skillsValue)
-                      ? skillsValue
-                      : [];
-                    if (e.target.checked) {
-                      setValue("skills", [...currentSkills, skill]);
-                    } else {
-                      setValue(
-                        "skills",
-                        currentSkills.filter((s) => s !== skill)
-                      );
-                    }
-                  }}
-                  disabled={isFieldDisabled()}
-                  className="form-checkbox"
-                />
-                <span className="tool-label">{skill}</span>
-              </label>
-            ))}
+            {techOptions.length > 0 ? (
+              techOptions.map((option) => {
+                const currentSkills = Array.isArray(skillsValue) ? skillsValue : [];
+                const isSelected = currentSkills.includes(option.name);
+                const isLimitReached = currentSkills.length >= 10;
+                const isDisabled = isFieldDisabled() || (!isSelected && isLimitReached);
+                
+                return (
+                  <label key={option.id} className="tool-checkbox">
+                    <input
+                      type="checkbox"
+                      value={option.name}
+                      checked={isSelected}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setValue("skills", [...currentSkills, option.name]);
+                        } else {
+                          setValue(
+                            "skills",
+                            currentSkills.filter((s) => s !== option.name)
+                          );
+                        }
+                      }}
+                      disabled={isDisabled}
+                      className="form-checkbox"
+                    />
+                    <span className="tool-label">{option.name}</span>
+                  </label>
+                );
+              })
+            ) : (
+              <div className="loading-tools">Loading skills...</div>
+            )}
           </div>
           {errors.skills && (
             <span className="form-error">{errors.skills.message}</span>

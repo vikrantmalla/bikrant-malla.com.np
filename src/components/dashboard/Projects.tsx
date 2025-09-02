@@ -79,6 +79,7 @@ const ProjectsForm = ({ projectsData, portfolioId }: ProjectsFormProps) => {
     hasError: false,
     errorMessage: "",
   });
+  const [techOptions, setTechOptions] = useState<Array<{ id: string; name: string; category: string }>>([]);
 
   const {
     register,
@@ -103,7 +104,7 @@ const ProjectsForm = ({ projectsData, portfolioId }: ProjectsFormProps) => {
   // Watch platform field for validation
   const platformValue = watch("platform");
 
-  // Load project limits on component mount
+  // Load project limits and tech options on component mount
   useEffect(() => {
     const loadProjectLimits = async () => {
       const result = await getProjectLimits();
@@ -111,7 +112,22 @@ const ProjectsForm = ({ projectsData, portfolioId }: ProjectsFormProps) => {
         setProjectLimits(result.data);
       }
     };
+    
+    const loadTechOptions = async () => {
+      try {
+        const { getTechOptions } = await import('@/app/dashboard/actions');
+        const result = await getTechOptions();
+        
+        if (result.success) {
+          setTechOptions(result.data);
+        }
+      } catch (error) {
+        console.error('Failed to load tech options:', error);
+      }
+    };
+
     loadProjectLimits();
+    loadTechOptions();
   }, []);
 
   // Debug form errors
@@ -741,54 +757,37 @@ const ProjectsForm = ({ projectsData, portfolioId }: ProjectsFormProps) => {
         <div className="form-group">
           <label className="form-label form-label--required">Tools</label>
           <div className="tools-checkboxes">
-            {[
-              "React",
-              "Next.js",
-              "TypeScript",
-              "Node.js",
-              "MongoDB",
-              "PostgreSQL",
-              "Tailwind CSS",
-              "GraphQL",
-              "Docker",
-              "AWS",
-              "Python",
-              "Django",
-              "Vue.js",
-              "Angular",
-              "Express.js",
-              "Redis",
-              "Elasticsearch",
-              "Kubernetes",
-              "Jenkins",
-              "Git",
-            ].map((tool) => (
-              <label key={tool} className="tool-checkbox">
-                <input
-                  type="checkbox"
-                  value={tool}
-                  checked={
-                    Array.isArray(toolsValue) && toolsValue.includes(tool)
-                  }
-                  onChange={(e) => {
-                    const currentTools = Array.isArray(toolsValue)
-                      ? toolsValue
-                      : [];
-                    if (e.target.checked) {
-                      setValue("tools", [...currentTools, tool]);
-                    } else {
-                      setValue(
-                        "tools",
-                        currentTools.filter((t) => t !== tool)
-                      );
+            {techOptions.length > 0 ? (
+              techOptions.map((option) => (
+                <label key={option.id} className="tool-checkbox">
+                  <input
+                    type="checkbox"
+                    value={option.name}
+                    checked={
+                      Array.isArray(toolsValue) && toolsValue.includes(option.name)
                     }
-                  }}
-                  disabled={isFieldDisabled()}
-                  className="form-checkbox"
-                />
-                <span className="tool-label">{tool}</span>
-              </label>
-            ))}
+                    onChange={(e) => {
+                      const currentTools = Array.isArray(toolsValue)
+                        ? toolsValue
+                        : [];
+                      if (e.target.checked) {
+                        setValue("tools", [...currentTools, option.name]);
+                      } else {
+                        setValue(
+                          "tools",
+                          currentTools.filter((t) => t !== option.name)
+                        );
+                      }
+                    }}
+                    disabled={isFieldDisabled()}
+                    className="form-checkbox"
+                  />
+                  <span className="tool-label">{option.name}</span>
+                </label>
+              ))
+            ) : (
+              <div className="loading-tools">Loading tools...</div>
+            )}
           </div>
           {errors.tools && (
             <span className="form-error">{errors.tools.message}</span>

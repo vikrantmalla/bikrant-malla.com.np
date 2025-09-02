@@ -350,3 +350,101 @@ export async function updateProjectLimits(formData: FormData) {
     return { success: false, error: error instanceof Error ? error.message : "Failed to update project limits" };
   }
 }
+
+// ===== TECH OPTIONS SERVER ACTIONS =====
+
+// Get all tech options
+export async function getTechOptions() {
+  try {
+    const fetchOptions = await getAuthenticatedFetchOptions("GET");
+    
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/tech-options`, fetchOptions);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to get tech options: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("Error getting tech options:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Failed to get tech options" };
+  }
+}
+
+// Create new tech option
+export async function createTechOption(formData: FormData) {
+  try {
+    const techOptionData = {
+      name: formData.get("name") as string,
+      category: formData.get("category") as string,
+      description: formData.get("description") as string || null,
+      isActive: formData.get("isActive") === "true",
+    };
+
+    const fetchOptions = await getAuthenticatedFetchOptions("POST", techOptionData);
+    
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/tech-options`, fetchOptions);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to create tech option: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    revalidatePath("/dashboard");
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("Error creating tech option:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Failed to create tech option" };
+  }
+}
+
+// Update tech option
+export async function updateTechOption(id: string, formData: FormData) {
+  try {
+    const techOptionData = {
+      name: formData.get("name") as string,
+      category: formData.get("category") as string,
+      description: formData.get("description") as string || null,
+      isActive: formData.get("isActive") === "true",
+    };
+
+    const fetchOptions = await getAuthenticatedFetchOptions("PUT", techOptionData);
+    
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/tech-options/${id}`, fetchOptions);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to update tech option: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    revalidatePath("/dashboard");
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("Error updating tech option:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Failed to update tech option" };
+  }
+}
+
+// Delete tech option
+export async function deleteTechOption(id: string) {
+  try {
+    const fetchOptions = await getAuthenticatedFetchOptions("DELETE");
+    
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/tech-options/${id}`, fetchOptions);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to delete tech option: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting tech option:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Failed to delete tech option" };
+  }
+}

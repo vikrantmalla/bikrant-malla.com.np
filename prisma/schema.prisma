@@ -116,6 +116,20 @@ model ArchiveProjectTag {
   tagId            String         @db.ObjectId
 }
 
+model TechOption {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   // e.g., "React", "Node.js", "MongoDB"
+  category    String   // e.g., "Frontend", "Backend", "Database"
+  description String?  // Optional description
+  isActive    Boolean  @default(true) // Can be disabled without deleting
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([name, category])
+  @@index([category])
+  @@index([isActive])
+}
+
 model Config {
   id                    String @id @default(auto()) @map("_id") @db.ObjectId
   maxWebProjects        Int    @default(6)

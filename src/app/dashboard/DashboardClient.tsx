@@ -11,6 +11,8 @@ import { toCSSVars } from "@/helpers/utils";
 import "./dashboard.scss";
 import { Invite } from "@/components/dashboard/Invite";
 import ProjectLimitsConfig from "@/components/dashboard/ProjectLimitsConfig";
+import TechOptionsManager from "@/components/dashboard/TechOptionsManager";
+import TechTagsManager from "@/components/dashboard/TechTagsManager";
 import { PortfolioDetails } from "@/types/data";
 
 interface DashboardClientProps {
@@ -279,6 +281,8 @@ export default function DashboardClient({
                 Settings
               </h2>
               <ProjectLimitsConfig />
+              <TechOptionsManager />
+              <TechTagsManager />
             </div>
           )}
         </div>
