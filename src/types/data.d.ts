@@ -300,6 +300,12 @@ export interface Config {
   allowSignUp: boolean;
 }
 
+export interface TechOption {
+  id: string;
+  name: string;
+  category: string;
+}
+
 export interface ThemeProperties {
   background: string;
   navBackground: string;
