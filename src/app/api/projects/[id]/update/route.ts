@@ -12,6 +12,7 @@ export async function PUT(
     return permissionCheck.response;
   }
 
+  try {
     const body = await request.json();
     
     // Validate required fields
@@ -28,7 +29,6 @@ export async function PUT(
         title: body.title,
         subTitle: body.subTitle,
         images: body.images,
-        imageUrl: body.imageUrl,
         alt: body.alt,
         projectView: body.projectView,
         tools: body.tools,
