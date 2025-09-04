@@ -12,26 +12,32 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]
-    env:
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
-      DB_PROD_MONGODB_URI: ${{ secrets.DB_PROD_MONGODB_URI }}
-      NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+        node-version: [22.x]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
       - name: Install NPM dependencies
         run: npm ci
 
+      - name: Run API tests
+        env:
+          NODE_ENV: test
+        run: npm run test:api
+
       - name: Build static website
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          DB_PROD_MONGODB_URI: ${{ secrets.DB_PROD_MONGODB_URI }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
         run: npm run build
 
       - name: Archive Release
@@ -53,16 +59,17 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [22.x]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
       - name: Download Release Artifact
         uses: actions/download-artifact@v4
