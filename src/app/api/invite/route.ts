@@ -6,8 +6,6 @@ import InvitationEmail from "@/components/emails/InvitationEmail";
 import { resendConfig } from "@/lib/resend-config";
 import { Role } from "@/types/enum";
 
-const resend = new Resend(resendConfig.apiKey);
-
 export async function POST(req: Request): Promise<Response> {
   const permissionCheck = await checkEditorPermissions();
 
@@ -118,7 +116,21 @@ export async function POST(req: Request): Promise<Response> {
     // Send email notification to the invited user using Resend
     const signupUrl = `${resendConfig.appUrl}/login`;
 
+    // Check if Resend is properly configured
+    if (!resendConfig.apiKey) {
+      console.error("❌ Resend API key is not configured");
+      return NextResponse.json(
+        {
+          error: "Email service not configured",
+          details: "Resend API key is missing. Please check environment variables.",
+        },
+        { status: 500 }
+      );
+    }
+
     try {
+      // Initialize Resend with API key at runtime
+      const resend = new Resend(resendConfig.apiKey);
       const emailResult = await resend.emails.send({
         from: resendConfig.fromEmail,
         to: email,
