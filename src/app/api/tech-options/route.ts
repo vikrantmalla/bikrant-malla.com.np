@@ -6,15 +6,12 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   try {
     const techOptions = await prisma.techOption.findMany({
-      orderBy: [
-        { category: 'asc' },
-        { name: 'asc' }
-      ]
+      orderBy: [{ category: "asc" }, { name: "asc" }],
     });
 
     return NextResponse.json({
       success: true,
-      data: techOptions
+      data: techOptions,
     });
   } catch (error) {
     console.error("Error fetching tech options:", error);
@@ -26,11 +23,23 @@ export async function GET() {
 }
 
 // POST - Create new tech option
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   const permissionCheck = await checkEditorPermissions();
-  
+
   if (!permissionCheck.success) {
-    return permissionCheck.response;
+    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
+    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
+    // We must ensure a valid NextResponse is returned.
+    if (permissionCheck.response) {
+      return permissionCheck.response;
+    } else {
+      // This case implies the permission check failed but did not provide a specific error response.
+      // Return a generic internal server error to ensure a valid Response is always returned.
+      return NextResponse.json(
+        { error: "Permission check failed unexpectedly." },
+        { status: 500 }
+      );
+    }
   }
 
   try {
@@ -48,8 +57,8 @@ export async function POST(request: Request) {
     const existingOption = await prisma.techOption.findFirst({
       where: {
         name: body.name,
-        category: body.category
-      }
+        category: body.category,
+      },
     });
 
     if (existingOption) {
@@ -64,13 +73,13 @@ export async function POST(request: Request) {
         name: body.name,
         category: body.category,
         description: body.description || null,
-        isActive: body.isActive !== false // Default to true
-      }
+        isActive: body.isActive !== false, // Default to true
+      },
     });
 
     return NextResponse.json({
       success: true,
-      data: newTechOption
+      data: newTechOption,
     });
   } catch (error) {
     console.error("Error creating tech option:", error);

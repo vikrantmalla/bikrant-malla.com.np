@@ -5,20 +5,24 @@ import { prisma } from "@/lib/prisma";
 // GET - Retrieve specific tech option
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
-) {
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Response> {
   try {
+    const { id } = await params;
     const techOption = await prisma.techOption.findUnique({
-      where: { id: params.id }
+      where: { id: id },
     });
 
     if (!techOption) {
-      return NextResponse.json({ error: "Tech option not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Tech option not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({
       success: true,
-      data: techOption
+      data: techOption,
     });
   } catch (error) {
     console.error("Error fetching tech option:", error);
@@ -32,15 +36,28 @@ export async function GET(
 // PUT - Update tech option
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
-) {
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Response> {
   const permissionCheck = await checkEditorPermissions();
-  
+
   if (!permissionCheck.success) {
-    return permissionCheck.response;
+    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
+    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
+    // We must ensure a valid NextResponse is returned.
+    if (permissionCheck.response) {
+      return permissionCheck.response;
+    } else {
+      // This case implies the permission check failed but did not provide a specific error response.
+      // Return a generic internal server error to ensure a valid Response is always returned.
+      return NextResponse.json(
+        { error: "Permission check failed unexpectedly." },
+        { status: 500 }
+      );
+    }
   }
 
   try {
+    const { id } = await params;
     const body = await request.json();
 
     // Validate required fields
@@ -56,8 +73,8 @@ export async function PUT(
       where: {
         name: body.name,
         category: body.category,
-        id: { not: params.id }
-      }
+        id: { not: id },
+      },
     });
 
     if (existingOption) {
@@ -68,18 +85,18 @@ export async function PUT(
     }
 
     const updatedTechOption = await prisma.techOption.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         name: body.name,
         category: body.category,
         description: body.description || null,
-        isActive: body.isActive
-      }
+        isActive: body.isActive,
+      },
     });
 
     return NextResponse.json({
       success: true,
-      data: updatedTechOption
+      data: updatedTechOption,
     });
   } catch (error) {
     console.error("Error updating tech option:", error);
@@ -93,41 +110,54 @@ export async function PUT(
 // DELETE - Delete tech option
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
-) {
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Response> {
   const permissionCheck = await checkEditorPermissions();
-  
+
   if (!permissionCheck.success) {
-    return permissionCheck.response;
+    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
+    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
+    // We must ensure a valid NextResponse is returned.
+    if (permissionCheck.response) {
+      return permissionCheck.response;
+    } else {
+      // This case implies the permission check failed but did not provide a specific error response.
+      // Return a generic internal server error to ensure a valid Response is always returned.
+      return NextResponse.json(
+        { error: "Permission check failed unexpectedly." },
+        { status: 500 }
+      );
+    }
   }
 
   try {
+    const { id } = await params;
     // Check if tech option is being used in any projects
     const projectsUsingTech = await prisma.project.findMany({
       where: {
         tools: {
-          has: params.id
-        }
-      }
+          has: id,
+        },
+      },
     });
 
     if (projectsUsingTech.length > 0) {
       return NextResponse.json(
-        { 
+        {
           error: "Cannot delete tech option. It is being used in projects.",
-          projectsCount: projectsUsingTech.length
+          projectsCount: projectsUsingTech.length,
         },
         { status: 400 }
       );
     }
 
     await prisma.techOption.delete({
-      where: { id: params.id }
+      where: { id: id },
     });
 
     return NextResponse.json({
       success: true,
-      message: "Tech option deleted successfully"
+      message: "Tech option deleted successfully",
     });
   } catch (error) {
     console.error("Error deleting tech option:", error);

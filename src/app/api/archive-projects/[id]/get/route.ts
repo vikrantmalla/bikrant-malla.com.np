@@ -5,7 +5,7 @@ import { checkArchiveProjectAccess } from "@/lib/roleUtils";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
@@ -15,24 +15,31 @@ export async function GET(
   }
 
   try {
+    const { id } = await params;
     const archiveProject = await prisma.archiveProject.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         portfolio: true,
         tagRelations: {
           include: {
-            tag: true
-          }
-        }
-      }
+            tag: true,
+          },
+        },
+      },
     });
 
     if (!archiveProject) {
-      return NextResponse.json({ error: "Archive project not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Archive project not found" },
+        { status: 404 }
+      );
     }
 
     // Check if user has access to this archive project
-    const { isEditor, isOwner, hasAccess } = await checkArchiveProjectAccess(user.email, params.id);
+    const { isEditor, isOwner, hasAccess } = await checkArchiveProjectAccess(
+      user.email,
+      id
+    );
 
     if (!hasAccess) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
@@ -40,10 +47,13 @@ export async function GET(
 
     return NextResponse.json({
       archiveProject,
-      userRole: isOwner ? "OWNER" : "EDITOR"
+      userRole: isOwner ? "OWNER" : "EDITOR",
     });
   } catch (error) {
     console.error("Error fetching archive project:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
-} 
+}

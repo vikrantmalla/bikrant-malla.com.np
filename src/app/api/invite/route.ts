@@ -8,15 +8,27 @@ import { Role } from "@/types/enum";
 
 const resend = new Resend(resendConfig.apiKey);
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<Response> {
   const permissionCheck = await checkEditorPermissions();
 
   if (!permissionCheck.success) {
-    return permissionCheck.response;
+    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
+    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
+    // We must ensure a valid NextResponse is returned.
+    if (permissionCheck.response) {
+      return permissionCheck.response;
+    } else {
+      // This case implies the permission check failed but did not provide a specific error response.
+      // Return a generic internal server error to ensure a valid Response is always returned.
+      return NextResponse.json(
+        { error: "Permission check failed unexpectedly." },
+        { status: 500 }
+      );
+    }
   }
 
   const user = permissionCheck.kindeUser;
-  
+
   if (!user || !user.email) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
@@ -119,6 +131,13 @@ export async function POST(req: Request) {
         }),
       });
 
+      return NextResponse.json(
+        {
+          message: `Invitation sent to ${email} with role ${role}`,
+          note: "The user will need to sign up through the regular Kinde flow to access the portfolio",
+        },
+        { status: 200 }
+      );
     } catch (emailError) {
       console.error("❌ Failed to send invitation email:", emailError);
       console.error("Email error details:", {
@@ -161,14 +180,6 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
-
-    return NextResponse.json(
-      {
-        message: `Invitation sent to ${email} with role ${role}`,
-        note: "The user will need to sign up through the regular Kinde flow to access the portfolio",
-      },
-      { status: 200 }
-    );
   } catch (error) {
     console.error("Invite user error:", error);
     return NextResponse.json(

@@ -80,7 +80,7 @@ export function useFormManager<T extends { id: string; portfolioId?: string }>(
         // Extract the items array from the API response
         // API returns { message, projects, portfolio } for projects endpoint
         // and { message, archiveProjects, portfolio } for archive-projects endpoint
-        const itemsData = response.projects || response.archiveProjects || response;
+        const itemsData = (response as any).projects || (response as any).archiveProjects || response;
         setItems(Array.isArray(itemsData) ? itemsData : []);
       } catch (error) {
         console.error(`Error fetching ${itemName}:`, error);
@@ -99,7 +99,9 @@ export function useFormManager<T extends { id: string; portfolioId?: string }>(
       setIsLoading(true);
       const response = await clientApi[apiEndpoint].get();
       // Extract the items array from the API response
-      const itemsData = response.projects || response.archiveProjects || response;
+      // API returns { message, projects, portfolio } for projects endpoint
+      // and { message, archiveProjects, portfolio } for archive-projects endpoint
+      const itemsData = (response as any).projects || (response as any).archiveProjects || response;
       setItems(Array.isArray(itemsData) ? itemsData : []);
     } catch (error) {
       console.error(`Error refreshing ${itemName}:`, error);
@@ -127,10 +129,10 @@ export function useFormManager<T extends { id: string; portfolioId?: string }>(
 
       if (isEditing && currentItem) {
         // Update existing item
-        result = await clientApi[apiEndpoint].update(currentItem.id, data);
+        result = await (clientApi[apiEndpoint] as any).update(currentItem.id, data);
       } else {
         // Create new item
-        result = await clientApi[apiEndpoint].create({ ...data, portfolioId });
+        result = await (clientApi[apiEndpoint] as any).create({ ...data, portfolioId });
       }
 
       if (result) {
@@ -194,7 +196,8 @@ export function useFormManager<T extends { id: string; portfolioId?: string }>(
     setMessage({ text: "", isError: false });
 
     try {
-      const result = await clientApi[apiEndpoint].delete(id);
+      const api = clientApi[apiEndpoint] as unknown as { delete: (id: string) => Promise<any> };
+      const result = await api.delete(id);
 
       if (result) {
         setMessage({

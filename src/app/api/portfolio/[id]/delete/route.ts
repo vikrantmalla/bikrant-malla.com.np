@@ -5,8 +5,8 @@ import { checkPortfolioAccess } from "@/lib/roleUtils";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
-) {
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Response> {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
@@ -15,27 +15,36 @@ export async function DELETE(
   }
 
   try {
+    const { id } = await params;
     // Only owners can delete portfolios
-    const { isOwner } = await checkPortfolioAccess(user.email, params.id);
+    const { isOwner } = await checkPortfolioAccess(user.email, id);
 
     if (!isOwner) {
-      return NextResponse.json({ error: "Access denied. Only portfolio owners can delete portfolios." }, { status: 403 });
+      return NextResponse.json(
+        {
+          error: "Access denied. Only portfolio owners can delete portfolios.",
+        },
+        { status: 403 }
+      );
     }
 
     // Delete related data first (due to foreign key constraints)
     await prisma.userPortfolioRole.deleteMany({
-      where: { portfolioId: params.id }
+      where: { portfolioId: id },
     });
 
     await prisma.portfolio.delete({
-      where: { id: params.id }
+      where: { id: id },
     });
 
     return NextResponse.json({
-      message: "Portfolio deleted successfully"
+      message: "Portfolio deleted successfully",
     });
   } catch (error) {
     console.error("Error deleting portfolio:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
-} 
+}

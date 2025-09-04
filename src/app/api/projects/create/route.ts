@@ -3,17 +3,29 @@ import { checkEditorPermissions, checkPortfolioAccess } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
 import { Platform } from "@/types/enum";
 
-export async function POST(request: Request) {
-    const permissionCheck = await checkEditorPermissions();
-  
+export async function POST(request: Request): Promise<Response> {
+  const permissionCheck = await checkEditorPermissions();
+
   if (!permissionCheck.success) {
-    return permissionCheck.response;
+    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
+    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
+    // We must ensure a valid NextResponse is returned.
+    if (permissionCheck.response) {
+      return permissionCheck.response;
+    } else {
+      // This case implies the permission check failed but did not provide a specific error response.
+      // Return a generic internal server error to ensure a valid Response is always returned.
+      return NextResponse.json(
+        { error: "Permission check failed unexpectedly." },
+        { status: 500 }
+      );
+    }
   }
-  
+
   if (!permissionCheck.kindeUser || !permissionCheck.kindeUser.email) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
-  
+
   try {
     const body = await request.json();
 
@@ -62,27 +74,43 @@ export async function POST(request: Request) {
     });
 
     const totalProjects = existingProjects.length;
-    const webProjects = existingProjects.filter(p => p.platform === Platform.Web).length;
-    const designProjects = existingProjects.filter(p => p.platform === Platform.Design).length;
+    const webProjects = existingProjects.filter(
+      (p) => p.platform === Platform.Web
+    ).length;
+    const designProjects = existingProjects.filter(
+      (p) => p.platform === Platform.Design
+    ).length;
 
     // Validate project limits
     if (totalProjects >= config.maxTotalProjects) {
       return NextResponse.json(
-        { error: `Maximum total projects limit reached (${config.maxTotalProjects}). Cannot create more projects.` },
+        {
+          error: `Maximum total projects limit reached (${config.maxTotalProjects}). Cannot create more projects.`,
+        },
         { status: 400 }
       );
     }
 
-    if (body.platform === Platform.Web && webProjects >= config.maxWebProjects) {
+    if (
+      body.platform === Platform.Web &&
+      webProjects >= config.maxWebProjects
+    ) {
       return NextResponse.json(
-        { error: `Maximum Web projects limit reached (${config.maxWebProjects}). Cannot create more Web projects.` },
+        {
+          error: `Maximum Web projects limit reached (${config.maxWebProjects}). Cannot create more Web projects.`,
+        },
         { status: 400 }
       );
     }
 
-    if (body.platform === Platform.Design && designProjects >= config.maxDesignProjects) {
+    if (
+      body.platform === Platform.Design &&
+      designProjects >= config.maxDesignProjects
+    ) {
       return NextResponse.json(
-        { error: `Maximum Design projects limit reached (${config.maxDesignProjects}). Cannot create more Design projects.` },
+        {
+          error: `Maximum Design projects limit reached (${config.maxDesignProjects}). Cannot create more Design projects.`,
+        },
         { status: 400 }
       );
     }

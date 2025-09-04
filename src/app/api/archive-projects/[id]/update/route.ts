@@ -5,7 +5,7 @@ import { checkArchiveProjectAccess } from "@/lib/roleUtils";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
@@ -15,8 +15,9 @@ export async function PUT(
   }
 
   try {
+    const { id } = await params;
     // Check if user has editor role or is owner
-    const { hasAccess } = await checkArchiveProjectAccess(user.email, params.id);
+    const { hasAccess } = await checkArchiveProjectAccess(user.email, id);
 
     if (!hasAccess) {
       return NextResponse.json({ error: "Access denied. Editor role required." }, { status: 403 });
@@ -33,7 +34,7 @@ export async function PUT(
     }
 
     const updatedArchiveProject = await prisma.archiveProject.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         title: body.title,
         year: body.year,

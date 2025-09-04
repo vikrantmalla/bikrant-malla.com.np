@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
   try {
     let config = await prisma.config.findFirst();
-    
+
     if (!config) {
       // Create default config if none exists
       config = await prisma.config.create({
@@ -17,7 +17,7 @@ export async function GET() {
         },
       });
     }
-    
+
     return NextResponse.json(config);
   } catch (error) {
     console.error("Error fetching config:", error);
@@ -29,18 +29,30 @@ export async function GET() {
 }
 
 // Update config
-export async function PUT(request: Request) {
+export async function PUT(request: Request): Promise<Response> {
   const permissionCheck = await checkEditorPermissions();
-  
+
   if (!permissionCheck.success) {
-    return permissionCheck.response;
+    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
+    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
+    // We must ensure a valid NextResponse is returned.
+    if (permissionCheck.response) {
+      return permissionCheck.response;
+    } else {
+      // This case implies the permission check failed but did not provide a specific error response.
+      // Return a generic internal server error to ensure a valid Response is always returned.
+      return NextResponse.json(
+        { error: "Permission check failed unexpectedly." },
+        { status: 500 }
+      );
+    }
   }
-  
+
   try {
     const body = await request.json();
-    
+
     let config = await prisma.config.findFirst();
-    
+
     if (!config) {
       config = await prisma.config.create({
         data: {
@@ -59,7 +71,7 @@ export async function PUT(request: Request) {
         },
       });
     }
-    
+
     return NextResponse.json(config);
   } catch (error) {
     console.error("Error updating config:", error);

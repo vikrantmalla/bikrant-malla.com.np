@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<Response> {
   try {
     const portfolio = await prisma.portfolio.findFirst({
       include: {

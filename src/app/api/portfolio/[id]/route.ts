@@ -5,11 +5,12 @@ import { prisma } from "@/lib/prisma";
 // GET - Retrieve portfolio data
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
-) {
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Response> {
   try {
+    const { id } = await params;
     const portfolio = await prisma.portfolio.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         projects: {
           include: {
@@ -54,19 +55,32 @@ export async function GET(
 // PUT - Update portfolio data (only editors and owners)
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
-) {
-    const permissionCheck = await checkEditorPermissions();
-  
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Response> {
+  const permissionCheck = await checkEditorPermissions();
+
   if (!permissionCheck.success) {
-    return permissionCheck.response;
+    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
+    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
+    // We must ensure a valid NextResponse is returned.
+    if (permissionCheck.response) {
+      return permissionCheck.response;
+    } else {
+      // This case implies the permission check failed but did not provide a specific error response.
+      // Return a generic internal server error to ensure a valid Response is always returned.
+      return NextResponse.json(
+        { error: "Permission check failed unexpectedly." },
+        { status: 500 }
+      );
+    }
   }
-  
+
   if (!permissionCheck.kindeUser || !permissionCheck.kindeUser.email) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
-  
+
   try {
+    const { id } = await params;
     const body = await request.json();
 
     // Validate required fields
@@ -87,7 +101,7 @@ export async function PUT(
     }
 
     const updatedPortfolio = await prisma.portfolio.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         name: body.name,
         jobTitle: body.jobTitle,
@@ -122,25 +136,41 @@ export async function PUT(
 // DELETE - Delete portfolio (only owners can delete)
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
-) {
-    const permissionCheck = await checkEditorPermissions();
-  
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Response> {
+  const permissionCheck = await checkEditorPermissions();
+
   if (!permissionCheck.success) {
-    return permissionCheck.response;
+    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
+    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
+    // We must ensure a valid NextResponse is returned.
+    if (permissionCheck.response) {
+      return permissionCheck.response;
+    } else {
+      // This case implies the permission check failed but did not provide a specific error response.
+      // Return a generic internal server error to ensure a valid Response is always returned.
+      return NextResponse.json(
+        { error: "Permission check failed unexpectedly." },
+        { status: 500 }
+      );
+    }
   }
-  
+
   if (!permissionCheck.kindeUser || !permissionCheck.kindeUser.email) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
-  
+
   try {
+    const { id } = await params;
     // Check if user is the portfolio owner
     const portfolio = await prisma.portfolio.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
-    if (!portfolio || portfolio.ownerEmail !== permissionCheck.kindeUser?.email) {
+    if (
+      !portfolio ||
+      portfolio.ownerEmail !== permissionCheck.kindeUser?.email
+    ) {
       return NextResponse.json(
         {
           error: "Access denied. Only portfolio owners can delete portfolios.",
@@ -151,11 +181,11 @@ export async function DELETE(
 
     // Delete related data first (due to foreign key constraints)
     await prisma.userPortfolioRole.deleteMany({
-      where: { portfolioId: params.id },
+      where: { portfolioId: id },
     });
 
     await prisma.portfolio.delete({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     return NextResponse.json({

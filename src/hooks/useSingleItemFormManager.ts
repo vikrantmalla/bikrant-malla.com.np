@@ -30,8 +30,11 @@ export function useSingleItemFormManager<T extends { id: string }>(
     
     const fetchItem = async () => {
       try {
-        const itemData = await clientApi[apiEndpoint].get();
-        setCurrentItem(itemData);
+        const itemData = await (clientApi[apiEndpoint] as any).get();
+        // Extract the actual item data from the API response
+        // API responses might have different structures, so we need to handle them properly
+        const actualItem = (itemData as any).project || (itemData as any).archiveProject || (itemData as any).portfolio || itemData;
+        setCurrentItem(actualItem as T);
       } catch (error) {
         console.error(`Error fetching ${itemName}:`, error);
       } finally {
@@ -51,10 +54,10 @@ export function useSingleItemFormManager<T extends { id: string }>(
 
       if (isEditing && currentItem) {
         // Update existing item
-        result = await clientApi[apiEndpoint].update(currentItem.id, data);
+        result = await (clientApi[apiEndpoint] as any).update(currentItem.id, data);
       } else {
         // Create new item
-        result = await clientApi[apiEndpoint].create(data);
+        result = await (clientApi[apiEndpoint] as any).create(data);
       }
 
       if (result) {
@@ -72,8 +75,10 @@ export function useSingleItemFormManager<T extends { id: string }>(
         } else {
           // After successful update, refresh item data and exit editing mode
           try {
-            const itemData = await clientApi[apiEndpoint].get();
-            setCurrentItem(itemData);
+            const itemData = await (clientApi[apiEndpoint] as any).get();
+            // Extract the actual item data from the API response, similar to initial fetch
+            const actualItem = (itemData as any).project || (itemData as any).archiveProject || (itemData as any).portfolio || itemData;
+            setCurrentItem(actualItem as T);
             setIsEditing(false); // Exit editing mode after successful update
           } catch (error) {
             console.error(`Error refreshing ${itemName}:`, error);
@@ -121,9 +126,12 @@ export function useSingleItemFormManager<T extends { id: string }>(
 
     setIsLoading(true);
     setMessage({ text: "", isError: false });
-
     try {
-      const result = await clientApi[apiEndpoint].delete(currentItem.id);
+      // The type definition for clientApi[apiEndpoint] is currently missing the 'delete' method.
+      // We assert its type to include 'delete' as it's expected to exist for this operation,
+      // based on the usage of `currentItem.id` and the intent to delete.
+      const client = clientApi[apiEndpoint] as unknown as { delete: (id: string) => Promise<any> };
+      const result = await client.delete(currentItem.id);
 
       if (result) {
         setMessage({ text: `${itemName} deleted successfully!`, isError: false });

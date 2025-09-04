@@ -5,8 +5,8 @@ import { checkPortfolioAccess } from "@/lib/roleUtils";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
-) {
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Response> {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
@@ -15,25 +15,38 @@ export async function PUT(
   }
 
   try {
+    const { id } = await params;
     // Check if user has editor role or is owner
-    const { hasAccess } = await checkPortfolioAccess(user.email, params.id);
+    const { hasAccess } = await checkPortfolioAccess(user.email, id);
 
     if (!hasAccess) {
-      return NextResponse.json({ error: "Access denied. Editor role required." }, { status: 403 });
+      return NextResponse.json(
+        { error: "Access denied. Editor role required." },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();
-    
+
     // Validate required fields
-    const requiredFields = ['name', 'jobTitle', 'aboutDescription1', 'email', 'ownerEmail'];
+    const requiredFields = [
+      "name",
+      "jobTitle",
+      "aboutDescription1",
+      "email",
+      "ownerEmail",
+    ];
     for (const field of requiredFields) {
       if (!body[field]) {
-        return NextResponse.json({ error: `${field} is required` }, { status: 400 });
+        return NextResponse.json(
+          { error: `${field} is required` },
+          { status: 400 }
+        );
       }
     }
 
     const updatedPortfolio = await prisma.portfolio.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         name: body.name,
         jobTitle: body.jobTitle,
@@ -45,15 +58,18 @@ export async function PUT(
         gitHub: body.gitHub,
         facebook: body.facebook,
         instagram: body.instagram,
-      }
+      },
     });
 
     return NextResponse.json({
       message: "Portfolio updated successfully",
-      portfolio: updatedPortfolio
+      portfolio: updatedPortfolio,
     });
   } catch (error) {
     console.error("Error updating portfolio:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
-} 
+}

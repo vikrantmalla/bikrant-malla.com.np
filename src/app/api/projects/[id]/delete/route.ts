@@ -4,29 +4,45 @@ import { prisma } from "@/lib/prisma";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
-) {
-    const permissionCheck = await checkEditorPermissions();
-  
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Response> {
+  const permissionCheck = await checkEditorPermissions();
+
   if (!permissionCheck.success) {
-    return permissionCheck.response;
+    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
+    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
+    // We must ensure a valid NextResponse is returned.
+    if (permissionCheck.response) {
+      return permissionCheck.response;
+    } else {
+      // This case implies the permission check failed but did not provide a specific error response.
+      // Return a generic internal server error to ensure a valid Response is always returned.
+      return NextResponse.json(
+        { error: "Permission check failed unexpectedly." },
+        { status: 500 }
+      );
+    }
   }
 
   try {
+    const { id } = await params;
     // Delete related data first (due to foreign key constraints)
     await prisma.projectTag.deleteMany({
-      where: { projectId: params.id }
+      where: { projectId: id },
     });
 
     await prisma.project.delete({
-      where: { id: params.id }
+      where: { id: id },
     });
 
     return NextResponse.json({
-      message: "Project deleted successfully"
+      message: "Project deleted successfully",
     });
   } catch (error) {
     console.error("Error deleting project:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
-} 
+}

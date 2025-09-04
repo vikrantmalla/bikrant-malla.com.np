@@ -5,8 +5,8 @@ import { checkPortfolioAccess } from "@/lib/roleUtils";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
-) {
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Response> {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
@@ -15,36 +15,43 @@ export async function GET(
   }
 
   try {
+    const { id } = await params;
     const portfolio = await prisma.portfolio.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         projects: {
           include: {
             tagRelations: {
               include: {
-                tag: true
-              }
-            }
-          }
+                tag: true,
+              },
+            },
+          },
         },
         archiveProjects: {
           include: {
             tagRelations: {
               include: {
-                tag: true
-              }
-            }
-          }
-        }
-      }
+                tag: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!portfolio) {
-      return NextResponse.json({ error: "Portfolio not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Portfolio not found" },
+        { status: 404 }
+      );
     }
 
     // Check if user has access to this portfolio
-    const { isEditor, isOwner, hasAccess } = await checkPortfolioAccess(user.email, params.id);
+    const { isEditor, isOwner, hasAccess } = await checkPortfolioAccess(
+      user.email,
+      id
+    );
 
     if (!hasAccess) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
@@ -52,10 +59,13 @@ export async function GET(
 
     return NextResponse.json({
       portfolio,
-      userRole: isOwner ? "OWNER" : "EDITOR"
+      userRole: isOwner ? "OWNER" : "EDITOR",
     });
   } catch (error) {
     console.error("Error fetching portfolio:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
-} 
+}
