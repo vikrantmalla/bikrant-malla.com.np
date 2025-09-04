@@ -40,7 +40,6 @@ jobs:
           NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
           RESEND_API_KEY_PROD: ${{ secrets.RESEND_API_KEY_PROD }}
           RESEND_FROM_EMAIL_PROD: ${{ secrets.RESEND_FROM_EMAIL_PROD }}
-          NEXT_PUBLIC_DEFAULT_APP_URL: ${{ secrets.NEXT_PUBLIC_DEFAULT_APP_URL }}
         run: npm run build
 
       - name: Archive Release
