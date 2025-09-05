@@ -1,7 +1,4 @@
 {
   "buildCommand": "npm run build:vercel",
-  "installCommand": "npm ci && npx prisma generate",
-  "env": {
-    "DATABASE_URL": "@database_url"
-  }
+  "installCommand": "npm ci && npx prisma generate"
 }
