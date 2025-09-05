@@ -1,8 +1,9 @@
 import { z } from "zod";
 
 const envVariables = z.object({
-  DB_PROD_MONGODB_URI: z.string(),
-  DB_DEV_MONGODB_URI: z.string(),
+  DATABASE_URL: z.string(),
+  DB_PROD_MONGODB_URI: z.string().optional(),
+  DB_DEV_MONGODB_URI: z.string().optional(),
   NEXT_PUBLIC_APP_URL: z.string().url(),
   NEXT_PUBLIC_DEFAULT_APP_URL: z.string().url(),
   NEXT_PUBLIC_GOOGLE_ANALYTICS: z.string(),
@@ -12,6 +13,7 @@ const envVariables = z.object({
 });
 
 const {
+  DATABASE_URL,
   DB_PROD_MONGODB_URI,
   DB_DEV_MONGODB_URI,
   NEXT_PUBLIC_APP_URL,
@@ -23,6 +25,7 @@ const {
 } = process.env;
 
 const parsedResult = envVariables.safeParse({
+  DATABASE_URL,
   DB_PROD_MONGODB_URI,
   DB_DEV_MONGODB_URI,
   NEXT_PUBLIC_APP_URL,

@@ -12,7 +12,7 @@ generator client {
 
 datasource db {
   provider = "mongodb"
-  url      = env("DB_DEV_MONGODB_URI")
+  url      = env("DATABASE_URL")
 }
 
 enum Platform {

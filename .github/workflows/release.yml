@@ -30,6 +30,7 @@ jobs:
       - name: Run API tests
         env:
           NODE_ENV: test
+          DATABASE_URL: ${{ secrets.DB_PROD_MONGODB_URI }}
         run: npm run test:api
 
       - name: Build static website
@@ -37,7 +38,7 @@ jobs:
           NODE_ENV: production
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
-          DB_PROD_MONGODB_URI: ${{ secrets.DB_PROD_MONGODB_URI }}
+          DATABASE_URL: ${{ secrets.DB_PROD_MONGODB_URI }}
           NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
           RESEND_API_KEY_PROD: ${{ secrets.RESEND_API_KEY_PROD }}
           RESEND_FROM_EMAIL_PROD: ${{ secrets.RESEND_FROM_EMAIL_PROD }}
