@@ -20,11 +20,14 @@ interface DashboardClientProps {
     success: boolean;
     data?: PortfolioDetails;
     error?: string;
+    isDatabaseError?: boolean;
   };
+  loginRedirectUrl?: string;
 }
 
 export default function DashboardClient({
   initialPortfolioData,
+  loginRedirectUrl = '/login',
 }: DashboardClientProps) {
   const { user, isAuthenticated, userRole, isCheckingRole, checkUserRole } =
     useAuth();
@@ -112,6 +115,33 @@ export default function DashboardClient({
     : null;
   const totalProjects = portfolioData?.projects?.length || 0;
   const totalPortfolioItems = portfolioData ? 1 : 0; // Portfolio itself counts as 1
+
+  // Handle case when no portfolio exists or portfolio is empty
+  if (initialPortfolioData.success && (!portfolioData || !portfolioData.name)) {
+    return (
+      <div
+        className="dashboard"
+        style={{
+          background: currentTheme?.background || "#f9fafb",
+          color: currentTheme?.text || "#000",
+        }}
+      >
+        <div className="dashboard__error">
+          <h1 className="dashboard__error-title">No Portfolio Found</h1>
+          <p className="dashboard__error-message">
+            You don&apos;t have a portfolio yet. Please contact the administrator to set up your portfolio.
+          </p>
+          <button 
+            onClick={() => window.location.href = loginRedirectUrl} 
+            className="dashboard__error-retry"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const totalArchived = portfolioData?.archiveProjects?.length || 0;
 
   return (

@@ -60,16 +60,27 @@ interface ArchiveProjectCreateData {
 }
 
 async function fetchData<T>(endpoint: string): Promise<T> {
-  const res = await fetch(`${baseUrl}/${endpoint}`, {
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch(`${baseUrl}/${endpoint}`, {
+      cache: "no-store",
+    });
 
-  if (!res.ok) {
-    throw new Error(`Failed to fetch ${endpoint}: ${res.statusText}`);
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`API Error for ${endpoint}:`, {
+        status: res.status,
+        statusText: res.statusText,
+        body: errorText
+      });
+      throw new Error(`Failed to fetch ${endpoint}: ${res.status} ${res.statusText}`);
+    }
+
+    const data: T = await res.json();
+    return data;
+  } catch (error) {
+    console.error(`Network/Parse Error for ${endpoint}:`, error);
+    throw error;
   }
-
-  const data: T = await res.json();
-  return data;
 }
 
 // GET METHOD

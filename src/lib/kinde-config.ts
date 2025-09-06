@@ -14,14 +14,13 @@ export const kindeConfig = {
   // Redirect URLs - can be different for dev/prod
   redirectUrl:
     process.env.KINDE_REDIRECT_URL ||
-    `${process.env.NEXT_PUBLIC_BASE_URL}/callback`,
+    `${process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_DEFAULT_APP_URL}`,
 
   logoutRedirectUrl:
-    process.env.KINDE_LOGOUT_REDIRECT_URL || process.env.NEXT_PUBLIC_BASE_URL,
+    process.env.KINDE_LOGOUT_REDIRECT_URL || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_DEFAULT_APP_URL,
 
   // Custom URLs
   customLoginUrl: "/login",
-  customCallbackUrl: "/callback",
 
   // Default redirects
   defaultLoginRedirect: "/dashboard",
@@ -73,14 +72,6 @@ export const buildLoginUrl = (redirectTo?: string) => {
   return baseUrl;
 };
 
-// Helper function to build callback URL with redirect
-export const buildCallbackUrl = (redirectTo?: string) => {
-  const baseUrl = `${kindeConfig.customCallbackUrl}`;
-  if (redirectTo) {
-    return `${baseUrl}?redirect=${encodeURIComponent(redirectTo)}`;
-  }
-  return baseUrl;
-};
 
 // Helper function to validate redirect URLs (prevent open redirects)
 export const isValidRedirectUrl = (url: string): boolean => {

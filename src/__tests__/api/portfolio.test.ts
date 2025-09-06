@@ -45,14 +45,30 @@ describe('/api/portfolio', () => {
       });
     });
 
-    it('should return 404 when no portfolio exists', async () => {
+    it('should return empty portfolio when no portfolio exists', async () => {
       mockPrisma.portfolio.findFirst.mockResolvedValue(null);
 
       const response = await GET(new Request('http://localhost:3000/api/portfolio'));
       const data = await response.json();
 
-      expect(response.status).toBe(404);
-      expect(data.error).toBe('Portfolio not found');
+      expect(response.status).toBe(200);
+      expect(data).toEqual({
+        id: null,
+        name: '',
+        jobTitle: '',
+        aboutDescription1: '',
+        aboutDescription2: '',
+        skills: [],
+        email: '',
+        ownerEmail: '',
+        linkedIn: '',
+        gitHub: '',
+        facebook: '',
+        instagram: '',
+        projects: [],
+        archiveProjects: [],
+        userRoles: []
+      });
     });
 
     it('should handle database errors', async () => {
