@@ -1,4 +1,17 @@
 import { Environment } from "@/types/enum";
+import { logKindeConfiguration } from "./sentry-debug";
+
+// Debug logging for production using Sentry
+if (process.env.NODE_ENV === 'production') {
+  logKindeConfiguration({
+    clientId: process.env.KINDE_CLIENT_ID,
+    clientSecret: process.env.KINDE_CLIENT_SECRET,
+    issuerUrl: process.env.KINDE_ISSUER_URL,
+    siteUrl: process.env.KINDE_SITE_URL,
+    redirectUrl: process.env.KINDE_REDIRECT_URL,
+    logoutRedirectUrl: process.env.KINDE_LOGOUT_REDIRECT_URL,
+  });
+}
 
 // Kinde Auth Configuration based on environment
 export const kindeConfig = {
@@ -14,7 +27,7 @@ export const kindeConfig = {
   // Redirect URLs - can be different for dev/prod
   redirectUrl:
     process.env.KINDE_REDIRECT_URL ||
-    `${process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_DEFAULT_APP_URL}`,
+    `${process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_DEFAULT_APP_URL}/callback`,
 
   logoutRedirectUrl:
     process.env.KINDE_LOGOUT_REDIRECT_URL || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_DEFAULT_APP_URL,
