@@ -7,8 +7,34 @@ import { fetchPortfolioDetailsData } from "@/service/apiService";
 import { Project } from "@/types/data";
 import { Platform } from "@/types/enum";
 
+// Force dynamic rendering for this page
+export const dynamic = 'force-dynamic';
+
 const Home = async () => {
-  const portfolioDetail = await fetchPortfolioDetailsData();
+  let portfolioDetail;
+  try {
+    portfolioDetail = await fetchPortfolioDetailsData();
+  } catch (error) {
+    console.error("Error fetching portfolio data in Home:", error);
+    // Return empty portfolio structure if database fails
+    portfolioDetail = {
+      id: null,
+      name: "",
+      jobTitle: "",
+      aboutDescription1: "",
+      aboutDescription2: "",
+      skills: [],
+      email: "",
+      ownerEmail: "",
+      linkedIn: "",
+      gitHub: "",
+      facebook: "",
+      instagram: "",
+      projects: [],
+      archiveProjects: [],
+      userRoles: []
+    };
+  }
   const aboutme = {
     title: portfolioDetail.name,
     subTitle: portfolioDetail.jobTitle,

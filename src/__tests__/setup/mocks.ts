@@ -5,6 +5,7 @@ import { jest } from '@jest/globals';
 export const mockPrisma = {
   $connect: jest.fn() as jest.MockedFunction<any>,
   $disconnect: jest.fn() as jest.MockedFunction<any>,
+  $runCommandRaw: jest.fn() as jest.MockedFunction<any>,
   user: {
     create: jest.fn() as jest.MockedFunction<any>,
     findUnique: jest.fn() as jest.MockedFunction<any>,

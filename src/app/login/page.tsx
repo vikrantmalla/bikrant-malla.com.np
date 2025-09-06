@@ -4,7 +4,7 @@ import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { buildCallbackUrl, sanitizeRedirectUrl } from "@/lib/kinde-config";
+import { buildLoginUrl, sanitizeRedirectUrl } from "@/lib/kinde-config";
 
 export default function LoginPage() {
   const { isAuthenticated, user } = useKindeBrowserClient();
@@ -73,7 +73,7 @@ export default function LoginPage() {
                 isLoading ? "opacity-50 cursor-not-allowed" : ""
               }`}
               onClick={handleLogin}
-              postLoginRedirectURL={buildCallbackUrl(redirectTo)}
+              postLoginRedirectURL={buildLoginUrl(redirectTo)}
             >
               {isLoading ? (
                 <div className="flex items-center">

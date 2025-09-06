@@ -8,6 +8,9 @@ import ClientOnly from "@/components/shared/ClientOnly";
 import "../styles/globals.scss";
 import { ZustandProvider } from "@/store/provider";
 
+// Force dynamic rendering for this layout
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata() {
   const appUrl =
     process.env.NEXT_PUBLIC_APP_URL;
@@ -90,7 +93,30 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const portfolioDetail = await fetchPortfolioDetailsData();
+  let portfolioDetail;
+  try {
+    portfolioDetail = await fetchPortfolioDetailsData();
+  } catch (error) {
+    console.error("Error fetching portfolio data in Layout:", error);
+    // Return empty portfolio structure if database fails
+    portfolioDetail = {
+      id: null,
+      name: "",
+      jobTitle: "",
+      aboutDescription1: "",
+      aboutDescription2: "",
+      skills: [],
+      email: "",
+      ownerEmail: "",
+      linkedIn: "",
+      gitHub: "",
+      facebook: "",
+      instagram: "",
+      projects: [],
+      archiveProjects: [],
+      userRoles: []
+    };
+  }
   const contact = {
     email: portfolioDetail.email,
     linkedIn: portfolioDetail.linkedIn,

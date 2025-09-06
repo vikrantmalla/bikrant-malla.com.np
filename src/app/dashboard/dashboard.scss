@@ -12,11 +12,12 @@ $dashboard-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0
 
 // Main Dashboard Container
 .dashboard {
+  @include flex(column, center);
   min-height: 100vh;
   background: $dashboard-bg;
   color: $dashboard-text;
   font-family: "Josefin Sans", "Poppins", "Roboto", sans-serif;
-  display: flex;
+
 }
 
 // Loading State
@@ -358,6 +359,43 @@ $dashboard-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0
 @media (prefers-contrast: high) {
   .dashboard__stat-card {
     border: 2px solid $dashboard-text;
+  }
+}
+
+// Error State
+.dashboard__error {
+  @include flex(column, center);
+  min-height: 50vh;
+  text-align: center;
+  padding: 2rem;
+  
+  &-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #dc2626;
+    margin-bottom: 1rem;
+  }
+  
+  &-message {
+    font-size: 1.1rem;
+    color: #6b7280;
+    margin-bottom: 2rem;
+    max-width: 500px;
+  }
+  
+  &-retry {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    
+    &:hover {
+      background: #2563eb;
+    }
   }
 }
 

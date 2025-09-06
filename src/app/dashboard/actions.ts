@@ -12,7 +12,36 @@ export async function getPortfolioData() {
     return { success: true, data };
   } catch (error) {
     console.error("Error fetching portfolio data:", error);
-    return { success: false, error: "Failed to fetch portfolio data" };
+    
+    // Handle specific database authentication errors
+    if (error instanceof Error && (error.message.includes('authentication failed') || error.message.includes('500 Internal Server Error'))) {
+      console.error("Database authentication failed - returning empty data");
+      return { 
+        success: true, 
+        data: {
+          id: null,
+          name: "",
+          jobTitle: "",
+          aboutDescription1: "",
+          aboutDescription2: "",
+          skills: [],
+          email: "",
+          ownerEmail: "",
+          linkedIn: "",
+          gitHub: "",
+          facebook: "",
+          instagram: "",
+          projects: [],
+          archiveProjects: [],
+          userRoles: []
+        }
+      };
+    }
+    
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : "Failed to fetch portfolio data" 
+    };
   }
 }
 
