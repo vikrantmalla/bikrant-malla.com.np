@@ -10,6 +10,9 @@ const envVariables = z.object({
   NEXT_PUBLIC_GOOGLE_SITE_ID: z.string(),
   NEXT_PUBLIC_MICROSOFT_CLARITY: z.string(),
   NEXT_PUBLIC_SENTRY_DSN: z.string(),
+  // JWT Configuration
+  JWT_SECRET: z.string(),
+  JWT_REFRESH_SECRET: z.string(),
 });
 
 const {
@@ -22,6 +25,9 @@ const {
   NEXT_PUBLIC_GOOGLE_SITE_ID,
   NEXT_PUBLIC_MICROSOFT_CLARITY,
   NEXT_PUBLIC_SENTRY_DSN,
+  // JWT Configuration
+  JWT_SECRET,
+  JWT_REFRESH_SECRET,
 } = process.env;
 
 const parsedResult = envVariables.safeParse({
@@ -34,6 +40,9 @@ const parsedResult = envVariables.safeParse({
   NEXT_PUBLIC_GOOGLE_SITE_ID,
   NEXT_PUBLIC_MICROSOFT_CLARITY,
   NEXT_PUBLIC_SENTRY_DSN,
+  // JWT Configuration
+  JWT_SECRET,
+  JWT_REFRESH_SECRET,
 });
 
 if (!parsedResult.success) {

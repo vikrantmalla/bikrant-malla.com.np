@@ -47,7 +47,7 @@ declare namespace Data {
 export = Data;
 
 export interface PortfolioDetails {
-  id: string;
+  id: string | null;
   name: string;
   jobTitle: string;
   aboutDescription1: string;
@@ -193,12 +193,14 @@ export interface MetaTag {
 
 export interface User {
   id: string;
-  kindeUserId: string;
   email: string;
+  password: string;
   name?: string;
   roles: UserPortfolioRole[];
   createdAt: Date;
   updatedAt: Date;
+  isActive: boolean;
+  emailVerified: boolean;
 }
 
 export interface UserPortfolioRole {

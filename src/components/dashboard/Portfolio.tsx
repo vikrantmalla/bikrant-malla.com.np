@@ -115,7 +115,7 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
   // Load existing portfolio data from props when component mounts or data changes
   useEffect(() => {
     if (portfolioData && portfolioData.id) {
-      setCurrentPortfolio(portfolioData);
+      setCurrentPortfolio(portfolioData as PortfolioData);
       setIsEditing(false); // Start in view mode
 
       // Populate form with existing data

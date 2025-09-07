@@ -1,7 +1,6 @@
 import { PortfolioDetails } from "@/types/data";
 import DashboardClient from "./DashboardClient";
 import { getPortfolioData } from "./actions";
-import { getLoginUrl } from "@/lib/login-url";
 
 // Force dynamic rendering for this page
 export const dynamic = "force-dynamic";
@@ -9,9 +8,6 @@ export const dynamic = "force-dynamic";
 export default async function Dashboard() {
   // Fetch portfolio data on the server
   const portfolioResult = await getPortfolioData();
-
-  // Get the login redirect URL from environment
-  const loginRedirectUrl = getLoginUrl();
 
   // Transform portfolioResult to ensure type compatibility with DashboardClient.
   // Specifically, if a portfolio is "successfully" fetched but has a null ID (indicating
@@ -39,7 +35,6 @@ export default async function Dashboard() {
           isDatabaseError?: boolean | undefined;
         }
       }
-      loginRedirectUrl={loginRedirectUrl}
     />
   );
 }

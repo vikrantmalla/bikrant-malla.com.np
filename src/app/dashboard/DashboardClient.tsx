@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import AuthModal from "@/components/authModal/authModal";
 import { useAuth } from "@/hooks/useAuth";
 import PortfolioForm from "@/components/dashboard/Portfolio";
 import ProjectsForm from "@/components/dashboard/Projects";
@@ -14,6 +13,8 @@ import ProjectLimitsConfig from "@/components/dashboard/ProjectLimitsConfig";
 import TechOptionsManager from "@/components/dashboard/TechOptionsManager";
 import TechTagsManager from "@/components/dashboard/TechTagsManager";
 import { PortfolioDetails } from "@/types/data";
+import LogoutButton from "@/components/auth/LogoutButton";
+import "@/components/auth/auth.scss";
 
 interface DashboardClientProps {
   initialPortfolioData: {
@@ -22,19 +23,15 @@ interface DashboardClientProps {
     error?: string;
     isDatabaseError?: boolean;
   };
-  loginRedirectUrl?: string;
 }
 
 export default function DashboardClient({
   initialPortfolioData,
-  loginRedirectUrl = '/login',
 }: DashboardClientProps) {
-  const { user, isAuthenticated, userRole, isCheckingRole, checkUserRole } =
+  const { user, isAuthenticated, userRole, isCheckingRole, checkUserRole, isLoading, redirectToLogin } =
     useAuth();
   const { isDarkTheme, themes } = useThemeStore();
   const currentTheme = isDarkTheme ? themes.dark : themes.light;
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeForm, setActiveForm] = useState("overview");
   const hasInitializedAuth = useRef(false);
@@ -55,6 +52,13 @@ export default function DashboardClient({
     initializeAuth();
   }, [isAuthenticated, checkUserRole]);
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      redirectToLogin('/dashboard');
+    }
+  }, [isLoading, isAuthenticated, redirectToLogin]);
+
   // Apply theme CSS variables when theme changes
   useEffect(() => {
     const root = document.documentElement;
@@ -67,7 +71,7 @@ export default function DashboardClient({
   };
 
   // Show loading state
-  if (loading) {
+  if (loading || isLoading) {
     return (
       <div
         className="dashboard"
@@ -131,12 +135,20 @@ export default function DashboardClient({
           <p className="dashboard__error-message">
             You don&apos;t have a portfolio yet. Please contact the administrator to set up your portfolio.
           </p>
-          <button 
-            onClick={() => window.location.href = loginRedirectUrl} 
-            className="dashboard__error-retry"
-          >
-            Go to Login
-          </button>
+          <div className="dashboard__error-actions">
+            <button 
+              onClick={() => window.location.reload()} 
+              className="dashboard__error-retry"
+            >
+              Refresh Page
+            </button>
+            <button 
+              onClick={() => redirectToLogin('/dashboard')} 
+              className="dashboard__error-login"
+            >
+              Go to Login
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -157,7 +169,7 @@ export default function DashboardClient({
         isOpen={isSideMenuOpen}
         onClose={() => setIsSideMenuOpen(false)}
         onFormChange={handleFormChange}
-        onLogout={() => setIsLogoutModalOpen(true)}
+        onLogout={() => {}}
         onThemeToggle={() => {}}
       />
 
@@ -273,7 +285,7 @@ export default function DashboardClient({
               )}
               <ProjectsForm
                 projectsData={portfolioData?.projects}
-                portfolioId={portfolioData?.id}
+                portfolioId={portfolioData?.id || undefined}
               />
             </div>
           )}
@@ -297,7 +309,7 @@ export default function DashboardClient({
                 )}
               <ArchiveProjectsForm
                 archiveProjectsData={portfolioData?.archiveProjects}
-                portfolioId={portfolioData?.id}
+                portfolioId={portfolioData?.id || undefined}
               />
             </div>
           )}
@@ -318,17 +330,12 @@ export default function DashboardClient({
         </div>
       </main>
 
-      {/* Modals */}
-      <AuthModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        type="login"
-      />
-      <AuthModal
-        isOpen={isLogoutModalOpen}
-        onClose={() => setIsLogoutModalOpen(false)}
-        type="logout"
-      />
+      {/* User Actions */}
+      <div className="dashboard__user-actions">
+        <LogoutButton className="dashboard__logout-btn">
+          Logout
+        </LogoutButton>
+      </div>
     </div>
   );
 }

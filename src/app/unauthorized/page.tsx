@@ -1,10 +1,10 @@
 "use client";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import CustomLoginLink from "@/components/authModal/CustomLoginLink";
 
 export default function UnauthorizedPage() {
-  const { isAuthenticated } = useKindeBrowserClient();
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

@@ -1,101 +1,148 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { buildLoginUrl, sanitizeRedirectUrl } from "@/lib/kinde-config";
+import "./login.scss";
 
 export default function LoginPage() {
-  const { isAuthenticated, user } = useKindeBrowserClient();
+  const { login, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Get the redirect URL from query params and sanitize it
-  const redirectTo = sanitizeRedirectUrl(searchParams.get("redirect") || "/dashboard");
+  // Get the redirect URL from query params
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
 
   useEffect(() => {
     // If user is already authenticated, redirect them
-    if (isAuthenticated && user) {
+    if (isAuthenticated && !isLoading) {
       router.push(redirectTo);
     }
-  }, [isAuthenticated, user, router, redirectTo]);
+  }, [isAuthenticated, isLoading, router, redirectTo]);
 
-  const handleLogin = async () => {
-    setIsLoading(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
     setError(null);
-    // The LoginLink component will handle the actual login
+
+    try {
+      const result = await login(formData.email, formData.password);
+      
+      if (result.success) {
+        router.push(redirectTo);
+      } else {
+        setError(result.error || "Login failed. Please try again.");
+      }
+    } catch (error) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  if (isLoading) {
+    return (
+      <div className="login-page__loading">
+        <div className="login-page__loading-container">
+          <div className="login-page__loading-spinner"></div>
+          <p className="login-page__loading-text">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Redirecting...</p>
+      <div className="login-page__loading">
+        <div className="login-page__loading-container">
+          <div className="login-page__loading-spinner"></div>
+          <p className="login-page__loading-text">Redirecting...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Access your portfolio dashboard
-          </p>
+    <div className="login-page">
+      <div className="login-page__container">
+        <div className="login-page__header">
+          <h2>Sign in to your account</h2>
+          <p>Access your portfolio dashboard</p>
         </div>
         
-        <div className="mt-8 space-y-6">
+        <form className="login-page__form" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-800">{error}</p>
-                </div>
-              </div>
+            <div className="login-page__error">
+              <svg className="login-page__error-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <p className="login-page__error-message">{error}</p>
             </div>
           )}
-          <div className="space-y-4">
-            <LoginLink
-              className={`group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${
-                isLoading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              onClick={handleLogin}
-              postLoginRedirectURL={buildLoginUrl(redirectTo)}
-            >
-              {isLoading ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Signing in...
-                </div>
-              ) : (
-                "Sign in with Kinde"
-              )}
-            </LoginLink>
-            
-            <div className="text-center">
-              <Link
-                href="/"
-                className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
-              >
-                Back to Portfolio
-              </Link>
+
+          <div className="login-page__fields">
+            <div className="login-page__field">
+              <label htmlFor="email">Email address</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+              />
+            </div>
+
+            <div className="login-page__field">
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+              />
             </div>
           </div>
-        </div>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`login-page__submit ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+          >
+            {isSubmitting ? (
+              <div className="login-page__submit-loading">
+                <div className="spinner"></div>
+                Signing in...
+              </div>
+            ) : (
+              "Sign in"
+            )}
+          </button>
+
+          <div className="login-page__back-link">
+            <Link href="/">Back to Portfolio</Link>
+          </div>
+        </form>
       </div>
     </div>
   );
-} 
+}

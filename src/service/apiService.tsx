@@ -85,7 +85,32 @@ async function fetchData<T>(endpoint: string): Promise<T> {
 
 // GET METHOD
 export async function fetchPortfolioDetailsData(): Promise<PortfolioDetails> {
-  return fetchData<PortfolioDetails>(PORTFOLIO_DETAILS_ENDPOINT);
+  try {
+    return await fetchData<PortfolioDetails>(PORTFOLIO_DETAILS_ENDPOINT);
+  } catch (error) {
+    console.error("Error fetching portfolio data:", error);
+    
+    // Return empty portfolio structure to prevent infinite loops
+    const emptyPortfolio: PortfolioDetails = {
+      id: null,
+      name: "",
+      jobTitle: "",
+      aboutDescription1: "",
+      aboutDescription2: "",
+      skills: [],
+      email: "",
+      ownerEmail: "",
+      linkedIn: "",
+      gitHub: "",
+      facebook: "",
+      instagram: "",
+      projects: [],
+      archiveProjects: [],
+      userRoles: []
+    };
+    
+    return emptyPortfolio;
+  }
 }
 
 export async function fetchProjectData(): Promise<ArchiveDetailsData> {
