@@ -24,7 +24,7 @@ export async function GET() {
 
 // POST - Create new tech option
 export async function POST(request: Request): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions();
+  const permissionCheck = await checkEditorPermissions(request);
 
   if (!permissionCheck.success) {
     // If permissionCheck.success is false, permissionCheck.response should contain an error response.

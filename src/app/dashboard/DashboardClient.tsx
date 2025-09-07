@@ -52,12 +52,7 @@ export default function DashboardClient({
     initializeAuth();
   }, [isAuthenticated, checkUserRole]);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      redirectToLogin('/dashboard');
-    }
-  }, [isLoading, isAuthenticated, redirectToLogin]);
+  // Server-side authentication handles protection, no client-side redirect needed
 
   // Apply theme CSS variables when theme changes
   useEffect(() => {

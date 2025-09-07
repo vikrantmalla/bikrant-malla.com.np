@@ -45,7 +45,7 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions();
+  const permissionCheck = await checkEditorPermissions(request);
 
   if (!permissionCheck.success) {
     // If permissionCheck.success is false, permissionCheck.response should contain an error response.
@@ -116,7 +116,7 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions();
+  const permissionCheck = await checkEditorPermissions(request);
 
   if (!permissionCheck.success) {
     // If permissionCheck.success is false, permissionCheck.response should contain an error response.

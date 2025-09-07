@@ -71,7 +71,16 @@ export async function POST(request: NextRequest) {
         name: user.name,
         emailVerified: user.emailVerified,
       },
-      accessToken,
+      accessToken, // Still return for client-side use
+    });
+
+    // Set access token as HTTP-only cookie for server-side auth
+    response.cookies.set('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 15 * 60, // 15 minutes (same as token expiry)
+      path: '/',
     });
 
     // Set refresh token as HTTP-only cookie

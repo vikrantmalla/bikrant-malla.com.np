@@ -51,19 +51,10 @@ export const useAuth = () => {
 
   // Check if user is authenticated
   const checkAuth = useCallback(async () => {
-    const token = getAccessToken();
-    if (!token) {
-      setIsAuthenticated(false);
-      setUser(null);
-      setIsLoading(false);
-      return;
-    }
-
     try {
+      // Use the /api/auth/me endpoint which will check server-side cookies
       const response = await fetch('/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include', // Include cookies in the request
       });
 
       if (response.ok) {
@@ -71,7 +62,7 @@ export const useAuth = () => {
         setUser(userData.user);
         setIsAuthenticated(true);
       } else {
-        // Token is invalid, remove it
+        // Not authenticated, clear any local storage
         removeAccessToken();
         setIsAuthenticated(false);
         setUser(null);
@@ -132,8 +123,8 @@ export const useAuth = () => {
       if (response.ok) {
         const data = await response.json();
         setAccessToken(data.accessToken);
-        setUser(data.user);
-        setIsAuthenticated(true);
+        // Don't set authentication state immediately - let checkAuth handle it
+        // This ensures server-side cookies are properly set
         return { success: true, user: data.user };
       } else {
         const error = await response.json();

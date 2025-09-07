@@ -80,6 +80,57 @@ export async function getUserFromToken(request: NextRequest): Promise<AuthResult
 }
 
 /**
+ * Get user from JWT token in cookies (for server-side authentication)
+ */
+export async function getUserFromCookie(request: NextRequest): Promise<AuthResult> {
+  try {
+    const accessToken = request.cookies.get('accessToken')?.value;
+    
+    if (!accessToken) {
+      return { user: null, error: 'No access token found' };
+    }
+
+    const decoded = verifyToken(accessToken);
+
+    if (!decoded || !decoded.userId) {
+      return { user: null, error: 'Invalid token' };
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        isActive: true,
+        emailVerified: true,
+      },
+    });
+
+    if (!user) {
+      return { user: null, error: 'User not found' };
+    }
+
+    const authUser: AuthUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      isActive: user.isActive,
+      emailVerified: user.emailVerified,
+    };
+
+    if (!authUser.isActive) {
+      return { user: null, error: 'Account is disabled' };
+    }
+
+    return { user: authUser };
+  } catch (error) {
+    console.error('Error getting user from cookie:', error);
+    return { user: null, error: 'Token verification failed' };
+  }
+}
+
+/**
  * Get user from session cookie
  */
 export async function getUserFromSession(request: NextRequest): Promise<AuthResult> {

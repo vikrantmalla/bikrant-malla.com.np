@@ -3,7 +3,7 @@ import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions();
+  const permissionCheck = await checkEditorPermissions(request);
 
   if (!permissionCheck.success) {
     // If permissionCheck.success is false, permissionCheck.response should contain an error response.
@@ -42,7 +42,7 @@ export async function POST(request: Request): Promise<Response> {
     }
     // Check if user is creating portfolio for themselves
     // Check if user is creating portfolio for themselves
-    if (body.ownerEmail !== permissionCheck.kindeUser!.email) {
+    if (body.ownerEmail !== permissionCheck.user!.email) {
       return NextResponse.json(
         { error: "You can only create portfolios for yourself" },
         { status: 403 }

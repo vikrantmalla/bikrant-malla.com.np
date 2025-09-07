@@ -1,34 +1,40 @@
-import { NextRequest } from 'next/server';
+import { cookies } from 'next/headers';
 import { verifyToken } from './jwt';
 import { prisma } from './prisma';
 
-export interface ServerAuthUser {
-  id: string;
-  email: string;
-  name: string | null;
-  isActive: boolean;
-  emailVerified: boolean;
+export interface ServerAuthResult {
+  isAuthenticated: boolean;
+  user: any | null;
+  error?: string;
 }
 
-export async function getServerAuthUser(request: NextRequest): Promise<ServerAuthUser | null> {
+/**
+ * Check authentication on the server side using cookies
+ */
+export async function getServerAuth(): Promise<ServerAuthResult> {
   try {
-    // Get the authorization header
-    const authHeader = request.headers.get('authorization');
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return null;
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get('accessToken')?.value;
+
+    if (!accessToken) {
+      return {
+        isAuthenticated: false,
+        user: null,
+        error: 'No access token found'
+      };
     }
 
-    const token = authHeader.substring(7);
-    
     // Verify the token
-    const decoded = verifyToken(token);
-    
+    const decoded = verifyToken(accessToken);
     if (!decoded || !decoded.userId) {
-      return null;
+      return {
+        isAuthenticated: false,
+        user: null,
+        error: 'Invalid token'
+      };
     }
-    
-    // Get user from database
+
+    // Get user data from database
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       select: {
@@ -40,29 +46,57 @@ export async function getServerAuthUser(request: NextRequest): Promise<ServerAut
       },
     });
 
-    if (!user || !user.isActive) {
-      return null;
+    if (!user) {
+      return {
+        isAuthenticated: false,
+        user: null,
+        error: 'User not found'
+      };
+    }
+
+    if (!user.isActive) {
+      return {
+        isAuthenticated: false,
+        user: null,
+        error: 'Account is disabled'
+      };
     }
 
     return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      isActive: user.isActive,
-      emailVerified: user.emailVerified,
+      isAuthenticated: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        isActive: user.isActive,
+        emailVerified: user.emailVerified,
+      }
     };
   } catch (error) {
     console.error('Server auth error:', error);
-    return null;
+    return {
+      isAuthenticated: false,
+      user: null,
+      error: 'Authentication failed'
+    };
   }
 }
 
-export async function requireAuth(request: NextRequest): Promise<ServerAuthUser> {
-  const user = await getServerAuthUser(request);
-  
-  if (!user) {
-    throw new Error('Authentication required');
+/**
+ * Check if user has specific role
+ */
+export async function checkServerRole(requiredRole: 'OWNER' | 'EDITOR'): Promise<boolean> {
+  try {
+    const authResult = await getServerAuth();
+    if (!authResult.isAuthenticated || !authResult.user) {
+      return false;
+    }
+
+    // Check if user has the required role
+    // This would need to be implemented based on your role checking logic
+    return true; // Placeholder - implement based on your role system
+  } catch (error) {
+    console.error('Server role check error:', error);
+    return false;
   }
-  
-  return user;
 }
