@@ -1,27 +1,14 @@
 'use client';
 
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
+import { LoginLink, LogoutLink, RegisterLink } from '@kinde-oss/kinde-auth-nextjs/components';
 import { useState, useEffect } from 'react';
 
 export default function KindeDebugPage() {
-  // Security: Only allow in development
-  if (process.env.NODE_ENV === 'production') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
-          <p className="text-gray-600">Debug page is only available in development mode.</p>
-        </div>
-      </div>
-    );
-  }
   const { 
     isAuthenticated, 
     user, 
     isLoading, 
-    login, 
-    logout, 
-    register,
     getToken,
     getPermissions,
     getOrganization,
@@ -67,17 +54,17 @@ export default function KindeDebugPage() {
     }
   }, [isAuthenticated, user, isLoading, getToken, getPermissions]);
 
-  const handleLogin = () => {
-    login();
-  };
-
-  const handleLogout = () => {
-    logout();
-  };
-
-  const handleRegister = () => {
-    register();
-  };
+  // Security: Only allow in development
+  if (process.env.NODE_ENV === 'production') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h1>
+          <p className="text-gray-600">Debug page is only available in development mode.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -99,24 +86,21 @@ export default function KindeDebugPage() {
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Actions</h2>
           <div className="flex gap-4">
-            <button
-              onClick={handleLogin}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            <LoginLink
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
             >
               Login
-            </button>
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            </LoginLink>
+            <LogoutLink
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
             >
               Logout
-            </button>
-            <button
-              onClick={handleRegister}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            </LogoutLink>
+            <RegisterLink
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
             >
               Register
-            </button>
+            </RegisterLink>
           </div>
         </div>
 
