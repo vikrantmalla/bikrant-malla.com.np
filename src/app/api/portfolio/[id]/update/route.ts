@@ -1,31 +1,30 @@
-import { NextResponse } from "next/server";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { NextResponse, NextRequest } from "next/server";
+import { checkSecureEditorPermissions } from "@/lib/secure-auth";
 import { prisma } from "@/lib/prisma";
-import { checkPortfolioAccess } from "@/lib/roleUtils";
 
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  const permissionCheck = await checkSecureEditorPermissions(request);
 
-  if (!user || !user.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!permissionCheck.success) {
+    if (permissionCheck.response) {
+      return permissionCheck.response;
+    } else {
+      return NextResponse.json(
+        { error: "Permission check failed unexpectedly." },
+        { status: 500 }
+      );
+    }
+  }
+
+  if (!permissionCheck.user || !permissionCheck.user.email) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
   try {
     const { id } = await params;
-    // Check if user has editor role or is owner
-    const { hasAccess } = await checkPortfolioAccess(user.email, id);
-
-    if (!hasAccess) {
-      return NextResponse.json(
-        { error: "Access denied. Editor role required." },
-        { status: 403 }
-      );
-    }
-
     const body = await request.json();
 
     // Validate required fields
@@ -33,7 +32,6 @@ export async function PUT(
       "name",
       "jobTitle",
       "aboutDescription1",
-      "email",
       "ownerEmail",
     ];
     for (const field of requiredFields) {
@@ -53,7 +51,7 @@ export async function PUT(
         aboutDescription1: body.aboutDescription1,
         aboutDescription2: body.aboutDescription2,
         skills: body.skills || [],
-        email: body.email,
+        ownerEmail: body.ownerEmail,
         linkedIn: body.linkedIn,
         gitHub: body.gitHub,
         facebook: body.facebook,

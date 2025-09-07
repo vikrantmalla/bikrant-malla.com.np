@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import { checkEditorPermissions } from "@/lib/roleUtils";
+import { NextResponse, NextRequest } from "next/server";
+import { checkSecureEditorPermissions } from "@/lib/secure-auth";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/password";
 
-export async function GET(request: Request): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions(request);
+export async function GET(request: NextRequest): Promise<Response> {
+  const permissionCheck = await checkSecureEditorPermissions(request);
 
   if (!permissionCheck.success) {
     // If permissionCheck.success is false, permissionCheck.response should contain an error response.

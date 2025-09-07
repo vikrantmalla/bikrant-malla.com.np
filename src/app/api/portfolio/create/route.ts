@@ -29,7 +29,6 @@ export async function POST(request: Request): Promise<Response> {
       "name",
       "jobTitle",
       "aboutDescription1",
-      "email",
       "ownerEmail",
     ];
     for (const field of requiredFields) {
@@ -40,7 +39,6 @@ export async function POST(request: Request): Promise<Response> {
         );
       }
     }
-    // Check if user is creating portfolio for themselves
     // Check if user is creating portfolio for themselves
     if (body.ownerEmail !== permissionCheck.user!.email) {
       return NextResponse.json(
@@ -56,7 +54,6 @@ export async function POST(request: Request): Promise<Response> {
         aboutDescription1: body.aboutDescription1,
         aboutDescription2: body.aboutDescription2,
         skills: body.skills || [],
-        email: body.email,
         ownerEmail: body.ownerEmail,
         linkedIn: body.linkedIn,
         gitHub: body.gitHub,

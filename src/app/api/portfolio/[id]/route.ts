@@ -88,7 +88,6 @@ export async function PUT(
       "name",
       "jobTitle",
       "aboutDescription1",
-      "email",
       "ownerEmail",
     ];
     for (const field of requiredFields) {
@@ -108,7 +107,7 @@ export async function PUT(
         aboutDescription1: body.aboutDescription1,
         aboutDescription2: body.aboutDescription2,
         skills: body.skills || [],
-        email: body.email,
+        ownerEmail: body.ownerEmail,
         linkedIn: body.linkedIn,
         gitHub: body.gitHub,
         facebook: body.facebook,

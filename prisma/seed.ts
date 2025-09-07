@@ -49,8 +49,7 @@ async function main() {
           "Docker",
           "AWS",
         ],
-        email: devEmail,
-        ownerEmail: devEmail, // Same email as owner
+        ownerEmail: devEmail, // Portfolio owner email
         linkedIn: "https://linkedin.com/in/bikrantmalla",
         gitHub: "https://github.com/bikrantmalla",
         facebook: "https://facebook.com/bikrantmalla",
