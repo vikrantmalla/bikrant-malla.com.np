@@ -1,5 +1,6 @@
 import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
+import { hashPassword } from "@/lib/password";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import InvitationEmail from "@/components/emails/InvitationEmail";
@@ -75,11 +76,17 @@ export async function POST(req: Request): Promise<Response> {
       dbUser = existingUser;
     } else {
       // Create a placeholder user record for the invited user
+      // Generate a temporary password that the user will need to reset
+      const tempPassword = crypto.randomUUID();
+      const hashedPassword = await hashPassword(tempPassword);
+      
       dbUser = await prisma.user.create({
         data: {
           email,
           name: "Invited User",
-          kindeUserId: crypto.randomUUID(), // Assign a temporary unique ID as kindeUserId is required
+          password: hashedPassword,
+          isActive: true,
+          emailVerified: false, // User needs to verify email and set their own password
         },
       });
     }

@@ -6,9 +6,11 @@ import { User, Portfolio, Project, ArchiveProject, Config, TechTag, TechOption }
 // Test data generators
 export const generateTestUser = (overrides: Partial<User> = {}): User => ({
   id: faker.string.uuid(),
-  kindeUserId: `kinde_${Date.now()}_${faker.string.alphanumeric(8)}`,
   email: faker.internet.email(),
+  password: faker.internet.password(),
   name: faker.person.fullName(),
+  isActive: true,
+  emailVerified: true,
   roles: [],
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -78,10 +80,8 @@ export const generateTestTechOption = (overrides: Partial<TechOption> = {}): Tec
 // Mock authentication helpers
 export const mockAuthenticatedUser = (user: User) => {
   const mockGetUser = jest.fn().mockResolvedValue({
-    id: user.kindeUserId,
+    id: user.id,
     email: user.email,
-    given_name: user.name?.split(' ')[0] || '',
-    family_name: user.name?.split(' ')[1] || '',
   });
 
   return {
@@ -107,10 +107,8 @@ export const mockEditorPermissions = (success: boolean, user?: User): void => {
       response: null,
       user,
       kindeUser: {
-        id: user.kindeUserId,
+        id: user.id,
         email: user.email,
-        given_name: user.name?.split(' ')[0] || '',
-        family_name: user.name?.split(' ')[1] || '',
       },
     });
   } else {

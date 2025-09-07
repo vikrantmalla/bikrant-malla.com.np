@@ -1,5 +1,6 @@
 import { PrismaClient } from "../src/generated/prisma";
 import { faker } from "@faker-js/faker";
+import { hashPassword } from "../src/lib/password";
 
 const prisma = new PrismaClient();
 
@@ -141,20 +142,40 @@ async function main() {
 
     console.log("✅ Archive projects created:", archiveProjects.length);
 
-    // Create a user with the same email as portfolio owner
-    const user = await prisma.user.create({
-      data: {
-        kindeUserId: `kinde_${Date.now()}`, // Generate a unique ID
+    // Create or update a user with the same email as portfolio owner
+    const hashedPassword = await hashPassword("password123"); // Default password for development
+    const user = await prisma.user.upsert({
+      where: { email: devEmail },
+      update: {
+        password: hashedPassword, // Update password
+        name: portfolioName, // Update name
+        isActive: true, // Account is active
+        emailVerified: true, // Email is verified for development
+      },
+      create: {
         email: devEmail, // Same email as portfolio owner
+        password: hashedPassword, // Hashed password
         name: portfolioName, // Same name as portfolio
+        isActive: true, // Account is active
+        emailVerified: true, // Email is verified for development
       },
     });
 
     console.log("✅ User created:", user.name, "with email:", user.email);
+    console.log("🔑 Default password: password123 (for development only)");
 
-    // Create user portfolio role - this user is the owner
-    await prisma.userPortfolioRole.create({
-      data: {
+    // Create or update user portfolio role - this user is the owner
+    await prisma.userPortfolioRole.upsert({
+      where: {
+        userId_portfolioId: {
+          userId: user.id,
+          portfolioId: portfolio.id,
+        },
+      },
+      update: {
+        role: "OWNER", // This user owns the portfolio
+      },
+      create: {
         userId: user.id,
         portfolioId: portfolio.id,
         role: "OWNER", // This user owns the portfolio
@@ -215,8 +236,18 @@ async function main() {
     ];
 
     for (const option of techOptions) {
-      await prisma.techOption.create({
-        data: option
+      await prisma.techOption.upsert({
+        where: {
+          name_category: {
+            name: option.name,
+            category: option.category,
+          },
+        },
+        update: {
+          description: option.description,
+          isActive: true,
+        },
+        create: option,
       });
     }
 
@@ -225,6 +256,7 @@ async function main() {
     console.log("🎉 Database seeding completed successfully!");
     console.log("📧 Portfolio owner email:", devEmail);
     console.log("👤 User email:", user.email);
+    console.log("🔑 User password: password123 (for development only)");
     console.log("🔗 Portfolio ID:", portfolio.id);
     console.log("🔗 User ID:", user.id);
 

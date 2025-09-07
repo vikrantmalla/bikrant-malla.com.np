@@ -93,30 +93,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  let portfolioDetail;
-  try {
-    portfolioDetail = await fetchPortfolioDetailsData();
-  } catch (error) {
-    console.error("Error fetching portfolio data in Layout:", error);
-    // Return empty portfolio structure if database fails
-    portfolioDetail = {
-      id: null,
-      name: "",
-      jobTitle: "",
-      aboutDescription1: "",
-      aboutDescription2: "",
-      skills: [],
-      email: "",
-      ownerEmail: "",
-      linkedIn: "",
-      gitHub: "",
-      facebook: "",
-      instagram: "",
-      projects: [],
-      archiveProjects: [],
-      userRoles: []
-    };
-  }
+  // Fetch portfolio data with error handling
+  const portfolioDetail = await fetchPortfolioDetailsData();
   const contact = {
     email: portfolioDetail.email,
     linkedIn: portfolioDetail.linkedIn,

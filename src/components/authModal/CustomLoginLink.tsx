@@ -1,6 +1,5 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { buildLoginUrl } from "@/lib/kinde-config";
 
 interface CustomLoginLinkProps {
   className?: string;
@@ -16,7 +15,7 @@ export default function CustomLoginLink({
   const router = useRouter();
 
   const handleLogin = () => {
-    const loginUrl = buildLoginUrl(redirectTo);
+    const loginUrl = `/login?redirect=${encodeURIComponent(redirectTo)}`;
     router.push(loginUrl);
   };
 

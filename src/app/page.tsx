@@ -11,30 +11,8 @@ import { Platform } from "@/types/enum";
 export const dynamic = 'force-dynamic';
 
 const Home = async () => {
-  let portfolioDetail;
-  try {
-    portfolioDetail = await fetchPortfolioDetailsData();
-  } catch (error) {
-    console.error("Error fetching portfolio data in Home:", error);
-    // Return empty portfolio structure if database fails
-    portfolioDetail = {
-      id: null,
-      name: "",
-      jobTitle: "",
-      aboutDescription1: "",
-      aboutDescription2: "",
-      skills: [],
-      email: "",
-      ownerEmail: "",
-      linkedIn: "",
-      gitHub: "",
-      facebook: "",
-      instagram: "",
-      projects: [],
-      archiveProjects: [],
-      userRoles: []
-    };
-  }
+  // Fetch portfolio data with error handling
+  const portfolioDetail = await fetchPortfolioDetailsData();
   const aboutme = {
     title: portfolioDetail.name,
     subTitle: portfolioDetail.jobTitle,

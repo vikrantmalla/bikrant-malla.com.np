@@ -84,8 +84,12 @@ const SideMenu: React.FC<SideMenuProps> = ({
   };
 
   const getUserInitials = () => {
-    if (user?.given_name && user?.family_name) {
-      return `${user.given_name.charAt(0)}${user.family_name.charAt(0)}`;
+    if (user?.name) {
+      const nameParts = user.name.split(' ');
+      if (nameParts.length >= 2) {
+        return `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`;
+      }
+      return user.name.charAt(0).toUpperCase();
     }
     if (user?.email) {
       return user.email.charAt(0).toUpperCase();
@@ -133,28 +137,6 @@ const SideMenu: React.FC<SideMenuProps> = ({
                 <FaTimes />
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* User Profile Section */}
-        <div className="side-menu__profile">
-          <div className="side-menu__avatar">
-            {user?.picture ? (
-              <img
-                src={user.picture}
-                alt="Profile"
-                className="side-menu__avatar-img"
-              />
-            ) : (
-              <div className="side-menu__avatar-placeholder">
-                {getUserInitials()}
-              </div>
-            )}
-            <h3 className="side-menu__user-info-name">
-              {user?.given_name && user?.family_name
-                ? `${user.given_name} ${user.family_name}`
-                : user?.email || "User"}
-            </h3>
           </div>
         </div>
 

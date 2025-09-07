@@ -1,16 +1,90 @@
 "use client";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
-import { sanitizeRedirectUrl } from "@/lib/kinde-config";
 import { clientApi } from "@/service/apiService";
 
+interface AuthUser {
+  id: string;
+  email: string;
+  name?: string;
+  isActive: boolean;
+  emailVerified: boolean;
+}
+
+interface UserRole {
+  hasEditorRole: boolean;
+  isOwner: boolean;
+}
+
+interface PortfolioInfo {
+  id: string;
+  name: string;
+  ownerEmail: string;
+}
+
 export const useAuth = () => {
-  const { user, isAuthenticated, isLoading } = useKindeBrowserClient();
   const router = useRouter();
-  const [userRole, setUserRole] = useState<{ hasEditorRole: boolean; isOwner: boolean } | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [isCheckingRole, setIsCheckingRole] = useState(false);
-  const [portfolioInfo, setPortfolioInfo] = useState<{ id: string; name: string; ownerEmail: string } | null>(null);
+  const [portfolioInfo, setPortfolioInfo] = useState<PortfolioInfo | null>(null);
+
+  // Get access token from localStorage
+  const getAccessToken = () => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('accessToken');
+  };
+
+  // Set access token in localStorage
+  const setAccessToken = (token: string) => {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem('accessToken', token);
+  };
+
+  // Remove access token from localStorage
+  const removeAccessToken = () => {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem('accessToken');
+  };
+
+  // Check if user is authenticated
+  const checkAuth = useCallback(async () => {
+    const token = getAccessToken();
+    if (!token) {
+      setIsAuthenticated(false);
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData.user);
+        setIsAuthenticated(true);
+      } else {
+        // Token is invalid, remove it
+        removeAccessToken();
+        setIsAuthenticated(false);
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      removeAccessToken();
+      setIsAuthenticated(false);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   // Check user role
   const checkUserRole = useCallback(async () => {
@@ -18,14 +92,24 @@ export const useAuth = () => {
 
     setIsCheckingRole(true);
     try {
-      const data = await clientApi.auth.checkRole();
-      const roleData = {
-        hasEditorRole: data.user.hasEditorRole,
-        isOwner: data.user.isOwner
-      };
-      setUserRole(roleData);
-      setPortfolioInfo(data.user.portfolio);
-      return roleData;
+      const token = getAccessToken();
+      const response = await fetch('/api/auth/check-role', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const roleData = {
+          hasEditorRole: data.user.hasEditorRole,
+          isOwner: data.user.isOwner
+        };
+        setUserRole(roleData);
+        setPortfolioInfo(data.user.portfolio);
+        return roleData;
+      }
+      return null;
     } catch (error) {
       console.error("Error checking user role:", error);
       return null;
@@ -34,10 +118,55 @@ export const useAuth = () => {
     }
   }, [isAuthenticated, user]);
 
+  // Login function
+  const login = async (email: string, password: string) => {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAccessToken(data.accessToken);
+        setUser(data.user);
+        setIsAuthenticated(true);
+        return { success: true, user: data.user };
+      } else {
+        const error = await response.json();
+        return { success: false, error: error.error };
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      return { success: false, error: 'Login failed. Please try again.' };
+    }
+  };
+
+  // Logout function
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      removeAccessToken();
+      setUser(null);
+      setIsAuthenticated(false);
+      setUserRole(null);
+      setPortfolioInfo(null);
+      router.push('/');
+    }
+  };
+
   // Redirect to login with optional redirect parameter
   const redirectToLogin = (redirectTo?: string) => {
-    const sanitizedRedirect = redirectTo ? sanitizeRedirectUrl(redirectTo) : "/dashboard";
-    router.push(`/login?redirect=${encodeURIComponent(sanitizedRedirect)}`);
+    const redirectUrl = redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : '/login';
+    router.push(redirectUrl);
   };
 
   // Check if user has access to a specific route
@@ -50,11 +179,17 @@ export const useAuth = () => {
     return true;
   };
 
-  // Logout and redirect
-  const logout = () => {
-    // The LogoutLink component will handle the actual logout
-    // This is just a utility function for programmatic logout
-  };
+  // Initialize auth on mount
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  // Check user role when authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      checkUserRole();
+    }
+  }, [isAuthenticated, user, checkUserRole]);
 
   return {
     user,
@@ -63,9 +198,10 @@ export const useAuth = () => {
     userRole,
     isCheckingRole,
     checkUserRole,
+    login,
+    logout,
     redirectToLogin,
     hasAccess,
-    logout,
     portfolioInfo
   };
 }; 

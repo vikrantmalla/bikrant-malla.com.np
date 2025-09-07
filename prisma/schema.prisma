@@ -28,9 +28,11 @@ enum Role {
 
 model User {
   id           String              @id @default(auto()) @map("_id") @db.ObjectId
-  kindeUserId  String              @unique // Kinde user ID
-  email        String              @unique // Kinde/Clerk user email
+  email        String              @unique // User email
+  password     String              // Hashed password
   name         String? // Optional user name
+  isActive     Boolean             @default(true) // Account status
+  emailVerified Boolean            @default(false) // Email verification status
   roles        UserPortfolioRole[] @relation("UserRoles")
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt

@@ -35,28 +35,23 @@ export async function GET(request: Request): Promise<Response> {
   } catch (error) {
     console.error("Portfolio API error:", error);
     
-    // Handle database authentication errors specifically
-    if (error instanceof Error && error.message.includes('authentication failed')) {
-      console.error("Database authentication failed - returning empty portfolio");
-      return NextResponse.json({
-        id: null,
-        name: "",
-        jobTitle: "",
-        aboutDescription1: "",
-        aboutDescription2: "",
-        skills: [],
-        email: "",
-        ownerEmail: "",
-        linkedIn: "",
-        gitHub: "",
-        facebook: "",
-        instagram: "",
-        projects: [],
-        archiveProjects: [],
-        userRoles: []
-      });
-    }
-    
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+    // Always return empty portfolio structure on error to prevent infinite loops
+    return NextResponse.json({
+      id: null,
+      name: "",
+      jobTitle: "",
+      aboutDescription1: "",
+      aboutDescription2: "",
+      skills: [],
+      email: "",
+      ownerEmail: "",
+      linkedIn: "",
+      gitHub: "",
+      facebook: "",
+      instagram: "",
+      projects: [],
+      archiveProjects: [],
+      userRoles: []
+    });
   }
 }

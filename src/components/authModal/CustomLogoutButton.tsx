@@ -1,8 +1,6 @@
 "use client";
 import { useState } from "react";
-import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
-import { useRouter } from "next/navigation";
-import { kindeConfig } from "@/lib/kinde-config";
+import { useAuth } from "@/hooks/useAuth";
 
 interface CustomLogoutButtonProps {
   className?: string;
@@ -14,19 +12,24 @@ export default function CustomLogoutButton({
   children = "Log Out"
 }: CustomLogoutButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const { logout } = useAuth();
 
   const handleLogout = async () => {
     setIsLoading(true);
-    // The LogoutLink component will handle the actual logout
-    // After logout, it will redirect to the home page
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <LogoutLink
+    <button
       className={`${className} ${isLoading ? "loading" : ""}`}
       onClick={handleLogout}
-      postLogoutRedirectURL={kindeConfig.defaultLogoutRedirect}
+      disabled={isLoading}
     >
       {isLoading ? (
         <div className="loading-content">
@@ -36,6 +39,6 @@ export default function CustomLogoutButton({
       ) : (
         children
       )}
-    </LogoutLink>
+    </button>
   );
 } 

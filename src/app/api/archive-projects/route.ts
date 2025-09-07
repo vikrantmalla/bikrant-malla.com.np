@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
+import { hashPassword } from "@/lib/password";
 
 export async function GET(request: Request): Promise<Response> {
   const permissionCheck = await checkEditorPermissions();
@@ -37,11 +38,18 @@ export async function GET(request: Request): Promise<Response> {
 
     // If user doesn't exist, create them
     if (!dbUser) {
+      // This should not happen with the new auth system as users are created during registration
+      // But keeping this as a fallback for migration purposes
+      const tempPassword = crypto.randomUUID();
+      const hashedPassword = await hashPassword(tempPassword);
+      
       dbUser = await prisma.user.create({
         data: {
-          kindeUserId: `kinde_${Date.now()}`,
           email: user.email,
+          password: hashedPassword,
           name: user.given_name || user.family_name || user.email.split("@")[0],
+          isActive: true,
+          emailVerified: false,
         },
         include: { roles: true },
       });
