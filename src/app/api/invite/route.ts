@@ -8,7 +8,7 @@ import { resendConfig } from "@/lib/resend-config";
 import { Role } from "@/types/enum";
 
 export async function POST(req: Request): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions();
+  const permissionCheck = await checkEditorPermissions(req);
 
   if (!permissionCheck.success) {
     // If permissionCheck.success is false, permissionCheck.response should contain an error response.
@@ -26,7 +26,7 @@ export async function POST(req: Request): Promise<Response> {
     }
   }
 
-  const user = permissionCheck.kindeUser;
+  const user = permissionCheck.user;
 
   if (!user || !user.email) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -143,7 +143,7 @@ export async function POST(req: Request): Promise<Response> {
         to: email,
         subject: `You have been invited to collaborate on ${portfolio.name}`,
         react: InvitationEmail({
-          inviterName: user.given_name || user.email,
+          inviterName: user.email,
           portfolioName: portfolio.name,
           role,
           signupUrl,

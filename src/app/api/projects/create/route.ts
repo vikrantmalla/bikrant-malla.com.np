@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { Platform } from "@/types/enum";
 
 export async function POST(request: Request): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions();
+  const permissionCheck = await checkEditorPermissions(request);
 
   if (!permissionCheck.success) {
     // If permissionCheck.success is false, permissionCheck.response should contain an error response.
@@ -22,7 +22,7 @@ export async function POST(request: Request): Promise<Response> {
     }
   }
 
-  if (!permissionCheck.kindeUser || !permissionCheck.kindeUser.email) {
+  if (!permissionCheck.user || !permissionCheck.user.email) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
@@ -42,7 +42,7 @@ export async function POST(request: Request): Promise<Response> {
 
     // Check if user has access to the portfolio
     const { hasAccess } = await checkPortfolioAccess(
-      permissionCheck.kindeUser!.email,
+      permissionCheck.user!.email,
       body.portfolioId
     );
 

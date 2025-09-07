@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/password";
 
 export async function GET(request: Request): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions();
+  const permissionCheck = await checkEditorPermissions(request);
 
   if (!permissionCheck.success) {
     // If permissionCheck.success is false, permissionCheck.response should contain an error response.
@@ -22,8 +22,7 @@ export async function GET(request: Request): Promise<Response> {
     }
   }
 
-  const user = permissionCheck.kindeUser;
-  const dbUser = permissionCheck.user;
+  const user = permissionCheck.user;
 
   if (!user || !user.email) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -47,7 +46,7 @@ export async function GET(request: Request): Promise<Response> {
         data: {
           email: user.email,
           password: hashedPassword,
-          name: user.given_name || user.family_name || user.email.split("@")[0],
+          name: user.name || user.email.split("@")[0],
           isActive: true,
           emailVerified: false,
         },

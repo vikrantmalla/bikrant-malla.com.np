@@ -35,7 +35,9 @@ export default function LoginPage() {
       const result = await login(formData.email, formData.password);
       
       if (result.success) {
-        router.push(redirectTo);
+        // Trigger authentication check to update state
+        // This will check server-side cookies and update isAuthenticated
+        window.location.href = redirectTo;
       } else {
         setError(result.error || "Login failed. Please try again.");
       }

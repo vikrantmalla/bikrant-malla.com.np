@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { checkEditorPermissions } from "@/lib/roleUtils";
+import { NextResponse, NextRequest } from "next/server";
+import { checkSecureEditorPermissions } from "@/lib/secure-auth";
 import { prisma } from "@/lib/prisma";
 
 // GET - Retrieve portfolio data
@@ -54,10 +54,10 @@ export async function GET(
 
 // PUT - Update portfolio data (only editors and owners)
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions();
+  const permissionCheck = await checkSecureEditorPermissions(request);
 
   if (!permissionCheck.success) {
     // If permissionCheck.success is false, permissionCheck.response should contain an error response.
@@ -75,7 +75,7 @@ export async function PUT(
     }
   }
 
-  if (!permissionCheck.kindeUser || !permissionCheck.kindeUser.email) {
+  if (!permissionCheck.user || !permissionCheck.user.email) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
@@ -135,10 +135,10 @@ export async function PUT(
 
 // DELETE - Delete portfolio (only owners can delete)
 export async function DELETE(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions();
+  const permissionCheck = await checkSecureEditorPermissions(request);
 
   if (!permissionCheck.success) {
     // If permissionCheck.success is false, permissionCheck.response should contain an error response.
@@ -156,7 +156,7 @@ export async function DELETE(
     }
   }
 
-  if (!permissionCheck.kindeUser || !permissionCheck.kindeUser.email) {
+  if (!permissionCheck.user || !permissionCheck.user.email) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
@@ -169,7 +169,7 @@ export async function DELETE(
 
     if (
       !portfolio ||
-      portfolio.ownerEmail !== permissionCheck.kindeUser?.email
+      portfolio.ownerEmail !== permissionCheck.user?.email
     ) {
       return NextResponse.json(
         {
