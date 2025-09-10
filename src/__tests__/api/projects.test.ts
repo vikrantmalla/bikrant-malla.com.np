@@ -1,6 +1,6 @@
 import { GET } from '@/app/api/projects/route';
 import { POST } from '@/app/api/projects/create/route';
-import { setupMocks, resetMocks, mockPrisma } from '../setup/mocks';
+import { setupMocks, resetMocks, mockPrisma, mockCustomAuth } from '../setup/mocks';
 import { generateTestUser, generateTestPortfolio, generateTestProject, createMockRequest } from '../utils/test-helpers';
 import { faker } from '@faker-js/faker';
 
@@ -21,16 +21,15 @@ describe('/api/projects', () => {
         generateTestProject(portfolio.id),
       ];
 
+      // Mock roleUtils
       const { checkEditorPermissions } = require('@/lib/roleUtils');
-      
       checkEditorPermissions.mockResolvedValue({
         success: true,
         response: null,
-        user,
-        kindeUser: { 
+        user: {
+          id: user.id,
           email: user.email,
-          given_name: (user.name || '').split(' ')[0],
-          family_name: (user.name || '').split(' ')[1] || '',
+          name: user.name,
         },
       });
 
@@ -57,16 +56,15 @@ describe('/api/projects', () => {
       const portfolio = generateTestPortfolio({ ownerEmail: user.email });
       const projects: never[] = [];
 
+      // Mock roleUtils
       const { checkEditorPermissions } = require('@/lib/roleUtils');
-      
       checkEditorPermissions.mockResolvedValue({
         success: true,
         response: null,
-        user,
-        kindeUser: { 
+        user: {
+          id: user.id,
           email: user.email,
-          given_name: (user.name || '').split(' ')[0],
-          family_name: (user.name || '').split(' ')[1] || '',
+          name: user.name,
         },
       });
 
@@ -83,22 +81,23 @@ describe('/api/projects', () => {
       expect(response!.status).toBe(200);
       expect(mockPrisma.user.create).toHaveBeenCalledWith({
         data: {
-          kindeUserId: expect.any(String),
           email: user.email,
-          name: user.name!.split(' ')[0],
+          password: expect.any(String),
+          name: user.name || user.email.split('@')[0],
+          isActive: true,
+          emailVerified: false,
         },
         include: { roles: true },
       });
     });
 
     it('should return 401 when user is not authenticated', async () => {
+      // Mock roleUtils
       const { checkEditorPermissions } = require('@/lib/roleUtils');
-      
       checkEditorPermissions.mockResolvedValue({
         success: false,
         response: { json: () => ({ error: 'Unauthorized' }), status: 401 },
         user: null,
-        kindeUser: null,
       });
 
       const response = await GET(new Request('http://localhost:3000/api/projects'));
@@ -110,16 +109,15 @@ describe('/api/projects', () => {
     it('should return 404 when no portfolio is found for user', async () => {
       const user = generateTestUser();
 
+      // Mock roleUtils
       const { checkEditorPermissions } = require('@/lib/roleUtils');
-      
       checkEditorPermissions.mockResolvedValue({
         success: true,
         response: null,
-        user,
-        kindeUser: { 
+        user: {
+          id: user.id,
           email: user.email,
-          given_name: (user.name || '').split(' ')[0],
-          family_name: (user.name || '').split(' ')[1] || '',
+          name: user.name,
         },
       });
 
@@ -138,16 +136,15 @@ describe('/api/projects', () => {
     it('should handle database errors', async () => {
       const user = generateTestUser();
 
+      // Mock roleUtils
       const { checkEditorPermissions } = require('@/lib/roleUtils');
-      
       checkEditorPermissions.mockResolvedValue({
         success: true,
         response: null,
-        user,
-        kindeUser: { 
+        user: {
+          id: user.id,
           email: user.email,
-            given_name: (user.name || '').split(' ')[0],
-          family_name: (user.name || '').split(' ')[1] || '',
+          name: user.name,
         },
       });
 
@@ -178,15 +175,17 @@ describe('/api/projects', () => {
       const portfolio = generateTestPortfolio();
       const config = { maxWebProjects: 6, maxDesignProjects: 6, maxTotalProjects: 12 };
 
+      // Mock roleUtils
       const { checkEditorPermissions, checkPortfolioAccess } = require('@/lib/roleUtils');
-      
       checkEditorPermissions.mockResolvedValue({
         success: true,
         response: null,
-        user,
-        kindeUser: { email: user.email },
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        },
       });
-
       checkPortfolioAccess.mockResolvedValue({
         hasAccess: true,
         isEditor: true,
@@ -195,6 +194,7 @@ describe('/api/projects', () => {
 
       const createdProject = generateTestProject(validProjectData.portfolioId, validProjectData);
       
+      mockPrisma.user.findUnique.mockResolvedValue(user);
       mockPrisma.config.findFirst.mockResolvedValue(config);
       mockPrisma.project.findMany.mockResolvedValue([]); // No existing projects
       mockPrisma.project.create.mockResolvedValue(createdProject);
@@ -214,13 +214,12 @@ describe('/api/projects', () => {
     });
 
     it('should return 401 when user is not authenticated', async () => {
+      // Mock roleUtils
       const { checkEditorPermissions } = require('@/lib/roleUtils');
-      
       checkEditorPermissions.mockResolvedValue({
         success: false,
         response: { json: () => ({ error: 'Unauthorized' }), status: 401 },
         user: null,
-        kindeUser: null,
       });
 
       const request = createMockRequest('http://localhost:3000/api/projects/create', {
@@ -237,13 +236,17 @@ describe('/api/projects', () => {
 
     it('should return 400 when required fields are missing', async () => {
       const user = generateTestUser();
-      const { checkEditorPermissions } = require('@/lib/roleUtils');
       
+      // Mock roleUtils
+      const { checkEditorPermissions } = require('@/lib/roleUtils');
       checkEditorPermissions.mockResolvedValue({
         success: true,
         response: null,
-        user,
-        kindeUser: { email: user.email },
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        },
       });
 
       const incompleteData = {
@@ -266,15 +269,18 @@ describe('/api/projects', () => {
 
     it('should return 403 when user does not have portfolio access', async () => {
       const user = generateTestUser();
-      const { checkEditorPermissions, checkPortfolioAccess } = require('@/lib/roleUtils');
       
+      // Mock roleUtils
+      const { checkEditorPermissions, checkPortfolioAccess } = require('@/lib/roleUtils');
       checkEditorPermissions.mockResolvedValue({
         success: true,
         response: null,
-        user,
-        kindeUser: { email: user.email },
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        },
       });
-
       checkPortfolioAccess.mockResolvedValue({
         hasAccess: false,
         isEditor: false,
@@ -299,21 +305,24 @@ describe('/api/projects', () => {
       const config = { maxWebProjects: 1, maxDesignProjects: 6, maxTotalProjects: 1 };
       const existingProjects = [generateTestProject(faker.string.uuid())]; // Already at limit
 
+      // Mock roleUtils
       const { checkEditorPermissions, checkPortfolioAccess } = require('@/lib/roleUtils');
-      
       checkEditorPermissions.mockResolvedValue({
         success: true,
         response: null,
-        user,
-        kindeUser: { email: user.email },
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        },
       });
-
       checkPortfolioAccess.mockResolvedValue({
         hasAccess: true,
         isEditor: true,
         isOwner: false,
       });
 
+      mockPrisma.user.findUnique.mockResolvedValue(user);
       mockPrisma.config.findFirst.mockResolvedValue(config);
       mockPrisma.project.findMany.mockResolvedValue(existingProjects);
 
@@ -332,21 +341,25 @@ describe('/api/projects', () => {
 
     it('should handle database errors', async () => {
       const user = generateTestUser();
-      const { checkEditorPermissions, checkPortfolioAccess } = require('@/lib/roleUtils');
       
+      // Mock roleUtils
+      const { checkEditorPermissions, checkPortfolioAccess } = require('@/lib/roleUtils');
       checkEditorPermissions.mockResolvedValue({
         success: true,
         response: null,
-        user,
-        kindeUser: { email: user.email },
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+        },
       });
-
       checkPortfolioAccess.mockResolvedValue({
         hasAccess: true,
         isEditor: true,
         isOwner: false,
       });
 
+      mockPrisma.user.findUnique.mockResolvedValue(user);
       mockPrisma.config.findFirst.mockRejectedValue(new Error('Database error'));
 
       const request = createMockRequest('http://localhost:3000/api/projects/create', {

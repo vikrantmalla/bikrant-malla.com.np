@@ -85,10 +85,13 @@ export const mockPrisma = {
   },
 };
 
-// Mock Kinde authentication
-export const mockKindeAuth = {
-  getKindeServerSession: jest.fn() as jest.MockedFunction<any>,
-  getUser: jest.fn() as jest.MockedFunction<any>,
+// Mock custom authentication
+export const mockCustomAuth = {
+  getUserFromToken: jest.fn() as jest.MockedFunction<any>,
+  getUserFromCookie: jest.fn() as jest.MockedFunction<any>,
+  checkUserPermissions: jest.fn() as jest.MockedFunction<any>,
+  generateAuthTokens: jest.fn() as jest.MockedFunction<any>,
+  verifyToken: jest.fn() as jest.MockedFunction<any>,
 };
 
 // Mock Next.js modules
@@ -109,9 +112,19 @@ export function setupMocks() {
     prisma: mockPrisma,
   }));
 
-  // Mock Kinde authentication
-  jest.mock('@kinde-oss/kinde-auth-nextjs/server', () => ({
-    getKindeServerSession: mockKindeAuth.getKindeServerSession,
+  // Mock custom authentication
+  jest.mock('@/lib/auth', () => ({
+    getUserFromToken: mockCustomAuth.getUserFromToken,
+    getUserFromCookie: mockCustomAuth.getUserFromCookie,
+    checkUserPermissions: mockCustomAuth.checkUserPermissions,
+    generateAuthTokens: mockCustomAuth.generateAuthTokens,
+    isValidEmail: jest.fn().mockReturnValue(true),
+  }));
+
+  // Mock JWT utilities
+  jest.mock('@/lib/jwt', () => ({
+    verifyToken: mockCustomAuth.verifyToken,
+    generateToken: jest.fn().mockReturnValue('mock-token'),
   }));
 
   // Mock Next.js
@@ -138,7 +151,7 @@ export function resetMocks() {
     }
   });
 
-  Object.values(mockKindeAuth).forEach((method: any) => {
+  Object.values(mockCustomAuth).forEach((method: any) => {
     if (jest.isMockFunction(method)) {
       method.mockReset();
     }

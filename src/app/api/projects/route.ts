@@ -80,23 +80,8 @@ export async function GET(request: Request): Promise<Response> {
       }
     }
 
-    // If still no portfolio, assign the first available portfolio to this user
-    if (!portfolio && allPortfolios.length > 0) {
-      const firstPortfolio = allPortfolios[0];
-
-      // Create user portfolio role
-      await prisma.userPortfolioRole.create({
-        data: {
-          userId: dbUser.id,
-          portfolioId: firstPortfolio.id,
-          role: "OWNER",
-        },
-      });
-
-      portfolio = await prisma.portfolio.findUnique({
-        where: { id: firstPortfolio.id },
-      });
-    }
+    // If still no portfolio found, user doesn't have access to any portfolio
+    // This should not automatically assign ownership to any portfolio
 
     if (!portfolio) {
       return NextResponse.json(

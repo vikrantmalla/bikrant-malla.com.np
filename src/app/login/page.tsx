@@ -1,20 +1,35 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { HiEye, HiEyeOff } from "react-icons/hi";
 import "./login.scss";
+
+interface LoginData {
+  email: string;
+  password: string;
+}
 
 export default function LoginPage() {
   const { login, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginData>({
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+      password: "",
+    }
+  });
 
   // Get the redirect URL from query params
   const redirectTo = searchParams.get("redirect") || "/dashboard";
@@ -26,13 +41,11 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, isLoading, router, redirectTo]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const onSubmit = async (data: LoginData) => {
     setError(null);
 
     try {
-      const result = await login(formData.email, formData.password);
+      const result = await login(data.email, data.password);
       
       if (result.success) {
         // Trigger authentication check to update state
@@ -43,16 +56,7 @@ export default function LoginPage() {
       }
     } catch (error) {
       setError("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsSubmitting(false);
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
   };
 
   if (isLoading) {
@@ -85,7 +89,7 @@ export default function LoginPage() {
           <p>Access your portfolio dashboard</p>
         </div>
         
-        <form className="login-page__form" onSubmit={handleSubmit}>
+        <form className="login-page__form" onSubmit={handleSubmit(onSubmit)}>
           {error && (
             <div className="login-page__error">
               <svg className="login-page__error-icon" viewBox="0 0 20 20" fill="currentColor">
@@ -100,28 +104,52 @@ export default function LoginPage() {
               <label htmlFor="email">Email address</label>
               <input
                 id="email"
-                name="email"
                 type="email"
                 autoComplete="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
                 placeholder="Enter your email"
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Please enter a valid email address"
+                  }
+                })}
+                className={errors.email ? "error" : ""}
               />
+              {errors.email && (
+                <span className="login-page__field-error">{errors.email.message}</span>
+              )}
             </div>
 
             <div className="login-page__field">
               <label htmlFor="password">Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-              />
+              <div className="login-page__password-container">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  placeholder="Enter your password"
+                  {...register("password", {
+                    required: "Password is required"
+                  })}
+                  className={errors.password ? "error" : ""}
+                />
+                <button
+                  type="button"
+                  className="login-page__password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <HiEyeOff className="login-page__password-icon" />
+                  ) : (
+                    <HiEye className="login-page__password-icon" />
+                  )}
+                </button>
+              </div>
+              {errors.password && (
+                <span className="login-page__field-error">{errors.password.message}</span>
+              )}
             </div>
           </div>
 

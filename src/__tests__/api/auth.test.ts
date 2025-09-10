@@ -1,5 +1,5 @@
 import { GET } from '@/app/api/auth/check-role/route';
-import { setupMocks, resetMocks, mockPrisma, mockKindeAuth } from '../setup/mocks';
+import { setupMocks, resetMocks, mockPrisma, mockCustomAuth } from '../setup/mocks';
 import { generateTestUser, generateTestPortfolio } from '../utils/test-helpers';
 import { faker } from '@faker-js/faker';
 
@@ -15,33 +15,38 @@ describe('/api/auth/check-role', () => {
     it('should return user role information for authenticated user', async () => {
       const user = generateTestUser();
       const portfolio = generateTestPortfolio({ ownerEmail: user.email });
-      const userWithRoles = {
-        ...user,
-        roles: [
-          {
-            id: faker.string.uuid(),
-            role: 'EDITOR',
-            portfolio: portfolio,
-          },
-        ],
+      const authUser = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        isActive: true,
+        emailVerified: true,
+      };
+      const permissionCheck = {
+        user: authUser,
+        hasEditorRole: true,
+        isOwner: true,
+        portfolio: {
+          id: portfolio.id,
+          name: portfolio.name,
+          ownerEmail: portfolio.ownerEmail,
+        },
       };
 
       // Mock authentication
-      mockKindeAuth.getKindeServerSession.mockReturnValue({
-        getUser: jest.fn().mockResolvedValue({
-          id: user.kindeUserId,
-          email: user.email,
-          given_name: (user.name || '').split(' ')[0],
-          family_name: (user.name || '').split(' ')[1] || '',
-        }),
+      mockCustomAuth.getUserFromToken.mockResolvedValue({
+        user: authUser,
       });
+      mockCustomAuth.checkUserPermissions.mockResolvedValue(permissionCheck);
 
-      // Mock database calls
-      mockPrisma.$connect.mockResolvedValue(undefined);
-      mockPrisma.user.findUnique.mockResolvedValue(userWithRoles);
-      mockPrisma.portfolio.findFirst.mockResolvedValue(portfolio);
+      // Create mock request with authorization header
+      const mockRequest = {
+        headers: {
+          get: jest.fn().mockReturnValue('Bearer mock-token'),
+        },
+      } as any;
 
-      const response = await GET();
+      const response = await GET(mockRequest);
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -50,7 +55,6 @@ describe('/api/auth/check-role', () => {
         name: user.name,
         hasEditorRole: true,
         isOwner: true,
-        roles: userWithRoles.roles,
         portfolio: {
           id: portfolio.id,
           name: portfolio.name,
@@ -61,27 +65,34 @@ describe('/api/auth/check-role', () => {
 
     it('should return user without editor role when not owner and no editor role', async () => {
       const user = generateTestUser();
-      const userWithRoles = {
-        ...user,
-        roles: [], // No roles
+      const authUser = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        isActive: true,
+        emailVerified: true,
+      };
+      const permissionCheck = {
+        user: authUser,
+        hasEditorRole: false,
+        isOwner: false,
+        portfolio: null,
       };
 
       // Mock authentication
-      mockKindeAuth.getKindeServerSession.mockReturnValue({
-        getUser: jest.fn().mockResolvedValue({
-          id: user.kindeUserId,
-          email: user.email,
-          given_name: (user.name || '').split(' ')[0],
-          family_name: (user.name || '').split(' ')[1] || '',
-        }),
+      mockCustomAuth.getUserFromToken.mockResolvedValue({
+        user: authUser,
       });
+      mockCustomAuth.checkUserPermissions.mockResolvedValue(permissionCheck);
 
-      // Mock database calls
-      mockPrisma.$connect.mockResolvedValue(undefined);
-      mockPrisma.user.findUnique.mockResolvedValue(userWithRoles);
-      mockPrisma.portfolio.findFirst.mockResolvedValue(null); // Not owner
+      // Create mock request with authorization header
+      const mockRequest = {
+        headers: {
+          get: jest.fn().mockReturnValue('Bearer mock-token'),
+        },
+      } as any;
 
-      const response = await GET();
+      const response = await GET(mockRequest);
       const data = await response.json();
 
       expect(response.status).toBe(200);
@@ -90,60 +101,83 @@ describe('/api/auth/check-role', () => {
         name: user.name,
         hasEditorRole: false,
         isOwner: false,
-        roles: [],
         portfolio: null,
       });
     });
 
     it('should return 401 when user is not authenticated', async () => {
       // Mock no authentication
-      mockKindeAuth.getKindeServerSession.mockReturnValue({
-        getUser: jest.fn().mockResolvedValue(null),
+      mockCustomAuth.getUserFromToken.mockResolvedValue({
+        user: null,
+        error: 'No token provided',
       });
 
-      const response = await GET();
+      // Create mock request without authorization header
+      const mockRequest = {
+        headers: {
+          get: jest.fn().mockReturnValue(null),
+        },
+      } as any;
+
+      const response = await GET(mockRequest);
       const data = await response.json();
 
       expect(response.status).toBe(401);
-      expect(data.error).toBe('Unauthorized');
-      expect(mockPrisma.user.findUnique).not.toHaveBeenCalled();
+      expect(data.error).toBe('No token provided');
+      expect(mockCustomAuth.checkUserPermissions).not.toHaveBeenCalled();
     });
 
-    it('should return 401 when user has no email', async () => {
-      // Mock user without email
-      mockKindeAuth.getKindeServerSession.mockReturnValue({
-        getUser: jest.fn().mockResolvedValue({
-          id: faker.string.uuid(),
-          // No email
-        }),
+    it('should return 401 when token is invalid', async () => {
+      // Mock invalid token
+      mockCustomAuth.getUserFromToken.mockResolvedValue({
+        user: null,
+        error: 'Invalid token',
       });
 
-      const response = await GET();
+      // Create mock request with invalid token
+      const mockRequest = {
+        headers: {
+          get: jest.fn().mockReturnValue('Bearer invalid-token'),
+        },
+      } as any;
+
+      const response = await GET(mockRequest);
       const data = await response.json();
 
       expect(response.status).toBe(401);
-      expect(data.error).toBe('Unauthorized');
-      expect(mockPrisma.user.findUnique).not.toHaveBeenCalled();
+      expect(data.error).toBe('Invalid token');
+      expect(mockCustomAuth.checkUserPermissions).not.toHaveBeenCalled();
     });
 
     it('should return 404 when user is not found in database', async () => {
       const user = generateTestUser();
+      const authUser = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        isActive: true,
+        emailVerified: true,
+      };
 
       // Mock authentication
-      mockKindeAuth.getKindeServerSession.mockReturnValue({
-        getUser: jest.fn().mockResolvedValue({
-          id: user.kindeUserId,
-          email: user.email,
-          given_name: (user.name || '').split(' ')[0],
-          family_name: (user.name || '').split(' ')[1] || '',
-        }),
+      mockCustomAuth.getUserFromToken.mockResolvedValue({
+        user: authUser,
+      });
+      mockCustomAuth.checkUserPermissions.mockResolvedValue({
+        user: null,
+        hasEditorRole: false,
+        isOwner: false,
+        portfolio: null,
       });
 
-      // Mock user not found in database
-      mockPrisma.$connect.mockResolvedValue(undefined);
-      mockPrisma.user.findUnique.mockResolvedValue(null);
+      // Create mock request with authorization header
+      const mockRequest = {
+        headers: {
+          get: jest.fn().mockReturnValue('Bearer mock-token'),
+        },
+      } as any;
 
-      const response = await GET();
+      const response = await GET(mockRequest);
       const data = await response.json();
 
       expect(response.status).toBe(404);
@@ -152,21 +186,28 @@ describe('/api/auth/check-role', () => {
 
     it('should handle database connection errors', async () => {
       const user = generateTestUser();
+      const authUser = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        isActive: true,
+        emailVerified: true,
+      };
 
       // Mock authentication
-      mockKindeAuth.getKindeServerSession.mockReturnValue({
-        getUser: jest.fn().mockResolvedValue({
-          id: user.kindeUserId,
-          email: user.email,
-          given_name: (user.name || '').split(' ')[0],
-          family_name: (user.name || '').split(' ')[1] || '',
-        }),
+      mockCustomAuth.getUserFromToken.mockResolvedValue({
+        user: authUser,
       });
+      mockCustomAuth.checkUserPermissions.mockRejectedValue(new Error('Database connection failed'));
 
-      // Mock database connection error
-      mockPrisma.$connect.mockRejectedValue(new Error('Database connection failed'));
+      // Create mock request with authorization header
+      const mockRequest = {
+        headers: {
+          get: jest.fn().mockReturnValue('Bearer mock-token'),
+        },
+      } as any;
 
-      const response = await GET();
+      const response = await GET(mockRequest);
       const data = await response.json();
 
       expect(response.status).toBe(500);
@@ -175,22 +216,28 @@ describe('/api/auth/check-role', () => {
 
     it('should handle database query errors', async () => {
       const user = generateTestUser();
+      const authUser = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        isActive: true,
+        emailVerified: true,
+      };
 
       // Mock authentication
-      mockKindeAuth.getKindeServerSession.mockReturnValue({
-        getUser: jest.fn().mockResolvedValue({
-          id: user.kindeUserId,
-          email: user.email,
-          given_name: (user.name || '').split(' ')[0],
-          family_name: (user.name || '').split(' ')[1] || '',
-        }),
+      mockCustomAuth.getUserFromToken.mockResolvedValue({
+        user: authUser,
       });
+      mockCustomAuth.checkUserPermissions.mockRejectedValue(new Error('Database query failed'));
 
-      // Mock database query error
-      mockPrisma.$connect.mockResolvedValue(); // Fix: $connect typically resolves without a specific value, or to void.
-      mockPrisma.user.findUnique.mockImplementation(() => Promise.reject(new Error('Database query failed'))); // Fix: Use mockImplementation to explicitly return a rejected promise, addressing potential type inference issues with mockRejectedValue.
+      // Create mock request with authorization header
+      const mockRequest = {
+        headers: {
+          get: jest.fn().mockReturnValue('Bearer mock-token'),
+        },
+      } as any;
 
-      const response = await GET();
+      const response = await GET(mockRequest);
       const data = await response.json();
 
       expect(response.status).toBe(500);
