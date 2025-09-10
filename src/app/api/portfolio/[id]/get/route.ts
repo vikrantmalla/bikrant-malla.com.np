@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getUserFromCookie } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkPortfolioAccess } from "@/lib/roleUtils";
 
@@ -7,8 +7,8 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  const authResult = await getUserFromCookie(request as NextRequest); 
+  const user = authResult?.user; 
 
   if (!user || !user.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -19,15 +19,14 @@ const portfolioSchema = z
     jobTitle: z.string().min(1, "Job Title is required"),
     aboutDescription1: z.string().min(1, "About Description 1 is required"),
     aboutDescription2: z.string().min(1, "About Description 2 is required"),
-    skills: z.array(z.string()).min(1, "At least one skill is required"),
-    email: z
-      .string()
-      .email("Invalid email address")
-      .min(1, "Email is required"),
+    skills: z.union([
+      z.string().min(1, "Skills are required"),
+      z.array(z.string()).min(1, "At least one skill is required")
+    ]),
     ownerEmail: z
       .string()
       .email("Invalid owner email address")
-      .min(1, "Owner Email is required"),
+      .optional(),
     linkedIn: z
       .string()
       .url("Invalid LinkedIn URL")
@@ -44,10 +43,6 @@ const portfolioSchema = z
       .string()
       .url("Invalid Instagram URL")
       .min(1, "Instagram URL is required"),
-  })
-  .refine((data) => data.email === data.ownerEmail, {
-    message: "Owner Email must match Email",
-    path: ["ownerEmail"],
   });
 
 interface PortfolioData {
@@ -57,7 +52,6 @@ interface PortfolioData {
   aboutDescription1: string;
   aboutDescription2: string;
   skills: string[];
-  email: string;
   ownerEmail: string;
   linkedIn: string;
   gitHub: string;
@@ -84,6 +78,7 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
   const [currentPortfolio, setCurrentPortfolio] =
     useState<PortfolioData | null>(null);
   const [techOptions, setTechOptions] = useState<Array<{ id: string; name: string; category: string }>>([]);
+  const [isLoadingTechOptions, setIsLoadingTechOptions] = useState(true);
 
   const {
     register,
@@ -100,7 +95,6 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
       aboutDescription1: "",
       aboutDescription2: "",
       skills: [],
-      email: "",
       ownerEmail: "",
       linkedIn: "",
       gitHub: "",
@@ -109,7 +103,7 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
     },
   });
 
-  // Watch skills field to handle checkbox selection
+  // Watch skills field to handle input changes
   const skillsValue = watch("skills");
 
   // Load existing portfolio data from props when component mounts or data changes
@@ -123,8 +117,7 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
       setValue("jobTitle", portfolioData.jobTitle || "");
       setValue("aboutDescription1", portfolioData.aboutDescription1 || "");
       setValue("aboutDescription2", portfolioData.aboutDescription2 || "");
-      setValue("skills", portfolioData.skills || []);
-      setValue("email", portfolioData.email || "");
+      setValue("skills", Array.isArray(portfolioData.skills) ? portfolioData.skills : (portfolioData.skills || ""));
       setValue("ownerEmail", portfolioData.ownerEmail || "");
       setValue("linkedIn", portfolioData.linkedIn || "");
       setValue("gitHub", portfolioData.gitHub || "");
@@ -145,11 +138,13 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
         const { getTechOptions } = await import('@/app/dashboard/actions');
         const result = await getTechOptions();
         
-        if (result.success) {
+        if (result.success && result.data.length > 0) {
           setTechOptions(result.data);
         }
       } catch (error) {
         console.error('Failed to load tech options:', error);
+      } finally {
+        setIsLoadingTechOptions(false);
       }
     };
 
@@ -164,8 +159,15 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
     try {
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => {
-        if (key === "skills" && Array.isArray(value)) {
-          formData.append(key, value.join(","));
+        if (key === "skills") {
+          // Handle both array and string formats
+          let skillsArray: string[] = [];
+          if (Array.isArray(value)) {
+            skillsArray = value;
+          } else if (typeof value === 'string') {
+            skillsArray = value.split(',').map((s: string) => s.trim()).filter((s: string) => s.length > 0);
+          }
+          formData.append(key, skillsArray.join(","));
         } else {
           formData.append(key, value as string);
         }
@@ -199,8 +201,15 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
     try {
       const formData = new FormData();
       Object.entries(data).forEach(([key, value]) => {
-        if (key === "skills" && Array.isArray(value)) {
-          formData.append(key, value.join(","));
+        if (key === "skills") {
+          // Handle both array and string formats
+          let skillsArray: string[] = [];
+          if (Array.isArray(value)) {
+            skillsArray = value;
+          } else if (typeof value === 'string') {
+            skillsArray = value.split(',').map((s: string) => s.trim()).filter((s: string) => s.length > 0);
+          }
+          formData.append(key, skillsArray.join(","));
         } else {
           formData.append(key, value as string);
         }
@@ -269,8 +278,7 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
       setValue("jobTitle", currentPortfolio.jobTitle || "");
       setValue("aboutDescription1", currentPortfolio.aboutDescription1 || "");
       setValue("aboutDescription2", currentPortfolio.aboutDescription2 || "");
-      setValue("skills", currentPortfolio.skills || []);
-      setValue("email", currentPortfolio.email || "");
+      setValue("skills", Array.isArray(currentPortfolio.skills) ? currentPortfolio.skills : (currentPortfolio.skills || ""));
       setValue("ownerEmail", currentPortfolio.ownerEmail || "");
       setValue("linkedIn", currentPortfolio.linkedIn || "");
       setValue("gitHub", currentPortfolio.gitHub || "");
@@ -400,10 +408,16 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
         </div>
 
         <div className="form-group">
-          <label className="form-label form-label--required">Skills (Max 10)</label>
-          <div className="tools-checkboxes">
-            {techOptions.length > 0 ? (
-              techOptions.map((option) => {
+          <label className="form-label form-label--required">
+            Skills {techOptions.length > 0 ? "(Select up to 10)" : "(2-10 skills, separated by commas)"}
+          </label>
+          
+          {isLoadingTechOptions ? (
+            <div className="loading-tools">Loading skills...</div>
+          ) : techOptions.length > 0 ? (
+            // Checkbox selection when tech options are available
+            <div className="tools-checkboxes">
+              {techOptions.map((option) => {
                 const currentSkills = Array.isArray(skillsValue) ? skillsValue : [];
                 const isSelected = currentSkills.includes(option.name);
                 const isLimitReached = currentSkills.length >= 10;
@@ -431,49 +445,69 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
                     <span className="tool-label">{option.name}</span>
                   </label>
                 );
-              })
-            ) : (
-              <div className="loading-tools">Loading skills...</div>
-            )}
-          </div>
+              })}
+            </div>
+          ) : (
+            // Text input when no tech options are available
+            <div>
+              <input
+                {...register("skills", {
+                  required: "At least 2 skills are required",
+                  validate: (value) => {
+                    if (!value) return "Skills are required";
+                    let skills: string[] = [];
+                    if (Array.isArray(value)) {
+                      skills = value;
+                    } else if (typeof value === 'string') {
+                      skills = value.split(',').map((s: string) => s.trim()).filter((s: string) => s.length > 0);
+                    }
+                    if (skills.length < 2) return "At least 2 skills are required";
+                    if (skills.length > 10) return "Maximum 10 skills allowed";
+                    return true;
+                  }
+                })}
+                className="form-input"
+                type="text"
+                id="skills"
+                placeholder="React, Next.js, TypeScript, Node.js, MongoDB"
+                disabled={isFieldDisabled()}
+                value={Array.isArray(skillsValue) ? skillsValue.join(", ") : (skillsValue || "")}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const skillsArray = value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+                  setValue("skills", skillsArray);
+                }}
+              />
+              <div className="form-help-text">
+                <p>Enter your skills separated by commas. Example: React, Next.js, TypeScript</p>
+                <p>Minimum: 2 skills | Maximum: 10 skills</p>
+              </div>
+            </div>
+          )}
+          
           {errors.skills && (
             <span className="form-error">{errors.skills.message}</span>
           )}
         </div>
 
         <div className="form-group">
-          <label htmlFor="email" className="form-label form-label--required">
-            Email
-          </label>
-          <input
-            {...register("email")}
-            className="form-input"
-            type="email"
-            id="email"
-            disabled={isFieldDisabled()}
-          />
-          {errors.email && (
-            <span className="form-error">{errors.email.message}</span>
-          )}
-        </div>
-
-        <div className="form-group">
           <label
             htmlFor="ownerEmail"
-            className="form-label form-label--required"
+            className="form-label"
           >
             Owner Email
           </label>
           <input
             {...register("ownerEmail")}
-            className="form-input"
+            className="form-input form-input--readonly"
             type="email"
             id="ownerEmail"
-            disabled={isFieldDisabled()}
+            disabled={true}
+            readOnly
           />
-          {errors.ownerEmail && (
-            <span className="form-error">{errors.ownerEmail.message}</span>
-          )}
+          <div className="form-help-text">
+            <p>Owner email cannot be changed after portfolio creation</p>
+          </div>
         </div>
 
         <div className="form-group">

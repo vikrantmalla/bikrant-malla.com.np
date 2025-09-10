@@ -88,6 +88,13 @@
   cursor: not-allowed;
 }
 
+.form-input--readonly {
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+  border-color: #d1d5db;
+}
+
 /* Tools Checkboxes */
 .tools-checkboxes {
   display: grid;

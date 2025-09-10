@@ -1,12 +1,12 @@
-// Login Page Styles
-.login-page {
+// Setup Page Styles
+.setup-page {
   min-height: 100vh;
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f9fafb;
-  padding: 3rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 1rem;
   position: fixed;
   top: 0;
   left: 0;
@@ -15,8 +15,12 @@
   z-index: 1000;
 
   &__container {
-    max-width: 28rem;
+    max-width: 32rem;
     width: 100%;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    padding: 3rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -25,23 +29,23 @@
   &__header {
     text-align: center;
     
-    h2 {
-      margin-top: 1.5rem;
-      font-size: 1.875rem;
+    h1 {
+      margin: 0;
+      font-size: 2rem;
       font-weight: 800;
       color: #111827;
-      margin-bottom: 0;
+      margin-bottom: 0.5rem;
     }
     
     p {
-      margin-top: 0.5rem;
-      font-size: 0.875rem;
+      margin: 0;
+      font-size: 1rem;
       color: #6b7280;
+      line-height: 1.5;
     }
   }
 
   &__form {
-    margin-top: 2rem;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -50,7 +54,7 @@
   &__error {
     background: #fef2f2;
     border: 1px solid #fecaca;
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
     padding: 1rem;
     display: flex;
     align-items: flex-start;
@@ -66,13 +70,14 @@
     &-message {
       font-size: 0.875rem;
       color: #991b1b;
+      margin: 0;
     }
   }
 
   &__fields {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.25rem;
   }
 
   &__field {
@@ -82,22 +87,21 @@
     label {
       display: block;
       font-size: 0.875rem;
-      font-weight: 500;
+      font-weight: 600;
       color: #374151;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.5rem;
     }
 
     input {
       appearance: none;
-      position: relative;
       display: block;
       width: 100%;
-      padding: 0.5rem 0.75rem;
-      border: 1px solid #d1d5db;
-      border-radius: 0.375rem;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 0.5rem;
       background: white;
       color: #111827;
-      font-size: 0.875rem;
+      font-size: 1rem;
       transition: all 0.2s ease;
 
       &::placeholder {
@@ -108,6 +112,10 @@
         outline: none;
         border-color: #3b82f6;
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      &:invalid {
+        border-color: #ef4444;
       }
 
       &.error {
@@ -131,7 +139,7 @@
     align-items: center;
 
     input {
-      padding-right: 2.5rem; // Make room for the toggle button
+      padding-right: 3rem; // Make room for the toggle button
     }
   }
 
@@ -170,18 +178,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0.75rem 1rem;
-    border: 1px solid transparent;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    font-weight: 500;
+    padding: 0.875rem 1.5rem;
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
     color: white;
-    background: #3b82f6;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
     cursor: pointer;
     transition: all 0.2s ease;
 
     &:hover:not(:disabled) {
-      background: #2563eb;
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
     }
 
     &:focus {
@@ -192,6 +202,7 @@
     &:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none;
     }
 
     &-loading {
@@ -210,18 +221,82 @@
     }
   }
 
-  &__back-link {
+  &__info {
     text-align: center;
     
-    a {
-      font-weight: 500;
-      color: #3b82f6;
-      text-decoration: none;
-      transition: color 0.2s ease;
+    p {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
 
-      &:hover {
-        color: #2563eb;
+  &__success {
+    text-align: center;
+    padding: 2rem 0;
+
+    &-icon {
+      width: 4rem;
+      height: 4rem;
+      color: #10b981;
+      margin: 0 auto 1.5rem;
+      
+      svg {
+        width: 100%;
+        height: 100%;
       }
+    }
+
+    h2 {
+      margin: 0 0 1rem;
+      font-size: 1.875rem;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    p {
+      margin: 0 0 1rem;
+      font-size: 1rem;
+      color: #6b7280;
+      line-height: 1.5;
+
+      &:last-of-type {
+        margin-bottom: 2rem;
+      }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #3b82f6;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #3b82f6;
+    background: white;
+    text-decoration: none;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #3b82f6;
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
   }
 
@@ -231,7 +306,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f9fafb;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     position: fixed;
     top: 0;
     left: 0;
@@ -241,13 +316,17 @@
 
     &-container {
       text-align: center;
+      background: white;
+      padding: 3rem;
+      border-radius: 1rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
 
     &-spinner {
       width: 2rem;
       height: 2rem;
-      border: 2px solid transparent;
-      border-top: 2px solid #3b82f6;
+      border: 3px solid transparent;
+      border-top: 3px solid #3b82f6;
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin: 0 auto 1rem;
@@ -255,6 +334,8 @@
 
     &-text {
       color: #6b7280;
+      font-size: 1rem;
+      margin: 0;
     }
   }
 }
@@ -271,14 +352,14 @@
 
 // Responsive Design
 @media (max-width: 640px) {
-  .login-page {
-    padding: 1.5rem 1rem;
+  .setup-page {
+    padding: 1rem;
 
     &__container {
-      max-width: 100%;
+      padding: 2rem 1.5rem;
     }
 
-    &__header h2 {
+    &__header h1 {
       font-size: 1.5rem;
     }
   }

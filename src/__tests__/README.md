@@ -41,7 +41,7 @@ src/__tests__/
 
 ### Mocking Strategy
 - **Prisma Client**: All database operations are mocked
-- **Kinde Authentication**: Authentication flows are mocked
+- **Custom Authentication**: JWT-based authentication flows are mocked
 - **Next.js Modules**: Request/Response objects are mocked
 - **Role Utilities**: Permission checking is mocked
 
@@ -99,11 +99,18 @@ it('should return data successfully', async () => {
 ```typescript
 it('should require authentication', async () => {
   // Mock unauthenticated user
-  mockKindeAuth.getKindeServerSession.mockReturnValue({
-    getUser: jest.fn().mockResolvedValue(null),
+  mockCustomAuth.getUserFromToken.mockResolvedValue({
+    user: null,
+    error: 'No token provided',
   });
   
-  const response = await GET();
+  const mockRequest = {
+    headers: {
+      get: jest.fn().mockReturnValue(null),
+    },
+  } as any;
+  
+  const response = await GET(mockRequest);
   
   expect(response.status).toBe(401);
 });
@@ -113,11 +120,14 @@ it('should require authentication', async () => {
 ```typescript
 it('should check user permissions', async () => {
   // Mock user with editor permissions
-  const { checkEditorPermissions } = require('@/lib/roleUtils');
-  checkEditorPermissions.mockResolvedValue({
-    success: true,
+  mockCustomAuth.getUserFromToken.mockResolvedValue({
     user: mockUser,
-    kindeUser: mockKindeUser,
+  });
+  mockCustomAuth.checkUserPermissions.mockResolvedValue({
+    user: mockUser,
+    hasEditorRole: true,
+    isOwner: false,
+    portfolio: null,
   });
   
   const response = await POST(request);

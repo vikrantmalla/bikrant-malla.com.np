@@ -1,4 +1,5 @@
 import React from "react";
+import { redirect } from "next/navigation";
 import AboutMe from "@/components/intro/AboutMe";
 import Behance from "@/components/behance/Behance";
 import Contact from "@/components/shared/footer/Contact";
@@ -6,11 +7,26 @@ import ProjectHighlight from "@/components/project/ProjectHighlight";
 import { fetchPortfolioDetailsData } from "@/service/apiService";
 import { Project } from "@/types/data";
 import { Platform } from "@/types/enum";
+import { prisma } from "@/lib/prisma";
 
 // Force dynamic rendering for this page
 export const dynamic = 'force-dynamic';
 
 const Home = async () => {
+  // Check if system is initialized
+  try {
+    const userCount = await prisma.user.count();
+    const portfolioCount = await prisma.portfolio.count();
+    
+    if (userCount === 0 || portfolioCount === 0) {
+      redirect('/setup');
+    }
+  } catch (error) {
+    console.error('Error checking system status:', error);
+    // If we can't check, redirect to setup to be safe
+    redirect('/setup');
+  }
+
   // Fetch portfolio data with error handling
   const portfolioDetail = await fetchPortfolioDetailsData();
   const aboutme = {
