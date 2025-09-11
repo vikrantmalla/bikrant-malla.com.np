@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getUserFromCookie } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { checkArchiveProjectAccess } from "@/lib/roleUtils";
 
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const user = await getUserFromCookie();
+  const { user } = await getUserFromCookie(request);
 
   if (!user || !user.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
