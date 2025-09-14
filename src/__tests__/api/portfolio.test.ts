@@ -63,8 +63,8 @@ describe('/api/portfolio', () => {
         ownerEmail: '',
         linkedIn: '',
         gitHub: '',
-        facebook: '',
-        instagram: '',
+        behance: '',
+        twitter: '',
         projects: [],
         archiveProjects: [],
         userRoles: []
@@ -90,8 +90,8 @@ describe('/api/portfolio', () => {
         ownerEmail: "",
         linkedIn: "",
         gitHub: "",
-        facebook: "",
-        instagram: "",
+        behance: "",
+        twitter: "",
         projects: [],
         archiveProjects: [],
         userRoles: []
@@ -110,8 +110,8 @@ describe('/api/portfolio', () => {
       skills: [faker.lorem.word(), faker.lorem.word(), faker.lorem.word()],
       linkedIn: faker.internet.url(),
       gitHub: faker.internet.url(),
-      facebook: faker.internet.url(),
-      instagram: faker.internet.url(),
+      behance: faker.internet.url(),
+      twitter: faker.internet.url(),
     };
 
     it('should create portfolio successfully with valid data', async () => {
@@ -155,8 +155,8 @@ describe('/api/portfolio', () => {
           ownerEmail: validPortfolioData.ownerEmail,
           linkedIn: validPortfolioData.linkedIn,
           gitHub: validPortfolioData.gitHub,
-          facebook: validPortfolioData.facebook,
-          instagram: validPortfolioData.instagram,
+          behance: validPortfolioData.behance,
+          twitter: validPortfolioData.twitter,
         },
       });
     });

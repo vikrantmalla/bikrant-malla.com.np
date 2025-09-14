@@ -54,8 +54,8 @@ export async function PUT(
         ownerEmail: body.ownerEmail,
         linkedIn: body.linkedIn,
         gitHub: body.gitHub,
-        facebook: body.facebook,
-        instagram: body.instagram,
+        behance: body.behance,
+        twitter: body.twitter,
       },
     });
 

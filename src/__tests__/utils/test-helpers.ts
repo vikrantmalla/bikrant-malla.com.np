@@ -28,8 +28,8 @@ export const generateTestPortfolio = (overrides: Partial<Portfolio> = {}): Portf
   ownerEmail: faker.internet.email(),
   linkedIn: faker.internet.url(),
   gitHub: faker.internet.url(),
-  facebook: faker.internet.url(),
-  instagram: faker.internet.url(),
+  behance: faker.internet.url(),
+  twitter: faker.internet.url(),
   ...overrides,
 });
 

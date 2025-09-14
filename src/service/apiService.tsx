@@ -102,8 +102,8 @@ export async function fetchPortfolioDetailsData(): Promise<PortfolioDetails> {
       ownerEmail: "",
       linkedIn: "",
       gitHub: "",
-      facebook: "",
-      instagram: "",
+      behance: "",
+      twitter: "",
       projects: [],
       archiveProjects: [],
       userRoles: []

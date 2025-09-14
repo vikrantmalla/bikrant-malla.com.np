@@ -40,8 +40,8 @@ const Home = async () => {
     email: portfolioDetail.email,
     linkedIn: portfolioDetail.linkedIn,
     gitHub: portfolioDetail.gitHub,
-    facebook: portfolioDetail.facebook,
-    instagram: portfolioDetail.instagram,
+    behance: portfolioDetail.behance,
+    twitter: portfolioDetail.twitter,
   };
   const behance = portfolioDetail.projects.filter(
     (project: Project) => project.platform === Platform.Design

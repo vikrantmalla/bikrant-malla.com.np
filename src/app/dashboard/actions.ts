@@ -29,8 +29,8 @@ export async function getPortfolioData() {
           ownerEmail: "",
           linkedIn: "",
           gitHub: "",
-          facebook: "",
-          instagram: "",
+          behance: "",
+          twitter: "",
           projects: [],
           archiveProjects: [],
           userRoles: []
