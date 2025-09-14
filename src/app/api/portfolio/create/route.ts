@@ -57,8 +57,8 @@ export async function POST(request: Request): Promise<Response> {
         ownerEmail: body.ownerEmail,
         linkedIn: body.linkedIn,
         gitHub: body.gitHub,
-        facebook: body.facebook,
-        instagram: body.instagram,
+        behance: body.behance,
+        twitter: body.twitter,
       },
     });
 

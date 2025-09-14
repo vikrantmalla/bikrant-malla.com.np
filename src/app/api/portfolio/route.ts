@@ -23,8 +23,8 @@ export async function GET(request: Request): Promise<Response> {
         ownerEmail: "",
         linkedIn: "",
         gitHub: "",
-        facebook: "",
-        instagram: "",
+        behance: "",
+        twitter: "",
         projects: [],
         archiveProjects: [],
         userRoles: []
@@ -47,8 +47,8 @@ export async function GET(request: Request): Promise<Response> {
       ownerEmail: "",
       linkedIn: "",
       gitHub: "",
-      facebook: "",
-      instagram: "",
+      behance: "",
+      twitter: "",
       projects: [],
       archiveProjects: [],
       userRoles: []

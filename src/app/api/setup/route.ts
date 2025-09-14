@@ -92,8 +92,8 @@ export async function POST(request: NextRequest) {
         ownerEmail: email.toLowerCase(),
         linkedIn: "",
         gitHub: "",
-        facebook: "",
-        instagram: "",
+        behance: "",
+        twitter: "",
       }
     });
 

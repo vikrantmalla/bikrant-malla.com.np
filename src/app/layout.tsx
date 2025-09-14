@@ -99,8 +99,8 @@ export default async function RootLayout({
     email: portfolioDetail.email,
     linkedIn: portfolioDetail.linkedIn,
     gitHub: portfolioDetail.gitHub,
-    facebook: portfolioDetail.facebook,
-    instagram: portfolioDetail.instagram,
+    behance: portfolioDetail.behance,
+    twitter: portfolioDetail.twitter,
   };
 
   return (
