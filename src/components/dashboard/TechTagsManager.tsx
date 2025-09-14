@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useThemeStore } from '@/store/feature/themeStore';
+import { getTechTags, createTechTag, updateTechTag, deleteTechTag } from '@/app/dashboard/actions';
 import './TechTagsManager.scss';
 
 interface TechTag {
@@ -40,18 +41,17 @@ const TechTagsManager: React.FC<TechTagsManagerProps> = ({ className }) => {
   const loadTechTags = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/tech-tags');
-      const result = await response.json();
+      const result = await getTechTags();
       
-      if (result.techTags) {
-        setTechTags(result.techTags);
+      if (result.success) {
+        setTechTags(result.data);
         setMessage({ text: '', isError: false });
       } else {
         setMessage({ text: `Error: ${result.error}`, isError: true });
       }
     } catch (error) {
       console.error('Error loading tech tags:', error);
-      setMessage({ text: 'Failed to load tech tags', isError: true });
+      setMessage({ text: 'Error: fetch failed', isError: true });
     } finally {
       setIsLoading(false);
     }
@@ -67,27 +67,21 @@ const TechTagsManager: React.FC<TechTagsManagerProps> = ({ className }) => {
     setIsLoading(true);
 
     try {
-      let response;
+      let result;
       
       if (editingId) {
         // Update existing tech tag
-        response = await fetch(`/api/tech-tags/${editingId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
-        });
+        const formDataObj = new FormData();
+        formDataObj.append('tag', formData.tag);
+        result = await updateTechTag(editingId, formDataObj);
       } else {
         // Create new tech tag
-        response = await fetch('/api/tech-tags', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
-        });
+        const formDataObj = new FormData();
+        formDataObj.append('tag', formData.tag);
+        result = await createTechTag(formDataObj);
       }
 
-      const result = await response.json();
-
-      if (response.ok) {
+      if (result.success) {
         setMessage({ 
           text: `Tech tag ${editingId ? 'updated' : 'created'} successfully!`, 
           isError: false 
@@ -112,13 +106,9 @@ const TechTagsManager: React.FC<TechTagsManagerProps> = ({ className }) => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/tech-tags/${id}`, {
-        method: 'DELETE'
-      });
+      const result = await deleteTechTag(id);
 
-      const result = await response.json();
-
-      if (response.ok) {
+      if (result.success) {
         setMessage({ text: 'Tech tag deleted successfully!', isError: false });
         loadTechTags();
       } else {

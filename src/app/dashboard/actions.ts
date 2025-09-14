@@ -45,6 +45,11 @@ export async function getPortfolioData() {
   }
 }
 
+// Helper function to get base URL
+function getBaseUrl() {
+  return process.env.NEXT_PUBLIC_BASE_URL || (process.env.NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_APP_URL : "http://localhost:3000");
+}
+
 // Helper function to get authenticated fetch options
 async function getAuthenticatedFetchOptions(method: string, body?: any) {
   const cookieStore = await cookies();
@@ -96,7 +101,7 @@ export async function createPortfolio(formData: FormData) {
 
     const fetchOptions = await getAuthenticatedFetchOptions("POST", portfolioData);
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/portfolio/create`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/portfolio/create`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -131,7 +136,7 @@ export async function updatePortfolio(id: string, formData: FormData) {
 
     const fetchOptions = await getAuthenticatedFetchOptions("PUT", portfolioData);
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/portfolio/${id}`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/portfolio/${id}`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -152,7 +157,7 @@ export async function deletePortfolio(id: string) {
   try {
     const fetchOptions = await getAuthenticatedFetchOptions("DELETE");
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/portfolio/${id}`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/portfolio/${id}`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -183,7 +188,7 @@ export async function createProject(formData: FormData) {
 
     const fetchOptions = await getAuthenticatedFetchOptions("POST", projectData);
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/projects/create`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/projects/create`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -215,7 +220,7 @@ export async function updateProject(id: string, formData: FormData) {
 
     const fetchOptions = await getAuthenticatedFetchOptions("PUT", projectData);
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/projects/${id}`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/projects/${id}`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -236,7 +241,7 @@ export async function deleteProject(id: string) {
   try {
     const fetchOptions = await getAuthenticatedFetchOptions("DELETE");
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/projects/${id}`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/projects/${id}`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -266,7 +271,7 @@ export async function createArchiveProject(formData: FormData) {
 
     const fetchOptions = await getAuthenticatedFetchOptions("POST", archiveData);
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/archive-projects/create`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/archive-projects/create`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -297,7 +302,7 @@ export async function updateArchiveProject(id: string, formData: FormData) {
 
     const fetchOptions = await getAuthenticatedFetchOptions("PUT", archiveData);
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/archive-projects/${id}`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/archive-projects/${id}`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -318,7 +323,7 @@ export async function deleteArchiveProject(id: string) {
   try {
     const fetchOptions = await getAuthenticatedFetchOptions("DELETE");
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/archive-projects/${id}`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/archive-projects/${id}`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -338,7 +343,7 @@ export async function getProjectLimits() {
   try {
     const fetchOptions = await getAuthenticatedFetchOptions("GET");
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/config`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/config`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -364,7 +369,7 @@ export async function updateProjectLimits(formData: FormData) {
 
     const fetchOptions = await getAuthenticatedFetchOptions("PUT", limitsData);
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/config`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/config`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -387,7 +392,7 @@ export async function getTechOptions() {
   try {
     const fetchOptions = await getAuthenticatedFetchOptions("GET");
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/tech-options`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/tech-options`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -414,7 +419,7 @@ export async function createTechOption(formData: FormData) {
 
     const fetchOptions = await getAuthenticatedFetchOptions("POST", techOptionData);
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/tech-options`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/tech-options`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -442,7 +447,7 @@ export async function updateTechOption(id: string, formData: FormData) {
 
     const fetchOptions = await getAuthenticatedFetchOptions("PUT", techOptionData);
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/tech-options/${id}`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/tech-options/${id}`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -463,7 +468,7 @@ export async function deleteTechOption(id: string) {
   try {
     const fetchOptions = await getAuthenticatedFetchOptions("DELETE");
     
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/tech-options/${id}`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/tech-options/${id}`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -475,5 +480,97 @@ export async function deleteTechOption(id: string) {
   } catch (error) {
     console.error("Error deleting tech option:", error);
     return { success: false, error: error instanceof Error ? error.message : "Failed to delete tech option" };
+  }
+}
+
+// ===== TECH TAGS SERVER ACTIONS =====
+
+// Get all tech tags
+export async function getTechTags() {
+  try {
+    const fetchOptions = await getAuthenticatedFetchOptions("GET");
+    
+    const response = await fetch(`${getBaseUrl()}/api/tech-tags`, fetchOptions);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to get tech tags: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    return { success: true, data: result.techTags };
+  } catch (error) {
+    console.error("Error getting tech tags:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Failed to get tech tags" };
+  }
+}
+
+// Create new tech tag
+export async function createTechTag(formData: FormData) {
+  try {
+    const techTagData = {
+      tag: formData.get("tag") as string,
+    };
+
+    const fetchOptions = await getAuthenticatedFetchOptions("POST", techTagData);
+    
+    const response = await fetch(`${getBaseUrl()}/api/tech-tags`, fetchOptions);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to create tech tag: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    revalidatePath("/dashboard");
+    return { success: true, data: result.techTag };
+  } catch (error) {
+    console.error("Error creating tech tag:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Failed to create tech tag" };
+  }
+}
+
+// Update tech tag
+export async function updateTechTag(id: string, formData: FormData) {
+  try {
+    const techTagData = {
+      tag: formData.get("tag") as string,
+    };
+
+    const fetchOptions = await getAuthenticatedFetchOptions("PUT", techTagData);
+    
+    const response = await fetch(`${getBaseUrl()}/api/tech-tags/${id}`, fetchOptions);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to update tech tag: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    revalidatePath("/dashboard");
+    return { success: true, data: result.techTag };
+  } catch (error) {
+    console.error("Error updating tech tag:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Failed to update tech tag" };
+  }
+}
+
+// Delete tech tag
+export async function deleteTechTag(id: string) {
+  try {
+    const fetchOptions = await getAuthenticatedFetchOptions("DELETE");
+    
+    const response = await fetch(`${getBaseUrl()}/api/tech-tags/${id}`, fetchOptions);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to delete tech tag: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting tech tag:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Failed to delete tech tag" };
   }
 }
