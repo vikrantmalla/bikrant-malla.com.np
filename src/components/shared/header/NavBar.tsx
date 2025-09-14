@@ -117,8 +117,8 @@ export function Navigation({ contact }: NavBarProps) {
               <SocialMedia
                 gitHub={contact.gitHub}
                 linkedIn={contact.linkedIn}
-                facebook={contact.facebook}
-                instagram={contact.instagram}
+                behance={contact.behance}
+                twitter={contact.twitter}
                 visibleCount={2}
               />
             )}

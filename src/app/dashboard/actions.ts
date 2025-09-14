@@ -95,8 +95,8 @@ export async function createPortfolio(formData: FormData) {
       ownerEmail: formData.get("ownerEmail") as string,
       linkedIn: formData.get("linkedIn") as string,
       gitHub: formData.get("gitHub") as string,
-      facebook: formData.get("facebook") as string,
-      instagram: formData.get("instagram") as string,
+      behance: formData.get("behance") as string,
+      twitter: formData.get("twitter") as string,
     };
 
     const fetchOptions = await getAuthenticatedFetchOptions("POST", portfolioData);
@@ -130,8 +130,8 @@ export async function updatePortfolio(id: string, formData: FormData) {
       ownerEmail: formData.get("ownerEmail") as string,
       linkedIn: formData.get("linkedIn") as string,
       gitHub: formData.get("gitHub") as string,
-      facebook: formData.get("facebook") as string,
-      instagram: formData.get("instagram") as string,
+      behance: formData.get("behance") as string,
+      twitter: formData.get("twitter") as string,
     };
 
     const fetchOptions = await getAuthenticatedFetchOptions("PUT", portfolioData);

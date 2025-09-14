@@ -57,8 +57,8 @@ export interface PortfolioDetails {
   ownerEmail: string;
   linkedIn: string;
   gitHub: string;
-  facebook: string;
-  instagram: string;
+  behance: string;
+  twitter: string;
   projects: Project[];
   archiveProjects: ArchiveProject[];
   // Optional relations that might be included in API responses
@@ -77,8 +77,8 @@ export interface Portfolio {
   ownerEmail: string;
   linkedIn: string;
   gitHub: string;
-  facebook: string;
-  instagram: string;
+  behance: string;
+  twitter: string;
   // Optional relations that might be included in API responses
   projects?: Project[];
   archiveProjects?: ArchiveProject[];
@@ -122,8 +122,8 @@ export interface Contact {
   email: string;
   linkedIn?: string;
   gitHub?: string;
-  facebook?: string;
-  instagram?: string;
+  behance?: string;
+  twitter?: string;
 }
 
 export interface ContactProps {
@@ -137,8 +137,8 @@ export interface NavBarProps {
 export interface SocialMedia {
   gitHub?: string;
   linkedIn?: string;
-  facebook?: string;
-  instagram?: string;
+  behance?: string;
+  twitter?: string;
   visibleCount?: number;
 }
 

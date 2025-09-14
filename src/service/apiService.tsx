@@ -31,8 +31,8 @@ interface PortfolioCreateData {
   ownerEmail: string;
   linkedIn: string;
   gitHub: string;
-  facebook: string;
-  instagram: string;
+  behance: string;
+  twitter: string;
 }
 
 // Type for project create/update data

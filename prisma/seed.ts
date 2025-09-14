@@ -50,10 +50,10 @@ async function main() {
           "AWS",
         ],
         ownerEmail: devEmail, // Portfolio owner email
-        linkedIn: "https://linkedin.com/in/bikrantmalla",
-        gitHub: "https://github.com/bikrantmalla",
-        facebook: "https://facebook.com/bikrantmalla",
-        instagram: "https://instagram.com/bikrantmalla",
+        linkedIn: faker.internet.url(),
+        gitHub: faker.internet.url(),
+        behance: faker.internet.url(),
+        twitter: faker.internet.url(),
       },
     });
 
