@@ -5,7 +5,7 @@ import SocialMedia from "./SocialMedia";
 import ExternalLink from "../externalLink";
 
 const Contact = ({ contact }: ContactProps) => {
-  const { email, linkedIn, gitHub, facebook, instagram } = contact;
+  const { email } = contact;
   return (
     <>
       <section className="contact" id="contact">

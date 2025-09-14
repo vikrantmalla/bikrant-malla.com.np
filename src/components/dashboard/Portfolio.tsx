@@ -35,14 +35,14 @@ const portfolioSchema = z
       .string()
       .url("Invalid GitHub URL")
       .min(1, "GitHub URL is required"),
-    facebook: z
+    behance: z
       .string()
-      .url("Invalid Facebook URL")
-      .min(1, "Facebook URL is required"),
-    instagram: z
+      .url("Invalid Behance URL")
+      .min(1, "Behance URL is required"),
+    twitter: z
       .string()
-      .url("Invalid Instagram URL")
-      .min(1, "Instagram URL is required"),
+      .url("Invalid Twitter URL")
+      .min(1, "Twitter URL is required"),
   });
 
 interface PortfolioData {
@@ -55,8 +55,8 @@ interface PortfolioData {
   ownerEmail: string;
   linkedIn: string;
   gitHub: string;
-  facebook: string;
-  instagram: string;
+  behance: string;
+  twitter: string;
 }
 
 interface FormMessageType {
@@ -98,8 +98,8 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
       ownerEmail: "",
       linkedIn: "",
       gitHub: "",
-      facebook: "",
-      instagram: "",
+      behance: "",
+      twitter: "",
     },
   });
 
@@ -121,8 +121,8 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
       setValue("ownerEmail", portfolioData.ownerEmail || "");
       setValue("linkedIn", portfolioData.linkedIn || "");
       setValue("gitHub", portfolioData.gitHub || "");
-      setValue("facebook", portfolioData.facebook || "");
-      setValue("instagram", portfolioData.instagram || "");
+      setValue("behance", portfolioData.behance || "");
+      setValue("twitter", portfolioData.twitter || "");
     } else {
       // No existing portfolio, start in create mode
       setCurrentPortfolio(null);
@@ -282,8 +282,8 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
       setValue("ownerEmail", currentPortfolio.ownerEmail || "");
       setValue("linkedIn", currentPortfolio.linkedIn || "");
       setValue("gitHub", currentPortfolio.gitHub || "");
-      setValue("facebook", currentPortfolio.facebook || "");
-      setValue("instagram", currentPortfolio.instagram || "");
+      setValue("behance", currentPortfolio.behance || "");
+      setValue("twitter", currentPortfolio.twitter || "");
     }
   };
 
@@ -543,37 +543,37 @@ const PortfolioForm = ({ portfolioData }: PortfolioFormProps) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="facebook" className="form-label form-label--required">
-            Facebook URL
+          <label htmlFor="behance" className="form-label form-label--required">
+            Behance URL
           </label>
           <input
-            {...register("facebook")}
+            {...register("behance")}
             className="form-input"
             type="url"
-            id="facebook"
+            id="behance"
             disabled={isFieldDisabled()}
           />
-          {errors.facebook && (
-            <span className="form-error">{errors.facebook.message}</span>
+          {errors.behance && (
+            <span className="form-error">{errors.behance.message}</span>
           )}
         </div>
 
         <div className="form-group">
           <label
-            htmlFor="instagram"
+            htmlFor="twitter"
             className="form-label form-label--required"
           >
-            Instagram URL
+            Twitter URL
           </label>
           <input
-            {...register("instagram")}
+            {...register("twitter")}
             className="form-input"
             type="url"
-            id="instagram"
+            id="twitter"
             disabled={isFieldDisabled()}
           />
-          {errors.instagram && (
-            <span className="form-error">{errors.instagram.message}</span>
+          {errors.twitter && (
+            <span className="form-error">{errors.twitter.message}</span>
           )}
         </div>
 

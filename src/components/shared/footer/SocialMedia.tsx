@@ -1,20 +1,21 @@
 import React from "react";
-import { FaGithub, FaBehance, FaLinkedinIn, FaTwitter, FaFacebook, FaInstagram } from "react-icons/fa";
+import { FaGithub, FaBehance, FaLinkedinIn } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 import ExternalLink from "../externalLink";
 
 interface SocialMediaProps {
   gitHub?: string;
   linkedIn?: string;
-  facebook?: string;
-  instagram?: string;
+  behance?: string;
+  twitter?: string;
   visibleCount?: number;
 }
 
 const SocialMedia: React.FC<SocialMediaProps> = ({
   gitHub,
   linkedIn,
-  facebook,
-  instagram,
+  behance,
+  twitter,
   visibleCount = 4,
 }) => {
   const socialMediaIcons = [
@@ -29,14 +30,14 @@ const SocialMedia: React.FC<SocialMediaProps> = ({
       url: linkedIn ?? "",
     },
     {
-      key: "facebook",
-      icon: <FaFacebook size={20} />,
-      url: facebook ?? "",
+      key: "behance",
+      icon: <FaBehance size={20} />,
+      url: behance ?? "",
     },
     {
-      key: "instagram",
-      icon: <FaInstagram size={20} />,
-      url: instagram ?? "",
+      key: "twitter",
+      icon: <FaXTwitter size={20} />,
+      url: twitter ?? "",
     },
   ];
 

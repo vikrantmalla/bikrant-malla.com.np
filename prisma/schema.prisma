@@ -60,8 +60,8 @@ model Portfolio {
   ownerEmail        String
   linkedIn          String
   gitHub            String
-  facebook          String
-  instagram         String
+  behance           String
+  twitter           String
   projects          Project[]           @relation("PortfolioProjects")
   archiveProjects   ArchiveProject[]    @relation("PortfolioArchiveProjects")
   userRoles         UserPortfolioRole[] @relation("PortfolioRoles")
