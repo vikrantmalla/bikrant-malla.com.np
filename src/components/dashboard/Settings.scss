@@ -1,0 +1,43 @@
+.settings-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.settings-header {
+  margin-bottom: 2rem;
+  text-align: center;
+  
+  .settings-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-color, #000);
+  }
+  
+  .settings-description {
+    font-size: 1rem;
+    opacity: 0.7;
+    margin: 0;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .settings-container {
+    padding: 0 0.5rem;
+  }
+  
+  .settings-header {
+    margin-bottom: 1.5rem;
+    
+    .settings-title {
+      font-size: 1.5rem;
+    }
+    
+    .settings-description {
+      font-size: 0.9rem;
+    }
+  }
+}

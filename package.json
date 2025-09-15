@@ -13,7 +13,6 @@
     "test:api": "jest --testPathPattern=__tests__/api",
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --coverage --watchAll=false",
-    "db:seed": "tsx prisma/seed.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -63,5 +62,8 @@
   "overrides": {
     "@types/react": "19.1.6",
     "@types/react-dom": "19.1.5"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

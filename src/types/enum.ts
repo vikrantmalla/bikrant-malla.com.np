@@ -94,3 +94,11 @@ export enum Theme {
   LIGHT = "light",
   DARK = "dark",
 }
+
+export enum ActiveForm {
+  OVERVIEW = "overview",
+  PORTFOLIO = "portfolio",
+  PROJECTS = "projects",
+  ARCHIVE = "archive",
+  SETTINGS = "settings",
+}

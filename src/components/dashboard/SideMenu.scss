@@ -380,12 +380,66 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-// Footer Section
-.side-menu__footer {
-  padding: 1.5rem;
+// User Section
+.side-menu__user-section {
+  @include flex(row, flex-start);
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
   border-top: 1px solid $side-menu-border;
   background: #ffffff;
   margin-top: auto;
+
+  @include xs-sm {
+    padding: 1rem;
+  }
+}
+
+.side-menu__user-avatar {
+  @include flex(row, center);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.side-menu__user-initials {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.side-menu__user-info {
+  @include flex(column, flex-start);
+  flex: 1;
+  min-width: 0;
+}
+
+.side-menu__user-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $side-menu-text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.25rem;
+}
+
+.side-menu__user-role {
+  font-size: 0.75rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  white-space: nowrap;
+}
+
+// Footer Section
+.side-menu__footer {
+  padding: 1rem 1.5rem 1.5rem 1.5rem;
+  background: #ffffff;
 
   @include xs-sm {
     padding: 1rem;
@@ -397,28 +451,34 @@ $side-menu-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   gap: 0.75rem;
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #e2e8f0;
+  border: none;
   border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  background: #ffffff;
-  color: #1e293b;
+  background: transparent;
+  border: 1px solid #000;
+  color: #000;
+  margin-top: 1rem;
+  width: 180px;
   
   &:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
   }
   
   &-icon {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
   
   &-text {
-    font-weight: 500;
+    font-weight: 600;
   }
 }
 

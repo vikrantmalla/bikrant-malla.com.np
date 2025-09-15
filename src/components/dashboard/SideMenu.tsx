@@ -2,13 +2,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
+import { ActiveForm } from "@/types/enum";
 import "./SideMenu.scss";
 import { FaArrowLeft, FaBars, FaTimes } from "react-icons/fa";
 
 interface SideMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  onFormChange?: (formType: string) => void;
+  onFormChange?: (formType: ActiveForm) => void;
   onLogout?: () => void;
   onThemeToggle?: () => void;
 }
@@ -17,7 +18,7 @@ interface MenuItem {
   id: string;
   label: string;
   icon: string;
-  formType: string;
+  formType: ActiveForm;
   isActive?: boolean;
   hasSubmenu?: boolean;
 }
@@ -38,35 +39,35 @@ const SideMenu: React.FC<SideMenuProps> = ({
       id: "dashboard",
       label: "Dashboard",
       icon: "📊",
-      formType: "overview",
+      formType: ActiveForm.OVERVIEW,
     },
     {
       id: "portfolio",
       label: "Portfolio",
       icon: "💼",
-      formType: "portfolio",
+      formType: ActiveForm.PORTFOLIO,
     },
     {
       id: "projects",
       label: "Projects",
       icon: "🚀",
-      formType: "projects",
+      formType: ActiveForm.PROJECTS,
     },
     {
       id: "archive",
       label: "Archive",
       icon: "📁",
-      formType: "archive",
+      formType: ActiveForm.ARCHIVE,
     },
     {
       id: "settings",
       label: "Settings",
       icon: "⚙️",
-      formType: "settings",
+      formType: ActiveForm.SETTINGS,
     },
   ];
 
-  const handleItemClick = (itemId: string, formType: string) => {
+  const handleItemClick = (itemId: string, formType: ActiveForm) => {
     setActiveItem(itemId);
     onFormChange?.(formType);
     // Close mobile menu when item is clicked
@@ -140,6 +141,21 @@ const SideMenu: React.FC<SideMenuProps> = ({
           </div>
         </div>
 
+        {/* User Section */}
+        <div className="side-menu__user-section">
+          <div className="side-menu__user-avatar">
+            <span className="side-menu__user-initials">{getUserInitials()}</span>
+          </div>
+          <div className="side-menu__user-info">
+            <div className="side-menu__user-name">
+              {user?.name || user?.email || "User"}
+            </div>
+            <div className="side-menu__user-role">
+              {userRole?.isOwner ? "Owner" : userRole?.hasEditorRole ? "Editor" : "Viewer"}
+            </div>
+          </div>
+        </div>
+
         {/* Navigation */}
         <nav className="side-menu__nav">
           <ul className="side-menu__nav-list">
@@ -165,7 +181,6 @@ const SideMenu: React.FC<SideMenuProps> = ({
         {/* Footer Actions */}
         <div className="side-menu__footer">
           <button className="side-menu__logout-btn" onClick={handleLogout}>
-            <span className="side-menu__logout-icon">🚪</span>
             <span className="side-menu__logout-text">Logout</span>
           </button>
         </div>
