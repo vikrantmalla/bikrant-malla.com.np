@@ -36,7 +36,18 @@ export function generateToken(
  */
 export function verifyToken(token: string, isRefresh = false): JWTPayload | null {
   try {
+    // Check if token is malformed before attempting verification
+    if (!token || typeof token !== 'string' || token.split('.').length !== 3) {
+      console.error('JWT verification failed: Malformed token');
+      return null;
+    }
+
     const secret = isRefresh ? JWT_REFRESH_SECRET : JWT_SECRET;
+    
+    if (!secret) {
+      console.error('JWT verification failed: Secret not configured');
+      return null;
+    }
     
     const decoded = jwt.verify(token, secret, {
       issuer: 'bikrant-malla-portfolio',
@@ -45,7 +56,17 @@ export function verifyToken(token: string, isRefresh = false): JWTPayload | null
 
     return decoded;
   } catch (error) {
-    console.error('JWT verification failed:', error);
+    if (error instanceof jwt.JsonWebTokenError) {
+      if (error.name === 'TokenExpiredError') {
+        console.error('JWT verification failed: Token expired');
+      } else if (error.name === 'JsonWebTokenError') {
+        console.error('JWT verification failed: Invalid token format');
+      } else {
+        console.error('JWT verification failed:', error.message);
+      }
+    } else {
+      console.error('JWT verification failed:', error);
+    }
     return null;
   }
 }
