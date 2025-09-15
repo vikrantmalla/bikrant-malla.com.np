@@ -61,8 +61,16 @@ export const useAuth = () => {
         const userData = await response.json();
         setUser(userData.user);
         setIsAuthenticated(true);
+      } else if (response.status === 401) {
+        // Not authenticated, clear any local storage and redirect
+        removeAccessToken();
+        setIsAuthenticated(false);
+        setUser(null);
+        setUserRole(null);
+        setPortfolioInfo(null);
+        router.push('/login');
       } else {
-        // Not authenticated, clear any local storage
+        // Other errors, clear any local storage
         removeAccessToken();
         setIsAuthenticated(false);
         setUser(null);
@@ -72,8 +80,31 @@ export const useAuth = () => {
       removeAccessToken();
       setIsAuthenticated(false);
       setUser(null);
+      setUserRole(null);
+      setPortfolioInfo(null);
+      // Don't redirect on network errors during initial auth check
     } finally {
       setIsLoading(false);
+    }
+  }, [router]);
+
+  // Try to refresh token before redirecting
+  const tryRefreshToken = useCallback(async () => {
+    try {
+      const response = await fetch('/api/auth/refresh', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAccessToken(data.accessToken);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      return false;
     }
   }, []);
 
@@ -99,15 +130,57 @@ export const useAuth = () => {
         setUserRole(roleData);
         setPortfolioInfo(data.user.portfolio);
         return roleData;
+      } else if (response.status === 401) {
+        // Token is invalid or expired, try to refresh first
+        const refreshSuccess = await tryRefreshToken();
+        
+        if (refreshSuccess) {
+          // Retry the request with new token
+          const newToken = getAccessToken();
+          const retryResponse = await fetch('/api/auth/check-role', {
+            headers: {
+              'Authorization': `Bearer ${newToken}`,
+            },
+          });
+
+          if (retryResponse.ok) {
+            const data = await retryResponse.json();
+            const roleData = {
+              hasEditorRole: data.user.hasEditorRole,
+              isOwner: data.user.isOwner
+            };
+            setUserRole(roleData);
+            setPortfolioInfo(data.user.portfolio);
+            return roleData;
+          }
+        }
+
+        // Refresh failed or retry failed, redirect to login
+        removeAccessToken();
+        setIsAuthenticated(false);
+        setUser(null);
+        setUserRole(null);
+        setPortfolioInfo(null);
+        router.push('/login');
+        return null;
+      } else {
+        console.error('Error checking user role:', response.status, response.statusText);
+        return null;
       }
-      return null;
     } catch (error) {
       console.error("Error checking user role:", error);
+      // On network errors, also redirect to login to be safe
+      removeAccessToken();
+      setIsAuthenticated(false);
+      setUser(null);
+      setUserRole(null);
+      setPortfolioInfo(null);
+      router.push('/login');
       return null;
     } finally {
       setIsCheckingRole(false);
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, tryRefreshToken, router]);
 
   // Login function
   const login = async (email: string, password: string) => {
