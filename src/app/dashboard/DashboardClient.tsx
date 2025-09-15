@@ -9,12 +9,9 @@ import { useThemeStore } from "@/store/feature/themeStore";
 import { toCSSVars } from "@/helpers/utils";
 import "./dashboard.scss";
 import { Invite } from "@/components/dashboard/Invite";
-import ProjectLimitsConfig from "@/components/dashboard/ProjectLimitsConfig";
-import TechOptionsManager from "@/components/dashboard/TechOptionsManager";
-import TechTagsManager from "@/components/dashboard/TechTagsManager";
+import Settings from "@/components/dashboard/Settings";
 import { PortfolioDetails } from "@/types/data";
-import LogoutButton from "@/components/auth/LogoutButton";
-import "@/components/auth/auth.scss";
+import { ActiveForm } from "@/types/enum";
 
 interface DashboardClientProps {
   initialPortfolioData: {
@@ -28,12 +25,19 @@ interface DashboardClientProps {
 export default function DashboardClient({
   initialPortfolioData,
 }: DashboardClientProps) {
-  const { user, isAuthenticated, userRole, isCheckingRole, checkUserRole, isLoading, redirectToLogin } =
-    useAuth();
+  const {
+    user,
+    isAuthenticated,
+    userRole,
+    isCheckingRole,
+    checkUserRole,
+    isLoading,
+    redirectToLogin,
+  } = useAuth();
   const { isDarkTheme, themes } = useThemeStore();
   const currentTheme = isDarkTheme ? themes.dark : themes.light;
   const [loading, setLoading] = useState(true);
-  const [activeForm, setActiveForm] = useState("overview");
+  const [activeForm, setActiveForm] = useState<ActiveForm>(ActiveForm.OVERVIEW);
   const hasInitializedAuth = useRef(false);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
 
@@ -61,7 +65,7 @@ export default function DashboardClient({
     root.style.cssText = themeVars.join(";");
   }, [currentTheme]);
 
-  const handleFormChange = (formType: string) => {
+  const handleFormChange = (formType: ActiveForm) => {
     setActiveForm(formType);
   };
 
@@ -128,17 +132,18 @@ export default function DashboardClient({
         <div className="dashboard__error">
           <h1 className="dashboard__error-title">No Portfolio Found</h1>
           <p className="dashboard__error-message">
-            You don&apos;t have a portfolio yet. Please contact the administrator to set up your portfolio.
+            You don&apos;t have a portfolio yet. Please contact the
+            administrator to set up your portfolio.
           </p>
           <div className="dashboard__error-actions">
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               className="dashboard__error-retry"
             >
               Refresh Page
             </button>
-            <button 
-              onClick={() => redirectToLogin('/dashboard')} 
+            <button
+              onClick={() => redirectToLogin("/dashboard")}
               className="dashboard__error-login"
             >
               Go to Login
@@ -170,18 +175,65 @@ export default function DashboardClient({
 
       {/* Main Content */}
       <main className="dashboard__main dashboard__main--with-sidebar">
+        {/* Full Width Header */}
+        <div className="dashboard__header-full">
+          <div className="dashboard__content">
+            <div className="dashboard__header-content">
+              <div className="dashboard__header-text">
+                {activeForm === ActiveForm.OVERVIEW && (
+                  <>
+                    <h2 className="dashboard__section-title">Overview</h2>
+                    <p className="dashboard__header-subtitle">Dashboard statistics and insights</p>
+                  </>
+                )}
+                {activeForm === ActiveForm.PORTFOLIO && (
+                  <>
+                    <h2 className="dashboard__section-title">Portfolio Management</h2>
+                    <p className="dashboard__header-subtitle">Manage your portfolio information and details</p>
+                  </>
+                )}
+                {activeForm === ActiveForm.PROJECTS && (
+                  <>
+                    <h2 className="dashboard__section-title">Projects Management</h2>
+                    <p className="dashboard__header-subtitle">Add, edit, and organize your projects</p>
+                  </>
+                )}
+                {activeForm === ActiveForm.ARCHIVE && (
+                  <>
+                    <h2 className="dashboard__section-title">Archive Management</h2>
+                    <p className="dashboard__header-subtitle">View and manage archived projects</p>
+                  </>
+                )}
+                {activeForm === ActiveForm.SETTINGS && (
+                  <>
+                    <h2 className="dashboard__section-title">Settings</h2>
+                    <p className="dashboard__header-subtitle">Configure your dashboard preferences</p>
+                  </>
+                )}
+              </div>
+              <div className="dashboard__header-actions">
+                <div className="dashboard__header-breadcrumb">
+                  <span className="dashboard__breadcrumb-item">Dashboard</span>
+                  <span className="dashboard__breadcrumb-separator">›</span>
+                  <span className="dashboard__breadcrumb-current">
+                    {activeForm === ActiveForm.OVERVIEW && "Overview"}
+                    {activeForm === ActiveForm.PORTFOLIO && "Portfolio"}
+                    {activeForm === ActiveForm.PROJECTS && "Projects"}
+                    {activeForm === ActiveForm.ARCHIVE && "Archive"}
+                    {activeForm === ActiveForm.SETTINGS && "Settings"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="dashboard__content">
           {/* Conditional Form Rendering */}
-          {activeForm === "overview" && (
+          {activeForm === ActiveForm.OVERVIEW && (
             <>
               {/* Overview Section */}
               <div className="dashboard__section">
-                <h2
-                  className="dashboard__section-title"
-                  style={{ color: currentTheme?.text || "#000" }}
-                >
-                  Overview
-                </h2>
                 <div className="dashboard__stats">
                   <div
                     className="dashboard__stat-card"
@@ -242,14 +294,8 @@ export default function DashboardClient({
             </>
           )}
 
-          {activeForm === "portfolio" && (
+          {activeForm === ActiveForm.PORTFOLIO && (
             <div>
-              <h2
-                className="dashboard__section-title"
-                style={{ color: currentTheme?.text || "#000" }}
-              >
-                Portfolio Management
-              </h2>
               {portfolioData && (
                 <div className="dashboard__current-data">
                   <p style={{ color: currentTheme?.text || "#000" }}>
@@ -262,14 +308,8 @@ export default function DashboardClient({
             </div>
           )}
 
-          {activeForm === "projects" && (
+          {activeForm === ActiveForm.PROJECTS && (
             <div>
-              <h2
-                className="dashboard__section-title"
-                style={{ color: currentTheme?.text || "#000" }}
-              >
-                Projects Management
-              </h2>
               {portfolioData?.projects && portfolioData.projects.length > 0 && (
                 <div className="dashboard__current-data">
                   <p style={{ color: currentTheme?.text || "#000" }}>
@@ -285,14 +325,8 @@ export default function DashboardClient({
             </div>
           )}
 
-          {activeForm === "archive" && (
+          {activeForm === ActiveForm.ARCHIVE && (
             <div>
-              <h2
-                className="dashboard__section-title"
-                style={{ color: currentTheme?.text || "#000" }}
-              >
-                Archive Management
-              </h2>
               {portfolioData?.archiveProjects &&
                 portfolioData.archiveProjects.length > 0 && (
                   <div className="dashboard__current-data">
@@ -309,28 +343,12 @@ export default function DashboardClient({
             </div>
           )}
 
-          {activeForm === "settings" && (
-            <div>
-              <h2
-                className="dashboard__section-title"
-                style={{ color: currentTheme?.text || "#000" }}
-              >
-                Settings
-              </h2>
-              <ProjectLimitsConfig />
-              <TechOptionsManager />
-              <TechTagsManager />
-            </div>
+          {activeForm === ActiveForm.SETTINGS && (
+            <Settings currentTheme={currentTheme} />
           )}
         </div>
       </main>
 
-      {/* User Actions */}
-      <div className="dashboard__user-actions">
-        <LogoutButton className="dashboard__logout-btn">
-          Logout
-        </LogoutButton>
-      </div>
     </div>
   );
 }

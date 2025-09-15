@@ -188,22 +188,8 @@ $dashboard-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0
 // Main Content
 .dashboard__main {
   flex: 1;
-  padding: 1.5rem;
-
-  @include xs-sm {
-    padding: 1rem;
-    padding-top: 5rem; // Account for mobile toggle button
-  }
-
-  @include sm {
-    padding: 1.25rem;
-    padding-top: 5rem; // Account for mobile toggle button
-  }
-
-  @include md {
-    padding: 2rem;
-    padding-top: 2rem; // Reset padding-top for desktop
-  }
+  display: flex;
+  flex-direction: column;
 
   &--with-sidebar {
     margin-left: 0; // Remove fixed margin for mobile
@@ -216,6 +202,72 @@ $dashboard-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0
       margin-left: 320px;
     }
   }
+}
+
+// Header Content Layout
+.dashboard__header-content {
+  @include flex(row, space-between);
+  align-items: flex-start;
+  gap: 2rem;
+
+  @include xs-sm {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.dashboard__header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard__header-subtitle {
+  font-size: 1rem;
+  color: #64748b;
+  margin: 0.5rem 0 0 0;
+  font-weight: 400;
+  line-height: 1.5;
+
+  @include md {
+    font-size: 1.125rem;
+  }
+}
+
+.dashboard__header-actions {
+  @include flex(column, flex-end);
+  align-items: flex-end;
+  gap: 0.5rem;
+
+  @include xs-sm {
+    align-items: flex-start;
+  }
+}
+
+.dashboard__header-breadcrumb {
+  @include flex(row, flex-end);
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #64748b;
+
+  @include xs-sm {
+    justify-content: flex-start;
+  }
+}
+
+.dashboard__breadcrumb-item {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.dashboard__breadcrumb-separator {
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.dashboard__breadcrumb-current {
+  color: #1e293b;
+  font-weight: 600;
 }
 
 // Auth Section
@@ -266,8 +318,13 @@ $dashboard-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0
 
 // Content Sections
 .dashboard__content {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
+  padding: 2rem 1.5rem;
+
+  @include xs-sm {
+    padding: 1.5rem 1rem;
+  }
 }
 
 .dashboard__section {
@@ -278,13 +335,58 @@ $dashboard-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0
   }
 }
 
+// Add some breathing room to the main content
+.dashboard__main {
+  .dashboard__content {
+    // Add extra padding for better spacing
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+
+    @include xs-sm {
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
+  }
+}
+
+// Current data sections styling
+.dashboard__current-data {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1rem 1.5rem;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+  color: #64748b;
+
+  p {
+    margin: 0;
+    font-weight: 500;
+
+    strong {
+      color: #1e293b;
+      font-weight: 600;
+    }
+  }
+}
+
 .dashboard__section-title {
   font-size: 1.5rem;
   font-weight: 700;
   color: $dashboard-text;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid $dashboard-border;
+  margin: 0;
+  padding: 0;
+  position: relative;
+
+  @include md {
+    font-size: 1.875rem;
+  }
+
+  .dashboard__section & {
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid $dashboard-border;
+  }
 }
 
 // Stats Cards
