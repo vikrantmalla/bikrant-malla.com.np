@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
-import { PrismaClientKnownRequestError } from "@/generated/prisma/runtime/library";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 // POST bulk create tech tags
 export async function POST(request: Request): Promise<Response> {
