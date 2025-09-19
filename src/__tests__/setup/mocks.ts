@@ -123,7 +123,8 @@ export function setupMocks() {
 
   // Mock JWT utilities
   jest.mock('@/lib/jwt', () => ({
-    verifyToken: mockCustomAuth.verifyToken,
+    verifyToken: jest.fn().mockReturnValue({ userId: 'mock-user-id', email: 'mock@example.com' }),
+    verifyRefreshToken: jest.fn().mockReturnValue({ userId: 'mock-user-id', email: 'mock@example.com' }),
     generateToken: jest.fn().mockReturnValue('mock-token'),
   }));
 
