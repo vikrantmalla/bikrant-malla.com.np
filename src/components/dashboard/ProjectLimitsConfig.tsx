@@ -22,11 +22,22 @@ const ProjectLimitsConfig = () => {
   }, []);
 
   const loadLimits = async () => {
-    const result = await getProjectLimits();
-    if (result.success) {
-      setLimits(result.data);
-    } else {
-      setMessage({ text: "Failed to load project limits", isError: true });
+    try {
+      const result = await getProjectLimits();
+      if (result && result.success) {
+        setLimits(result.data);
+      } else {
+        setMessage({ 
+          text: result?.error || "Failed to load project limits", 
+          isError: true 
+        });
+      }
+    } catch (error) {
+      console.error("Error loading project limits:", error);
+      setMessage({ 
+        text: "Failed to load project limits", 
+        isError: true 
+      });
     }
   };
 
@@ -39,7 +50,7 @@ const ProjectLimitsConfig = () => {
 
     try {
       const result = await updateProjectLimits(formData);
-      if (result.success) {
+      if (result && result.success) {
         setMessage({
           text: "Project limits updated successfully!",
           isError: false,
@@ -47,10 +58,17 @@ const ProjectLimitsConfig = () => {
         setLimits(result.data);
         setIsEditing(false);
       } else {
-        setMessage({ text: `Error: ${result.error}`, isError: true });
+        setMessage({ 
+          text: `Error: ${result?.error || "Unknown error occurred"}`, 
+          isError: true 
+        });
       }
     } catch (error) {
-      setMessage({ text: "Failed to update project limits", isError: true });
+      console.error("Error updating project limits:", error);
+      setMessage({ 
+        text: "Failed to update project limits", 
+        isError: true 
+      });
     } finally {
       setIsLoading(false);
     }
@@ -62,6 +80,30 @@ const ProjectLimitsConfig = () => {
     loadLimits(); // Reload original values
   };
 
+  if (!limits && !message.isError) {
+    return <div className="config-loading">Loading project limits...</div>;
+  }
+
+  if (message.isError && !limits) {
+    return (
+      <div className="project-limits-config">
+        <div className="config-header">
+          <h3>Project Limits Configuration</h3>
+        </div>
+        <div className={`config-message config-message--error`}>
+          {message.text}
+        </div>
+        <button 
+          onClick={loadLimits}
+          className="config-retry-btn"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  // Ensure limits is not null before rendering the form
   if (!limits) {
     return <div className="config-loading">Loading project limits...</div>;
   }
