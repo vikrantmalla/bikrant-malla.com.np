@@ -41,6 +41,7 @@
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^10.1.1",
     "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.10",
@@ -57,7 +58,8 @@
     "prisma": "^6.9.0",
     "semantic-release": "^24.0.0",
     "tsx": "^4.20.4",
-    "typescript": "5.1.6"
+    "typescript": "5.1.6",
+    "whatwg-fetch": "^3.6.20"
   },
   "overrides": {
     "@types/react": "19.1.6",
