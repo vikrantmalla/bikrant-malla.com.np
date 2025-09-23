@@ -305,7 +305,7 @@ describe('ArchiveFilterMenu', () => {
       
       // Check that URLs are generated correctly for different tag formats
       const reactNativeLink = screen.getByText('React Native').closest('a');
-      expect(reactNativeLink).toHaveAttribute('href', '/archive?tag=react-native');
+      expect(reactNativeLink).toHaveAttribute('href', '/archive?tag=react_native');
       
       const nodejsLink = screen.getByText('Node.js').closest('a');
       expect(nodejsLink).toHaveAttribute('href', '/archive?tag=node.js');

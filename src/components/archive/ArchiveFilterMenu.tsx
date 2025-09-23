@@ -150,7 +150,12 @@ const ArchiveFilterMenu = ({ techTag }: Omit<ArchiveProps, 'project'>) => {
           </li>
         ))}
       </ul>
-      <button role="button" className="sort-btn" onClick={handleSortClick}>
+      <button 
+        role="button" 
+        className="sort-btn" 
+        onClick={handleSortClick}
+        aria-label="Sort projects"
+      >
         {isAscending ? <FaSortAmountDownAlt /> : <FaSortAmountUpAlt />}
       </button>
     </div>

@@ -65,6 +65,7 @@ describe('Archive Integration Tests', () => {
   const mockSetProjectList = jest.fn();
   const mockSetSkeletonLoading = jest.fn();
   const mockSortProjectList = jest.fn();
+  const mockSetOriginalProjects = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -83,12 +84,12 @@ describe('Archive Integration Tests', () => {
       setProjectList: mockSetProjectList,
       setSkeletonLoading: mockSetSkeletonLoading,
       sortProjectList: mockSortProjectList,
+      setOriginalProjects: mockSetOriginalProjects,
     });
   });
 
   describe('Filter Integration', () => {
     it('filters projects correctly when React JS is selected', async () => {
-      // Mock the filter function to return only CryptoMarket
       const mockFilterProjects = jest.fn().mockImplementation((tag) => {
         if (tag === 'React JS') {
           mockSetProjectList([mockArchiveProjects[0]]);
@@ -105,6 +106,7 @@ describe('Archive Integration Tests', () => {
         setProjectList: mockSetProjectList,
         setSkeletonLoading: mockSetSkeletonLoading,
         sortProjectList: mockSortProjectList,
+        setOriginalProjects: mockSetOriginalProjects,
       });
 
       render(
@@ -114,7 +116,7 @@ describe('Archive Integration Tests', () => {
         </ArchiveStoreProvider>
       );
 
-      const reactJSButton = screen.getByText('React JS');
+      const reactJSButton = screen.getByRole('link', { name: /Filter by React JS projects/i });
       fireEvent.click(reactJSButton);
 
       await waitFor(() => {
@@ -134,6 +136,7 @@ describe('Archive Integration Tests', () => {
         setProjectList: mockSetProjectList,
         setSkeletonLoading: mockSetSkeletonLoading,
         sortProjectList: mockSortProjectList,
+        setOriginalProjects: mockSetOriginalProjects,
       });
 
       render(
@@ -143,7 +146,7 @@ describe('Archive Integration Tests', () => {
         </ArchiveStoreProvider>
       );
 
-      const cssButton = screen.getByText('CSS');
+      const cssButton = screen.getByRole('link', { name: /Filter by CSS projects/i });
       fireEvent.click(cssButton);
 
       await waitFor(() => {
@@ -163,6 +166,7 @@ describe('Archive Integration Tests', () => {
         setProjectList: mockSetProjectList,
         setSkeletonLoading: mockSetSkeletonLoading,
         sortProjectList: mockSortProjectList,
+        setOriginalProjects: mockSetOriginalProjects,
       });
 
       render(
@@ -193,6 +197,7 @@ describe('Archive Integration Tests', () => {
         setProjectList: mockSetProjectList,
         setSkeletonLoading: mockSetSkeletonLoading,
         sortProjectList: mockSortProjectList,
+        setOriginalProjects: mockSetOriginalProjects,
       });
 
       render(
@@ -228,6 +233,7 @@ describe('Archive Integration Tests', () => {
         setProjectList: mockSetProjectList,
         setSkeletonLoading: mockSetSkeletonLoading,
         sortProjectList: mockSortProjectList,
+        setOriginalProjects: mockSetOriginalProjects,
       });
 
       render(
@@ -238,7 +244,7 @@ describe('Archive Integration Tests', () => {
       );
 
       // Should show React JS as selected
-      const reactJSButton = screen.getByText('React JS').closest('a');
+      const reactJSButton = screen.getByRole('link', { name: /Filter by React JS projects/i });
       expect(reactJSButton).toHaveClass('tag-selected');
     });
   });
@@ -255,6 +261,7 @@ describe('Archive Integration Tests', () => {
         setProjectList: mockSetProjectList,
         setSkeletonLoading: mockSetSkeletonLoading,
         sortProjectList: mockSortProjectList,
+        setOriginalProjects: mockSetOriginalProjects,
       });
 
       render(
@@ -279,6 +286,7 @@ describe('Archive Integration Tests', () => {
         setProjectList: mockSetProjectList,
         setSkeletonLoading: mockSetSkeletonLoading,
         sortProjectList: mockSortProjectList,
+        setOriginalProjects: mockSetOriginalProjects,
       });
 
       render(
