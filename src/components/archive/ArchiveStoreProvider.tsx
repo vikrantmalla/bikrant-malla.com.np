@@ -12,14 +12,15 @@ const ArchiveStoreProvider: React.FC<ArchiveStoreProviderProps> = ({
   archiveProjects, 
   children 
 }) => {
-  const { setProjectList } = useProjectStore();
+  const { setProjectList, setOriginalProjects } = useProjectStore();
 
   useEffect(() => {
-    // Populate the store with the archive projects
+    // Initialize store with archive projects on component mount
     if (archiveProjects.length > 0) {
-      setProjectList(archiveProjects);
+      setOriginalProjects(archiveProjects); // Store original projects for filtering
+      setProjectList(archiveProjects); // Set initial display list
     }
-  }, [archiveProjects, setProjectList]);
+  }, [archiveProjects, setOriginalProjects, setProjectList]);
 
   return <>{children}</>;
 };

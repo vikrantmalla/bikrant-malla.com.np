@@ -5,6 +5,7 @@ import { ArchiveProject, ProviderContext } from "@/types/data";
 export const useProjectStore = createStore<ProviderContext.ProjectStore>(
   (set) => ({
     projectList: [],
+    originalProjects: [], // Store original projects for "All" filter
     selectedTag: TagsCategory.ALL,
     showSkeletonLoading: false,
     isAscending: false,
@@ -14,6 +15,13 @@ export const useProjectStore = createStore<ProviderContext.ProjectStore>(
     setProjectList: (projects) =>
       set({
         projectList: [...projects].sort(
+          (prevProject, nextProject) => nextProject.year - prevProject.year
+        ),
+      }),
+
+    setOriginalProjects: (projects) =>
+      set({
+        originalProjects: [...projects].sort(
           (prevProject, nextProject) => nextProject.year - prevProject.year
         ),
       }),
