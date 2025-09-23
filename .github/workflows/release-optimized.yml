@@ -1,0 +1,154 @@
+name: Next.js Application - Optimized Build and Release
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22.x'
+
+jobs:
+  # Run tests in parallel to reduce overall time
+  test-suite:
+    name: Run All Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event.pull_request.merged == true || github.event_name == 'push'
+    
+    strategy:
+      matrix:
+        test-type: [api, component]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run ${{ matrix.test-type }} tests
+        env:
+          NODE_ENV: test
+          DATABASE_URL: ${{ secrets.DB_PROD_MONGODB_URI }}
+        run: |
+          if [ "${{ matrix.test-type }}" = "api" ]; then
+            npm run test:api
+          else
+            npm run test -- --testPathPattern=__tests__/components --coverage --watchAll=false
+          fi
+
+  build-and-archive:
+    name: Build and Archive Next.js Application
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.test-suite.result == 'success'
+    needs: [test-suite]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static website
+        id: build
+        env:
+          NODE_ENV: production
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          DATABASE_URL: ${{ secrets.DB_PROD_MONGODB_URI }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          RESEND_API_KEY_PROD: ${{ secrets.RESEND_API_KEY_PROD }}
+          RESEND_FROM_EMAIL_PROD: ${{ secrets.RESEND_FROM_EMAIL_PROD }}
+        run: |
+          echo "Starting build process..."
+          npm run build
+          echo "Build completed successfully"
+          echo "build_success=true" >> $GITHUB_OUTPUT
+
+      - name: Verify build output
+        if: steps.build.outputs.build_success == 'true'
+        run: |
+          echo "Verifying build output..."
+          if [ -d ".next" ]; then
+            echo "Build output directory exists"
+            ls -la .next/
+          else
+            echo "Build output directory not found"
+            exit 1
+          fi
+
+      - name: Archive Release
+        if: steps.build.outputs.build_success == 'true'
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: "zip"
+          filename: "release.zip"
+
+      - name: Upload Release Artifact
+        if: steps.build.outputs.build_success == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-archive
+          path: release.zip
+
+  release:
+    name: Release to GitHub
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [test-suite, build-and-archive]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.build-and-archive.result == 'success'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download Release Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-archive
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
+  notify-failure:
+    name: Notify on Failure
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [test-suite, build-and-archive, release]
+    if: failure() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Notify Failure
+        run: |
+          echo "❌ Workflow failed for commit ${{ github.sha }}"
+          echo "Failed jobs: ${{ toJson(needs) }}"

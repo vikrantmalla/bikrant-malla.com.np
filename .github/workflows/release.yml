@@ -12,7 +12,6 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 env:
   NODE_VERSION: '22.x'
 
@@ -20,9 +19,20 @@ jobs:
   api-tests:
     name: Run API Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: github.event.pull_request.merged == true || github.event_name == 'push'
 
     steps:
+      - name: Check runner status
+        run: |
+          echo "🚀 Runner is available and ready!"
+          echo "Runner OS: $RUNNER_OS"
+          echo "Runner Architecture: $RUNNER_ARCH"
+          echo "Available disk space:"
+          df -h
+          echo "Available memory:"
+          free -h
+          
       - name: Run API tests
         uses: ./.github/actions/run-tests
         with:
@@ -32,6 +42,7 @@ jobs:
   component-tests:
     name: Run Component Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: github.event.pull_request.merged == true || github.event_name == 'push'
 
     steps:
@@ -44,6 +55,7 @@ jobs:
   build-and-archive:
     name: Build and Archive Next.js Application
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.api-tests.result == 'success' && needs.component-tests.result == 'success'
     needs: [api-tests, component-tests]
 
@@ -56,6 +68,7 @@ jobs:
   release:
     name: Release to GitHub
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [api-tests, component-tests, build-and-archive]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.build-and-archive.result == 'success'
 
@@ -81,6 +94,7 @@ jobs:
   notify-failure:
     name: Notify on Failure
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [api-tests, component-tests, build-and-archive, release]
     if: failure() && github.event_name == 'push' && github.ref == 'refs/heads/main'
 
