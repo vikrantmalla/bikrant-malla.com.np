@@ -41,6 +41,7 @@ jobs:
         with:
           test-type: "api"
           node-version: ${{ env.NODE_VERSION }}
+          database-url: ${{ secrets.DB_PROD_MONGODB_URI }}
 
   component-tests:
     name: Run Component Tests
@@ -57,6 +58,7 @@ jobs:
         with:
           test-type: "component"
           node-version: ${{ env.NODE_VERSION }}
+          database-url: ""
 
   build-and-archive:
     name: Build and Archive Next.js Application
@@ -73,6 +75,13 @@ jobs:
         uses: ./.github/actions/build-app
         with:
           node-version: ${{ env.NODE_VERSION }}
+          # secrets are configured in repository settings
+          sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-dsn: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+          database-url: ${{ secrets.DB_PROD_MONGODB_URI }}
+          app-url: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          resend-api-key: ${{ secrets.RESEND_API_KEY_PROD }}
+          resend-from-email: ${{ secrets.RESEND_FROM_EMAIL_PROD }}
 
   release:
     name: Release to GitHub

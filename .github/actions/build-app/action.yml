@@ -5,6 +5,30 @@ inputs:
     description: "Node.js version to use"
     required: false
     default: "22.x"
+  sentry-auth-token:
+    description: "Sentry auth token"
+    required: false
+    default: ""
+  sentry-dsn:
+    description: "Sentry DSN"
+    required: false
+    default: ""
+  database-url:
+    description: "Database URL"
+    required: false
+    default: ""
+  app-url:
+    description: "Application URL"
+    required: false
+    default: ""
+  resend-api-key:
+    description: "Resend API key"
+    required: false
+    default: ""
+  resend-from-email:
+    description: "Resend from email"
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -24,12 +48,12 @@ runs:
       shell: bash
       env:
         NODE_ENV: production
-        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
-        DATABASE_URL: ${{ secrets.DB_PROD_MONGODB_URI }}
-        NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
-        RESEND_API_KEY_PROD: ${{ secrets.RESEND_API_KEY_PROD }}
-        RESEND_FROM_EMAIL_PROD: ${{ secrets.RESEND_FROM_EMAIL_PROD }}
+        SENTRY_AUTH_TOKEN: ${{ inputs.sentry-auth-token }}
+        NEXT_PUBLIC_SENTRY_DSN: ${{ inputs.sentry-dsn }}
+        DATABASE_URL: ${{ inputs.database-url }}
+        NEXT_PUBLIC_APP_URL: ${{ inputs.app-url }}
+        RESEND_API_KEY_PROD: ${{ inputs.resend-api-key }}
+        RESEND_FROM_EMAIL_PROD: ${{ inputs.resend-from-email }}
       run: |
         echo "Starting build process..."
         npm run build

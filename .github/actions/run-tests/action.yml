@@ -8,6 +8,10 @@ inputs:
     description: "Node.js version to use"
     required: false
     default: "22.x"
+  database-url:
+    description: "Database URL for API tests"
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -27,7 +31,7 @@ runs:
       shell: bash
       env:
         NODE_ENV: test
-        DATABASE_URL: ${{ secrets.DB_PROD_MONGODB_URI }}
+        DATABASE_URL: ${{ inputs.database-url }}
       run: npm run test:api
 
     - name: Run Component tests
