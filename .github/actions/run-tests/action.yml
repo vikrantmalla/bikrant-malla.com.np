@@ -1,0 +1,33 @@
+name: 'Run Tests'
+description: 'Run API or Component tests with proper environment setup'
+inputs:
+  test-type:
+    description: 'Type of tests to run (api, component, or all)'
+    required: true
+  node-version:
+    description: 'Node.js version to use'
+    required: false
+    default: '22.x'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js Environment
+      uses: ./.github/actions/setup-node
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Run API tests
+      if: inputs.test-type == 'api' || inputs.test-type == 'all'
+      shell: bash
+      env:
+        NODE_ENV: test
+        DATABASE_URL: ${{ secrets.DB_PROD_MONGODB_URI }}
+      run: npm run test:api
+
+    - name: Run Component tests
+      if: inputs.test-type == 'component' || inputs.test-type == 'all'
+      shell: bash
+      env:
+        NODE_ENV: test
+      run: npm run test -- --testPathPattern=__tests__/components --coverage --watchAll=false

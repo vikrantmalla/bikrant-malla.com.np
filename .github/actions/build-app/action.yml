@@ -1,0 +1,71 @@
+name: 'Build Next.js Application'
+description: 'Build and archive Next.js application with production environment'
+inputs:
+  node-version:
+    description: 'Node.js version to use'
+    required: false
+    default: '22.x'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js Environment
+      uses: ./.github/actions/setup-node
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Build static website
+      id: build
+      shell: bash
+      env:
+        NODE_ENV: production
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        NEXT_PUBLIC_SENTRY_DSN: ${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+        DATABASE_URL: ${{ secrets.DB_PROD_MONGODB_URI }}
+        NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+        RESEND_API_KEY_PROD: ${{ secrets.RESEND_API_KEY_PROD }}
+        RESEND_FROM_EMAIL_PROD: ${{ secrets.RESEND_FROM_EMAIL_PROD }}
+      run: |
+        echo "Starting build process..."
+        npm run build
+        echo "Build completed successfully"
+        echo "build_success=true" >> $GITHUB_OUTPUT
+
+    - name: Verify build output
+      if: steps.build.outputs.build_success == 'true'
+      shell: bash
+      run: |
+        echo "Verifying build output..."
+        if [ -d ".next" ]; then
+          echo "Build output directory exists"
+          ls -la .next/
+        else
+          echo "Build output directory not found"
+          exit 1
+        fi
+
+    - name: Archive Release
+      if: steps.build.outputs.build_success == 'true'
+      uses: thedoctor0/zip-release@0.7.5
+      with:
+        type: "zip"
+        filename: "release.zip"
+
+    - name: Upload Release Artifact
+      if: steps.build.outputs.build_success == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-archive
+        path: release.zip
+
+    - name: Build Failed - Upload Logs
+      if: failure() && steps.build.conclusion == 'failure'
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-logs
+        path: |
+          .next/
+          *.log
+          npm-debug.log*
+          yarn-debug.log*
+          yarn-error.log*
