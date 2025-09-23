@@ -38,11 +38,38 @@ jobs:
           DATABASE_URL: ${{ secrets.DB_PROD_MONGODB_URI }}
         run: npm run test:api
 
+  component-tests:
+    name: Run Component Tests
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true || github.event_name == 'push'
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: Run Component tests
+        env:
+          NODE_ENV: test
+        run: npm run test -- --testPathPattern=__tests__/components --coverage --watchAll=false
+
   build-and-archive:
     name: Build and Archive Next.js Application
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.api-tests.result == 'success'
-    needs: api-tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.api-tests.result == 'success' && needs.component-tests.result == 'success'
+    needs: [api-tests, component-tests]
 
     strategy:
       matrix:
@@ -118,7 +145,7 @@ jobs:
   release:
     name: Release to GitHub
     runs-on: ubuntu-latest
-    needs: [api-tests, build-and-archive]
+    needs: [api-tests, component-tests, build-and-archive]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.build-and-archive.result == 'success'
 
     strategy:
