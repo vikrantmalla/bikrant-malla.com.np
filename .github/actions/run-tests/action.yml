@@ -1,21 +1,26 @@
-name: 'Run Tests'
-description: 'Run API or Component tests with proper environment setup'
+name: "Run Tests"
+description: "Run API or Component tests with proper environment setup"
 inputs:
   test-type:
-    description: 'Type of tests to run (api, component, or all)'
+    description: "Type of tests to run (api, component, or all)"
     required: true
   node-version:
-    description: 'Node.js version to use'
+    description: "Node.js version to use"
     required: false
-    default: '22.x'
+    default: "22.x"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
-    - name: Setup Node.js Environment
-      uses: ./.github/actions/setup-node
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
+        cache: "npm"
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
 
     - name: Run API tests
       if: inputs.test-type == 'api' || inputs.test-type == 'all'

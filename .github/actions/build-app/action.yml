@@ -1,18 +1,23 @@
-name: 'Build Next.js Application'
-description: 'Build and archive Next.js application with production environment'
+name: "Build Next.js Application"
+description: "Build and archive Next.js application with production environment"
 inputs:
   node-version:
-    description: 'Node.js version to use'
+    description: "Node.js version to use"
     required: false
-    default: '22.x'
+    default: "22.x"
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
-    - name: Setup Node.js Environment
-      uses: ./.github/actions/setup-node
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
+        cache: "npm"
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
 
     - name: Build static website
       id: build

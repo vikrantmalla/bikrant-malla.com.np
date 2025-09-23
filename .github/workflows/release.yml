@@ -13,7 +13,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 env:
-  NODE_VERSION: '22.x'
+  NODE_VERSION: "22.x"
 
 jobs:
   api-tests:
@@ -23,6 +23,9 @@ jobs:
     if: github.event.pull_request.merged == true || github.event_name == 'push'
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Check runner status
         run: |
           echo "🚀 Runner is available and ready!"
@@ -32,11 +35,11 @@ jobs:
           df -h
           echo "Available memory:"
           free -h
-          
+
       - name: Run API tests
         uses: ./.github/actions/run-tests
         with:
-          test-type: 'api'
+          test-type: "api"
           node-version: ${{ env.NODE_VERSION }}
 
   component-tests:
@@ -46,10 +49,13 @@ jobs:
     if: github.event.pull_request.merged == true || github.event_name == 'push'
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Run Component tests
         uses: ./.github/actions/run-tests
         with:
-          test-type: 'component'
+          test-type: "component"
           node-version: ${{ env.NODE_VERSION }}
 
   build-and-archive:
@@ -60,6 +66,9 @@ jobs:
     needs: [api-tests, component-tests]
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Build and Archive Application
         uses: ./.github/actions/build-app
         with:
