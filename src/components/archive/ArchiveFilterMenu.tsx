@@ -9,9 +9,10 @@ import { TagsCategory } from "@/types/enum";
 import { FaSortAmountDownAlt, FaSortAmountUpAlt } from "react-icons/fa";
 import { useProjectStore } from "@/store/feature/projectStore";
 
-const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
+const ArchiveFilterMenu = ({ techTag }: Omit<ArchiveProps, 'project'>) => {
   const {
     projectList,
+    originalProjects,
     isAscending,
     selectedTag,
     sortProjectList,
@@ -31,7 +32,13 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
   } else {
     const words = selectedTag.split("_"); // Split the tag by underscore if it contains any
     formattedSelectedTag = words
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word) => {
+        // Special case for JS to ensure it's uppercase
+        if (word.toLowerCase() === 'js') {
+          return 'JS';
+        }
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
       .join(" ");
   }
 
@@ -41,14 +48,36 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
     (tag: string) => {
       let filteredProjects;
       if (tag === TagsCategory.ALL || tag === TagsCategory.ALL.toLowerCase()) {
-        filteredProjects = project;
+        // For "All" tag, use the original projects
+        filteredProjects = originalProjects;
       } else if (tag === TagsCategory.FEATURE.toLowerCase()) {
         // Filter based on isNew property for "Feature" tag
-        filteredProjects = project.filter((p) => p.isNew);
+        filteredProjects = originalProjects.filter((p) => p.isNew);
       } else {
+        // Format the tag for comparison with build array
+        let formattedTag: string;
+        if (
+          tag.toUpperCase() === TagsCategory.HTML ||
+          tag.toUpperCase() === TagsCategory.CSS ||
+          tag.toUpperCase() === TagsCategory.SCSS
+        ) {
+          formattedTag = tag.toUpperCase();
+        } else {
+          const words = tag.split("_"); // Split the tag by underscore if it contains any
+          formattedTag = words
+            .map((word) => {
+              // Special case for JS to ensure it's uppercase
+              if (word.toLowerCase() === 'js') {
+                return 'JS';
+              }
+              return word.charAt(0).toUpperCase() + word.slice(1);
+            })
+            .join(" ");
+        }
+        
         // Filter based on tag props
-        filteredProjects = project.filter((p) =>
-          p.build.includes(formattedSelectedTag)
+        filteredProjects = originalProjects.filter((p) =>
+          p.build.includes(formattedTag)
         );
       }
       setProjectList(filteredProjects);
@@ -59,7 +88,7 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
         label: "keyword_list_update",
       });
     },
-    [setProjectList, project, formattedSelectedTag]
+    [setProjectList, originalProjects]
   );
 
   useEffect(() => {
@@ -107,7 +136,7 @@ const ArchiveFilterMenu = ({ project, techTag }: ArchiveProps) => {
               href={
                 formattedTech[index] === TagsCategory.ALL.toLowerCase()
                   ? "/archive"
-                  : `?tag=${formattedTech[index]}`
+                  : `/archive?tag=${formattedTech[index]}`
               }
               aria-label={`Filter by ${techTag} projects`}
             >

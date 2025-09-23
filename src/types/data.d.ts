@@ -26,11 +26,13 @@ declare namespace Data {
 
     interface ProjectStore {
       projectList: ArchiveProject[];
+      originalProjects: ArchiveProject[];
       selectedTag: string;
       showSkeletonLoading: boolean;
       isAscending: boolean;
       setSelectedTag: (tag: string) => void;
       setProjectList: (projects: ArchiveProject[]) => void;
+      setOriginalProjects: (projects: ArchiveProject[]) => void;
       sortProjectList: () => void;
       setSkeletonLoading: (value: boolean) => void;
     }

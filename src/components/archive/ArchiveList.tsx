@@ -1,28 +1,39 @@
 "use client";
 import React from "react";
-import { ArchiveProject } from "../../types/data";
 import { joseFont } from "@/helpers/lib/font";
 import ArchiveDetails from "./ArchiveCard";
+import { useProjectStore } from "@/store/feature/projectStore";
 
-interface ArchiveListProps {
-  archiveProjects: ArchiveProject[];
-}
+const ArchiveList: React.FC = () => {
+  const { projectList, showSkeletonLoading } = useProjectStore();
 
-const ArchiveList: React.FC<ArchiveListProps> = ({ archiveProjects }) => {
+  // Show skeleton loading state
+  if (showSkeletonLoading) {
+    return (
+      <div className="archive-lists">
+        <div className="message-placeholder">
+          <p className={`subheading ${joseFont} fs-600`}>
+            Loading projects...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {archiveProjects.length > 0 ? (
-        archiveProjects.map((data: ArchiveProject, id: number) => {
-          return <ArchiveDetails key={id} {...data} />
-        })
+    <div className="archive-lists">
+      {projectList.length > 0 ? (
+        projectList.map((project, index) => (
+          <ArchiveDetails key={`${project.id}-${index}`} {...project} />
+        ))
       ) : (
         <div className="message-placeholder">
           <p className={`subheading ${joseFont} fs-600`}>
-            Project is not available
+            No projects found for the selected filter
           </p>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

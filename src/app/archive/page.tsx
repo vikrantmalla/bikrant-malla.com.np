@@ -48,10 +48,10 @@ const Archive = async () => {
           </p>
           <ArchiveStoreProvider archiveProjects={archiveProjects}>
             <div>
-              <ArchiveFilterMenu project={archiveProjects} techTag={techTags} />
+              <ArchiveFilterMenu techTag={techTags} />
             </div>
             <div className="archive-lists">
-              <ArchiveList archiveProjects={archiveProjects} />
+              <ArchiveList />
             </div>
           </ArchiveStoreProvider>
         </div>

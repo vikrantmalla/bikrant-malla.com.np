@@ -15,29 +15,30 @@ const ArchiveDetails = ({
   viewCode,
 }: ArchiveProject) => {
   const { selectedTag, showSkeletonLoading } = useProjectStore();
-  const tags = [...build];
-  let formattedSelectedTag: string;
-
-  if (
-    selectedTag.toUpperCase() === TagsCategory.HTML ||
-    selectedTag.toUpperCase() === TagsCategory.CSS ||
-    selectedTag.toUpperCase() === TagsCategory.SCSS
-  ) {
-    formattedSelectedTag = selectedTag.toUpperCase();
-  } else {
-    const words = selectedTag.split("_"); // Split the tag by underscore if it contains any
-    formattedSelectedTag = words
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+  
+  // Format the selected tag for comparison (matches the filter logic)
+  const formatSelectedTag = (tag: string): string => {
+    if (
+      tag.toUpperCase() === TagsCategory.HTML ||
+      tag.toUpperCase() === TagsCategory.CSS ||
+      tag.toUpperCase() === TagsCategory.SCSS
+    ) {
+      return tag.toUpperCase();
+    }
+    
+    const words = tag.split("_");
+    return words
+      .map((word) => {
+        // Special case for JS to ensure it's uppercase
+        if (word.toLowerCase() === 'js') {
+          return 'JS';
+        }
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
       .join(" ");
-  }
-  /*
-   * Reorder the tag according to the formattedTag
-   */
-  // const reorderedTags = formattedTag !== "All"
-  // ? (formattedTag !== "Feature"
-  //     ? [formorderedTag, ...tags.filter(tag => tag !== formattedTag)]
-  //     : tags.filter(tag => tag !== "Feature"))
-  // : tags;
+  };
+
+  const formattedSelectedTag = formatSelectedTag(selectedTag);
 
   return (
     <>
@@ -65,13 +66,15 @@ const ArchiveDetails = ({
             </div>
           </div>
           <div className="tag">
-            {tags.map((tag, id) => {
-              return (
-                <span className={`${joseFont} fs-300`} key={id}>
-                  {tag}
-                </span>
-              );
-            })}
+            {build.map((tag, index) => (
+              <span 
+                className={`${joseFont} fs-300`} 
+                key={`${id}-tag-${index}`}
+                data-testid={`project-tag-${tag.toLowerCase().replace(/\s+/g, '-')}`}
+              >
+                {tag}
+              </span>
+            ))}
           </div>
         </div>
       ) : (
