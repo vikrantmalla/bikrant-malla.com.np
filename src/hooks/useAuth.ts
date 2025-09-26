@@ -30,6 +30,16 @@ export const useAuth = () => {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [isCheckingRole, setIsCheckingRole] = useState(false);
   const [portfolioInfo, setPortfolioInfo] = useState<PortfolioInfo | null>(null);
+  
+  // Cache for role data to prevent unnecessary API calls
+  const [roleCache, setRoleCache] = useState<{
+    data: UserRole | null;
+    timestamp: number;
+    userId: string | null;
+  }>({ data: null, timestamp: 0, userId: null });
+  
+  // Cache duration: 5 minutes
+  const CACHE_DURATION = 5 * 60 * 1000;
 
   // Get access token from localStorage
   const getAccessToken = () => {
@@ -68,12 +78,14 @@ export const useAuth = () => {
         setUser(null);
         setUserRole(null);
         setPortfolioInfo(null);
+        setRoleCache({ data: null, timestamp: 0, userId: null });
         router.push('/login');
       } else {
-        // Other errors, clear any local storage
-        removeAccessToken();
-        setIsAuthenticated(false);
-        setUser(null);
+      // Other errors, clear any local storage
+      removeAccessToken();
+      setIsAuthenticated(false);
+      setUser(null);
+      setRoleCache({ data: null, timestamp: 0, userId: null });
       }
     } catch (error) {
       console.error('Auth check failed:', error);
@@ -82,6 +94,7 @@ export const useAuth = () => {
       setUser(null);
       setUserRole(null);
       setPortfolioInfo(null);
+      setRoleCache({ data: null, timestamp: 0, userId: null });
       // Don't redirect on network errors during initial auth check
     } finally {
       setIsLoading(false);
@@ -112,6 +125,16 @@ export const useAuth = () => {
   const checkUserRole = useCallback(async () => {
     if (!isAuthenticated || !user) return null;
 
+    // Check cache first
+    const now = Date.now();
+    if (
+      roleCache.data &&
+      roleCache.userId === user.id &&
+      (now - roleCache.timestamp) < CACHE_DURATION
+    ) {
+      return roleCache.data;
+    }
+
     setIsCheckingRole(true);
     try {
       const token = getAccessToken();
@@ -123,12 +146,29 @@ export const useAuth = () => {
 
       if (response.ok) {
         const data = await response.json();
+        
+        // Handle new API response structure with success/data wrapper
+        const userData = data.data?.user || data.user;
+        
+        if (!userData) {
+          console.error('Invalid response structure:', data);
+          return null;
+        }
+        
         const roleData = {
-          hasEditorRole: data.user.hasEditorRole,
-          isOwner: data.user.isOwner
+          hasEditorRole: userData.hasEditorRole,
+          isOwner: userData.isOwner
         };
+        
+        // Update cache
+        setRoleCache({
+          data: roleData,
+          timestamp: now,
+          userId: user.id
+        });
+        
         setUserRole(roleData);
-        setPortfolioInfo(data.user.portfolio);
+        setPortfolioInfo(userData.portfolio);
         return roleData;
       } else if (response.status === 401) {
         // Token is invalid or expired, try to refresh first
@@ -145,12 +185,29 @@ export const useAuth = () => {
 
           if (retryResponse.ok) {
             const data = await retryResponse.json();
+            
+            // Handle new API response structure with success/data wrapper
+            const userData = data.data?.user || data.user;
+            
+            if (!userData) {
+              console.error('Invalid response structure in retry:', data);
+              return null;
+            }
+            
             const roleData = {
-              hasEditorRole: data.user.hasEditorRole,
-              isOwner: data.user.isOwner
+              hasEditorRole: userData.hasEditorRole,
+              isOwner: userData.isOwner
             };
+            
+            // Update cache
+            setRoleCache({
+              data: roleData,
+              timestamp: now,
+              userId: user.id
+            });
+            
             setUserRole(roleData);
-            setPortfolioInfo(data.user.portfolio);
+            setPortfolioInfo(userData.portfolio);
             return roleData;
           }
         }
@@ -161,7 +218,15 @@ export const useAuth = () => {
         setUser(null);
         setUserRole(null);
         setPortfolioInfo(null);
+        setRoleCache({ data: null, timestamp: 0, userId: null });
         router.push('/login');
+        return null;
+      } else if (response.status === 429) {
+        // Rate limit exceeded - don't clear auth state, just return cached data if available
+        console.warn('Rate limit exceeded for check-role, using cached data if available');
+        if (roleCache.data && roleCache.userId === user.id) {
+          return roleCache.data;
+        }
         return null;
       } else {
         console.error('Error checking user role:', response.status, response.statusText);
@@ -175,12 +240,13 @@ export const useAuth = () => {
       setUser(null);
       setUserRole(null);
       setPortfolioInfo(null);
+      setRoleCache({ data: null, timestamp: 0, userId: null });
       router.push('/login');
       return null;
     } finally {
       setIsCheckingRole(false);
     }
-  }, [isAuthenticated, user, tryRefreshToken, router]);
+  }, [isAuthenticated, user, tryRefreshToken, router, roleCache, CACHE_DURATION]);
 
   // Login function
   const login = async (email: string, password: string) => {
@@ -223,6 +289,7 @@ export const useAuth = () => {
       setIsAuthenticated(false);
       setUserRole(null);
       setPortfolioInfo(null);
+      setRoleCache({ data: null, timestamp: 0, userId: null });
       router.push('/');
     }
   };

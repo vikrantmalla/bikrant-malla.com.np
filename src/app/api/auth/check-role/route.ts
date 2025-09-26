@@ -1,33 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromToken, checkUserPermissions } from '@/lib/auth';
+import { withApiErrorHandler } from '@/lib/api-utils';
+import { createSuccessResponse, handleApiError } from '@/lib/api-errors';
+import { validateRequestMiddleware } from '@/lib/api-utils';
+import { rateLimiters } from '@/lib/rate-limit';
 
-export async function GET(request: NextRequest) {
-  try {
-    // Get user from token
-    const authResult = await getUserFromToken(request);
-    
-    if (!authResult.user) {
-      return NextResponse.json({ error: authResult.error || 'Unauthorized' }, { status: 401 });
-    }
+async function checkRoleHandler(request: NextRequest) {
+  // Validate request
+  validateRequestMiddleware(request);
 
-    // Check user permissions
-    const permissionCheck = await checkUserPermissions(authResult.user);
-
-    if (!permissionCheck.user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    return NextResponse.json({
-      user: {
-        email: permissionCheck.user.email,
-        name: permissionCheck.user.name,
-        hasEditorRole: permissionCheck.hasEditorRole,
-        isOwner: permissionCheck.isOwner,
-        portfolio: permissionCheck.portfolio
-      }
-    });
-  } catch (error) {
-    console.error('Error checking user role:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  // Get user from token
+  const authResult = await getUserFromToken(request);
+  
+  if (!authResult.user) {
+    throw new Error(authResult.error || 'Unauthorized');
   }
-} 
+
+  // Check user permissions
+  const permissionCheck = await checkUserPermissions(authResult.user);
+
+  if (!permissionCheck.user) {
+    throw new Error('User not found');
+  }
+
+  return createSuccessResponse({
+    user: {
+      email: permissionCheck.user.email,
+      name: permissionCheck.user.name,
+      hasEditorRole: permissionCheck.hasEditorRole,
+      isOwner: permissionCheck.isOwner,
+      portfolio: permissionCheck.portfolio
+    }
+  }, 'User role checked successfully');
+}
+
+// Apply rate limiting and error handling
+export const GET = withApiErrorHandler(checkRoleHandler, 'checkRole'); 
