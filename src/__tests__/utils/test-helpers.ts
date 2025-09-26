@@ -3,9 +3,14 @@ import { faker } from '@faker-js/faker';
 import { Platform, Role } from '@/types/enum';
 import { User, Portfolio, Project, ArchiveProject, Config, TechTag, TechOption } from '@/types/data';
 
+// Helper function to generate ObjectId format
+const generateObjectId = (): string => {
+  return faker.string.alphanumeric(24).toLowerCase();
+};
+
 // Test data generators
 export const generateTestUser = (overrides: Partial<User> = {}): User => ({
-  id: faker.string.uuid(),
+  id: generateObjectId(),
   email: faker.internet.email(),
   password: faker.internet.password(),
   name: faker.person.fullName(),
@@ -18,7 +23,7 @@ export const generateTestUser = (overrides: Partial<User> = {}): User => ({
 });
 
 export const generateTestPortfolio = (overrides: Partial<Portfolio> = {}): Portfolio => ({
-  id: faker.string.uuid(),
+  id: generateObjectId(),
   name: faker.person.fullName(),
   jobTitle: faker.person.jobTitle(),
   aboutDescription1: faker.lorem.paragraph(),
@@ -34,7 +39,7 @@ export const generateTestPortfolio = (overrides: Partial<Portfolio> = {}): Portf
 });
 
 export const generateTestProject = (portfolioId: string, overrides: Partial<Project> = {}): Project => ({
-  id: faker.string.uuid(),
+  id: generateObjectId(),
   title: faker.lorem.words(3),
   subTitle: faker.lorem.sentence(),
   images: faker.image.url(),
@@ -47,13 +52,13 @@ export const generateTestProject = (portfolioId: string, overrides: Partial<Proj
 });
 
 export const generateTestConfig = (overrides: Partial<Config> = {}): Config => ({
-  id: faker.string.uuid(),
+  id: generateObjectId(),
   allowSignUp: true,
   ...overrides,
 });
 
 export const generateTestArchiveProject = (portfolioId: string, overrides: Partial<ArchiveProject> = {}): ArchiveProject => ({
-  id: faker.string.uuid(),
+  id: generateObjectId(),
   title: faker.lorem.words(3),
   year: faker.date.past().getFullYear(),
   isNew: faker.datatype.boolean(),
@@ -65,13 +70,13 @@ export const generateTestArchiveProject = (portfolioId: string, overrides: Parti
 });
 
 export const generateTestTechTag = (overrides: Partial<TechTag> = {}): TechTag => ({
-  id: faker.string.uuid(),
+  id: generateObjectId(),
   tag: faker.lorem.word(),
   ...overrides,
 });
 
 export const generateTestTechOption = (overrides: Partial<TechOption> = {}): TechOption => ({
-  id: faker.string.uuid(),
+  id: generateObjectId(),
   name: faker.lorem.word(),
   category: faker.lorem.word(),
   ...overrides,

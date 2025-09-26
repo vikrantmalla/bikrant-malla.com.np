@@ -10,6 +10,7 @@ export const passwordSchema = z
   .string()
   .min(8, "Password must be at least 8 characters");
 export const uuidSchema = z.string().uuid("Invalid UUID format");
+export const objectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format");
 
 // Auth schemas
 export const loginSchema = z.object({
@@ -40,7 +41,7 @@ export const createProjectSchema = z.object({
     .min(1, "Project URL is required"),
   tools: z.array(z.string()).min(1, "At least one tool is required"),
   platform: z.nativeEnum(Platform),
-  portfolioId: uuidSchema,
+  portfolioId: objectIdSchema,
 });
 
 export const updateProjectSchema = z.object({
@@ -84,7 +85,15 @@ export const createTechTagSchema = z.object({
 export const bulkCreateTechTagsSchema = z.object({
   tags: z
     .array(z.string().min(1, "Tag name is required").max(50).trim())
-    .min(1, "At least one tag is required"),
+    .min(1, "At least one tag is required")
+    .max(50, "Cannot create more than 50 tags at once"),
+});
+
+export const bulkDeleteTechTagsSchema = z.object({
+  tagIds: z
+    .array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format"))
+    .min(1, "At least one tag ID is required")
+    .max(50, "Cannot delete more than 50 tags at once"),
 });
 
 // Tech option schemas
@@ -123,7 +132,7 @@ export const createArchiveProjectSchema = z.object({
     .min(1, "Project URL is required"),
   viewCode: z.string().url("Invalid code URL").min(1, "Code URL is required"),
   build: z.array(z.string()).default([]),
-  portfolioId: uuidSchema,
+  portfolioId: objectIdSchema,
 });
 
 export const updateArchiveProjectSchema = createArchiveProjectSchema
