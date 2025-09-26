@@ -3,85 +3,82 @@ import { getUserFromCookie } from "@/lib/auth";
 import { verifyToken, verifyRefreshToken, generateToken } from "@/lib/jwt";
 import { prisma } from "@/lib/prisma";
 import { Environment } from "@/types/enum";
+import { withApiErrorHandler } from "@/lib/api-utils";
+import { createSuccessResponse } from "@/lib/api-errors";
 
-export async function GET(request: NextRequest) {
-  try {
-    // Get user from cookie
-    let authResult = await getUserFromCookie(request);
+async function meHandler(request: NextRequest) {
+  // Get user from cookie
+  let authResult = await getUserFromCookie(request);
 
-    // If authentication failed due to expired token, try to refresh
-    if (!authResult.user && authResult.error === "Invalid token") {
-      const refreshToken = request.cookies.get("refreshToken")?.value;
+  // If authentication failed due to expired token, try to refresh
+  if (!authResult.user && authResult.error === "Invalid token") {
+    const refreshToken = request.cookies.get("refreshToken")?.value;
 
-      if (refreshToken) {
-        try {
-          const refreshResult = await tryRefreshToken(refreshToken);
-          if (refreshResult.success && refreshResult.newAccessToken) {
-            // Set new access token in response
-            const response = NextResponse.json({
-              user: {
-                id: refreshResult.user!.id,
-                email: refreshResult.user!.email,
-                name: refreshResult.user!.name,
-                isActive: refreshResult.user!.isActive,
-                emailVerified: refreshResult.user!.emailVerified,
-              },
-            });
+    if (refreshToken) {
+      try {
+        const refreshResult = await tryRefreshToken(refreshToken);
+        if (refreshResult.success && refreshResult.newAccessToken) {
+          // Set new access token in response
+          const response = createSuccessResponse({
+            user: {
+              id: refreshResult.user!.id,
+              email: refreshResult.user!.email,
+              name: refreshResult.user!.name,
+              isActive: refreshResult.user!.isActive,
+              emailVerified: refreshResult.user!.emailVerified,
+            },
+          });
 
-            response.cookies.set("accessToken", refreshResult.newAccessToken, {
-              httpOnly: true,
-              secure: process.env.NODE_ENV === Environment.PRODUCTION,
-              sameSite: "strict",
-              maxAge: 15 * 60, // 15 minutes
-              path: "/",
-            });
+          response.cookies.set("accessToken", refreshResult.newAccessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === Environment.PRODUCTION,
+            sameSite: "strict",
+            maxAge: 15 * 60, // 15 minutes
+            path: "/",
+          });
 
-            if (refreshResult.newRefreshToken) {
-              response.cookies.set(
-                "refreshToken",
-                refreshResult.newRefreshToken,
-                {
-                  httpOnly: true,
-                  secure: process.env.NODE_ENV === Environment.PRODUCTION,
-                  sameSite: "strict",
-                  maxAge: 7 * 24 * 60 * 60, // 7 days
-                  path: "/",
-                }
-              );
-            }
-
-            return response;
+          if (refreshResult.newRefreshToken) {
+            response.cookies.set(
+              "refreshToken",
+              refreshResult.newRefreshToken,
+              {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === Environment.PRODUCTION,
+                sameSite: "strict",
+                maxAge: 7 * 24 * 60 * 60, // 7 days
+                path: "/",
+              }
+            );
           }
-        } catch (error) {
-          console.error("Token refresh failed in /api/auth/me:", error);
+
+          return response;
         }
+      } catch (error) {
+        console.error("Token refresh failed in /api/auth/me:", error);
       }
     }
+  }
 
-    if (!authResult.user) {
-      return NextResponse.json(
-        { error: authResult.error || "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    return NextResponse.json({
-      user: {
-        id: authResult.user.id,
-        email: authResult.user.email,
-        name: authResult.user.name,
-        isActive: authResult.user.isActive,
-        emailVerified: authResult.user.emailVerified,
-      },
-    });
-  } catch (error) {
-    console.error("Error getting user info:", error);
+  if (!authResult.user) {
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      { error: authResult.error || "Unauthorized" },
+      { status: 401 }
     );
   }
+
+  return createSuccessResponse({
+    user: {
+      id: authResult.user.id,
+      email: authResult.user.email,
+      name: authResult.user.name,
+      isActive: authResult.user.isActive,
+      emailVerified: authResult.user.emailVerified,
+    },
+  });
 }
+
+// Apply rate limiting and error handling
+export const GET = withApiErrorHandler(meHandler, 'checkRole');
 
 /**
  * Try to refresh the access token using refresh token

@@ -33,6 +33,7 @@ export default function DashboardClient({
     checkUserRole,
     isLoading,
     redirectToLogin,
+    logout,
   } = useAuth();
   const { isDarkTheme, themes } = useThemeStore();
   const currentTheme = isDarkTheme ? themes.dark : themes.light;
@@ -169,7 +170,7 @@ export default function DashboardClient({
         isOpen={isSideMenuOpen}
         onClose={() => setIsSideMenuOpen(false)}
         onFormChange={handleFormChange}
-        onLogout={() => {}}
+        onLogout={logout}
         onThemeToggle={() => {}}
       />
 
