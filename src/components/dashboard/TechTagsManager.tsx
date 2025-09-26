@@ -194,7 +194,7 @@ const TechTagsManager: React.FC<TechTagsManagerProps> = ({ className }) => {
 
       {/* Tech Tags List */}
       <div className="tech-tags-list">
-        {isLoading && techTags.length === 0 ? (
+        {isLoading && (!techTags || techTags.length === 0) ? (
           // Show skeleton loader only on initial load
           <div className="loading-skeleton">
             {[1, 2, 3, 4, 5].map((index) => (
@@ -208,7 +208,7 @@ const TechTagsManager: React.FC<TechTagsManagerProps> = ({ className }) => {
               </div>
             ))}
           </div>
-        ) : techTags.length > 0 ? (
+        ) : techTags && techTags.length > 0 ? (
           // Show actual tech tags
           techTags.map(tag => (
             <div key={tag.id} className="tech-tag-item">
