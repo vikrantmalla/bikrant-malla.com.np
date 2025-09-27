@@ -149,7 +149,7 @@ export const updateConfigSchema = z.object({
   maxWebProjects: z.number().int().min(1).max(100),
   maxDesignProjects: z.number().int().min(1).max(100),
   maxTotalProjects: z.number().int().min(1).max(200),
-});
+}).strict();
 
 // Archive project schemas
 export const createArchiveProjectSchema = z.object({

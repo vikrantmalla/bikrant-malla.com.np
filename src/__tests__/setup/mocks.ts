@@ -174,7 +174,7 @@ export function setupMocks() {
           return await handler(...args);
         } catch (error: any) {
           // Handle custom error classes
-          if (error && typeof error === 'object' && 'statusCode' in error) {
+          if (error && typeof error === "object" && "statusCode" in error) {
             return {
               json: () =>
                 Promise.resolve({
@@ -187,7 +187,13 @@ export function setupMocks() {
             };
           }
           // Handle validation errors (ZodError or validation-related errors)
-          if (error && error.message && (error.name === 'ZodError' || error.message.includes('required') || error.message.includes('Invalid'))) {
+          if (
+            error &&
+            error.message &&
+            (error.name === "ZodError" ||
+              error.message.includes("required") ||
+              error.message.includes("Invalid"))
+          ) {
             return {
               json: () =>
                 Promise.resolve({
@@ -251,7 +257,7 @@ export function setupMocks() {
           return await handler(...args);
         } catch (error: any) {
           // Use the mock error handler logic
-          if (error && typeof error === 'object' && 'statusCode' in error) {
+          if (error && typeof error === "object" && "statusCode" in error) {
             return {
               json: () =>
                 Promise.resolve({
@@ -264,7 +270,13 @@ export function setupMocks() {
             };
           }
           // Handle validation errors (ZodError or validation-related errors)
-          if (error && error.message && (error.name === 'ZodError' || error.message.includes('required') || error.message.includes('Invalid'))) {
+          if (
+            error &&
+            error.message &&
+            (error.name === "ZodError" ||
+              error.message.includes("required") ||
+              error.message.includes("Invalid"))
+          ) {
             return {
               json: () =>
                 Promise.resolve({
@@ -294,7 +306,7 @@ export function setupMocks() {
           return await handler(...args);
         } catch (error: any) {
           // Use the mock error handler logic
-          if (error && typeof error === 'object' && 'statusCode' in error) {
+          if (error && typeof error === "object" && "statusCode" in error) {
             return {
               json: () =>
                 Promise.resolve({
@@ -307,7 +319,13 @@ export function setupMocks() {
             };
           }
           // Handle validation errors (ZodError or validation-related errors)
-          if (error && error.message && (error.name === 'ZodError' || error.message.includes('required') || error.message.includes('Invalid'))) {
+          if (
+            error &&
+            error.message &&
+            (error.name === "ZodError" ||
+              error.message.includes("required") ||
+              error.message.includes("Invalid"))
+          ) {
             return {
               json: () =>
                 Promise.resolve({
@@ -461,7 +479,7 @@ export function setupMocks() {
     AuthenticationError: class AuthenticationError extends Error {
       public statusCode: number;
       public code: string;
-      
+
       constructor(message = "Authentication required") {
         super(message);
         this.name = "AuthenticationError";
@@ -472,7 +490,7 @@ export function setupMocks() {
     AuthorizationError: class AuthorizationError extends Error {
       public statusCode: number;
       public code: string;
-      
+
       constructor(message = "Insufficient permissions") {
         super(message);
         this.name = "AuthorizationError";
@@ -483,7 +501,7 @@ export function setupMocks() {
     NotFoundError: class NotFoundError extends Error {
       public statusCode: number;
       public code: string;
-      
+
       constructor(message = "Resource not found") {
         super(message);
         this.name = "NotFoundError";
@@ -494,7 +512,7 @@ export function setupMocks() {
     ConflictError: class ConflictError extends Error {
       public statusCode: number;
       public code: string;
-      
+
       constructor(message = "Resource already exists") {
         super(message);
         this.name = "ConflictError";
@@ -569,7 +587,10 @@ export function setupMocks() {
         if (data && typeof data === "object") {
           const dataAsAny = data as any; // Cast to any to allow property access in this mock
           if (dataAsAny.tag === "") {
-            return { success: false, errors: new Error("Tag name is required") };
+            return {
+              success: false,
+              errors: new Error("Tag name is required"),
+            };
           }
           if (dataAsAny.tags && dataAsAny.tags.length === 0) {
             return {
@@ -577,18 +598,29 @@ export function setupMocks() {
               errors: new Error("At least one tag is required"),
             };
           }
-          if (dataAsAny.tagIds && dataAsAny.tagIds.includes("invalid-objectid")) {
-            return { success: false, errors: new Error("Invalid ObjectId format") };
+          if (
+            dataAsAny.tagIds &&
+            dataAsAny.tagIds.includes("invalid-objectid")
+          ) {
+            return {
+              success: false,
+              errors: new Error("Invalid ObjectId format"),
+            };
           }
         }
         // Handle ObjectId validation for route parameters
         if (typeof data === "string" && data === "invalid-objectid") {
-          return { success: false, errors: new Error("Invalid ObjectId format") };
+          return {
+            success: false,
+            errors: new Error("Invalid ObjectId format"),
+          };
         }
         // For all other cases, return success
         return { success: true, data };
       }),
-      objectIdSchema: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format"),
+      objectIdSchema: z
+        .string()
+        .regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format"),
       uuidSchema: z.string().uuid("Invalid UUID format"),
       createTechTagSchema: z.object({
         tag: z.string().min(1, "Tag name is required").max(50).trim(),
@@ -601,7 +633,9 @@ export function setupMocks() {
       }),
       bulkDeleteTechTagsSchema: z.object({
         tagIds: z
-          .array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format"))
+          .array(
+            z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format")
+          )
           .min(1, "At least one tag ID is required")
           .max(50, "Cannot delete more than 50 tags at once"),
       }),
@@ -633,7 +667,56 @@ export function setupMocks() {
       updatePortfolioSchema: { parse: jest.fn().mockReturnValue({}) },
       createTechOptionSchema: { parse: jest.fn().mockReturnValue({}) },
       inviteUserSchema: { parse: jest.fn().mockReturnValue({}) },
-      updateConfigSchema: { parse: jest.fn().mockReturnValue({}) },
+      updateConfigSchema: {
+        parse: jest.fn().mockImplementation((data) => {
+          // Check if all required fields are present and valid
+          if (!data || typeof data !== "object") {
+            throw new Error("Invalid data");
+          }
+
+          // Assert the type of data after the initial check to include the expected properties
+          const typedData = data as {
+            maxWebProjects?: number;
+            maxDesignProjects?: number;
+            maxTotalProjects?: number;
+          };
+
+          const { maxWebProjects, maxDesignProjects, maxTotalProjects } =
+            typedData;
+
+          // Check if all required fields are present
+          if (
+            maxWebProjects === undefined ||
+            maxDesignProjects === undefined ||
+            maxTotalProjects === undefined
+          ) {
+            throw new Error("Missing required fields");
+          }
+
+          // Check if all fields are numbers
+          if (
+            typeof maxWebProjects !== "number" ||
+            typeof maxDesignProjects !== "number" ||
+            typeof maxTotalProjects !== "number"
+          ) {
+            throw new Error("Invalid data types");
+          }
+
+          // Check if all fields are within valid ranges
+          if (
+            maxWebProjects < 1 ||
+            maxWebProjects > 100 ||
+            maxDesignProjects < 1 ||
+            maxDesignProjects > 100 ||
+            maxTotalProjects < 1 ||
+            maxTotalProjects > 200
+          ) {
+            throw new Error("Values out of range");
+          }
+
+          return data;
+        }),
+      },
       createArchiveProjectSchema: { parse: jest.fn().mockReturnValue({}) },
       updateArchiveProjectSchema: { parse: jest.fn().mockReturnValue({}) },
     };
@@ -651,6 +734,62 @@ export function resetMocks() {
       });
     }
   });
+
+  // Reset validation mocks
+  const { updateConfigSchema } = require("@/lib/validation");
+  if (
+    updateConfigSchema &&
+    updateConfigSchema.parse &&
+    jest.isMockFunction(updateConfigSchema.parse)
+  ) {
+    updateConfigSchema.parse.mockReset();
+    updateConfigSchema.parse.mockImplementation(
+      (data: {
+        maxWebProjects: number;
+        maxDesignProjects: number;
+        maxTotalProjects: number;
+      }) => {
+        // Check if all required fields are present and valid
+        if (!data || typeof data !== "object") {
+          throw new Error("Invalid data");
+        }
+
+        const { maxWebProjects, maxDesignProjects, maxTotalProjects } = data;
+
+        // Check if all required fields are present
+        if (
+          maxWebProjects === undefined ||
+          maxDesignProjects === undefined ||
+          maxTotalProjects === undefined
+        ) {
+          throw new Error("Missing required fields");
+        }
+
+        // Check if all fields are numbers
+        if (
+          typeof maxWebProjects !== "number" ||
+          typeof maxDesignProjects !== "number" ||
+          typeof maxTotalProjects !== "number"
+        ) {
+          throw new Error("Invalid data types");
+        }
+
+        // Check if all fields are within valid ranges
+        if (
+          maxWebProjects < 1 ||
+          maxWebProjects > 100 ||
+          maxDesignProjects < 1 ||
+          maxDesignProjects > 100 ||
+          maxTotalProjects < 1 ||
+          maxTotalProjects > 200
+        ) {
+          throw new Error("Values out of range");
+        }
+
+        return data;
+      }
+    );
+  }
 
   Object.values(mockCustomAuth).forEach((method: any) => {
     if (jest.isMockFunction(method)) {
