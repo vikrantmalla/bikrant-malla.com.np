@@ -1,132 +1,175 @@
-import { NextResponse, NextRequest } from "next/server";
-import { checkSecureEditorPermissions } from "@/lib/secure-auth";
+import { NextRequest } from "next/server";
+import { checkEditorPermissions, checkPortfolioAccess } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/password";
+import {
+  withApiErrorHandler,
+  withPublicRateLimit,
+  withAdminRateLimit,
+} from "@/lib/api-utils";
+import {
+  createSuccessResponse,
+  NotFoundError,
+  ConflictError,
+  AuthorizationError,
+} from "@/lib/api-errors";
+import {
+  createArchiveProjectSchema,
+  validateRequest,
+  objectIdSchema,
+} from "@/lib/validation";
 
-export async function GET(request: NextRequest): Promise<Response> {
-  const permissionCheck = await checkSecureEditorPermissions(request);
+// GET all archive projects for user's portfolio
+export const GET = withPublicRateLimit(async (request: NextRequest) => {
+  const permissionCheck = await checkEditorPermissions(request);
 
   if (!permissionCheck.success) {
-    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
-    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
-    // We must ensure a valid NextResponse is returned.
     if (permissionCheck.response) {
       return permissionCheck.response;
     } else {
-      // This case implies the permission check failed but did not provide a specific error response.
-      // Return a generic internal server error to ensure a valid Response is always returned.
-      return NextResponse.json(
-        { error: "Permission check failed unexpectedly." },
-        { status: 500 }
-      );
+      throw new Error("Permission check failed unexpectedly");
     }
   }
 
   const user = permissionCheck.user;
 
   if (!user || !user.email) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    throw new NotFoundError("User not found");
   }
 
-  try {
-    // Check if user exists in our database
-    let dbUser = await prisma.user.findUnique({
-      where: { email: user.email },
+  // Check if user exists in our database
+  let dbUser = await prisma.user.findUnique({
+    where: { email: user.email },
+    include: { roles: true },
+  });
+
+  // If user doesn't exist, create them
+  if (!dbUser) {
+    const tempPassword = crypto.randomUUID();
+    const hashedPassword = await hashPassword(tempPassword);
+
+    dbUser = await prisma.user.create({
+      data: {
+        email: user.email,
+        password: hashedPassword,
+        name: user.name || user.email.split("@")[0],
+        isActive: true,
+        emailVerified: false,
+      },
       include: { roles: true },
     });
+  }
 
-    // If user doesn't exist, create them
-    if (!dbUser) {
-      // This should not happen with the new auth system as users are created during registration
-      // But keeping this as a fallback for migration purposes
-      const tempPassword = crypto.randomUUID();
-      const hashedPassword = await hashPassword(tempPassword);
-      
-      dbUser = await prisma.user.create({
-        data: {
-          email: user.email,
-          password: hashedPassword,
-          name: user.name || user.email.split("@")[0],
-          isActive: true,
-          emailVerified: false,
-        },
-        include: { roles: true },
-      });
-    }
+  // First, try to find a portfolio owned by this user
+  let portfolio = await prisma.portfolio.findFirst({
+    where: {
+      ownerEmail: user.email,
+    },
+  });
 
-    // Check all portfolios
-    const allPortfolios = await prisma.portfolio.findMany({
-      select: { id: true, name: true, ownerEmail: true },
-    });
-
-    // First, try to find a portfolio owned by this user
-    let portfolio = await prisma.portfolio.findFirst({
+  // If no portfolio found, try to find one where user has a role
+  if (!portfolio) {
+    const userRole = await prisma.userPortfolioRole.findFirst({
       where: {
-        ownerEmail: user.email,
+        userId: dbUser.id,
       },
+      include: { portfolio: true },
     });
 
-    // If no portfolio found, try to find one where user has a role
-    if (!portfolio) {
-      const userRole = await prisma.userPortfolioRole.findFirst({
-        where: {
-          userId: dbUser.id,
-        },
-        include: { portfolio: true },
-      });
-
-      if (userRole) {
-        portfolio = userRole.portfolio;
-      }
+    if (userRole) {
+      portfolio = userRole.portfolio;
     }
+  }
 
-    // If still no portfolio found, user doesn't have access to any portfolio
-    // This should not automatically assign ownership to any portfolio
+  if (!portfolio) {
+    throw new NotFoundError("No portfolio found for user");
+  }
 
-    if (!portfolio) {
-      return NextResponse.json(
-        {
-          error: "No portfolio found for user",
-          message: "User doesn't have access to any portfolio",
-          debug: {
-            userEmail: user.email,
-            dbUserExists: !!dbUser,
-            totalPortfolios: allPortfolios.length,
-            portfolios: allPortfolios,
-          },
-        },
-        { status: 404 }
-      );
-    }
-
-    const archiveProjects = await prisma.archiveProject.findMany({
-      where: { portfolioId: portfolio.id },
-      include: {
-        portfolio: true,
-        tagRelations: {
-          include: {
-            tag: true,
-          },
+  const archiveProjects = await prisma.archiveProject.findMany({
+    where: { portfolioId: portfolio.id },
+    include: {
+      portfolio: true,
+      tagRelations: {
+        include: {
+          tag: true,
         },
       },
-    });
+    },
+  });
 
-    return NextResponse.json({
-      message: "Archive projects retrieved successfully",
+  return createSuccessResponse(
+    {
       archiveProjects,
       portfolio: {
         id: portfolio.id,
         name: portfolio.name,
       },
-    });
-  } catch (error) {
-    console.error("Error fetching archive projects:", error);
-    return NextResponse.json(
-      {
-        error: "Internal server error",
-        message: "Failed to fetch archive projects",
-      },
-      { status: 500 }
+    },
+    "Archive projects retrieved successfully"
+  );
+});
+
+// POST create new archive project
+export const POST = withAdminRateLimit(async (request: NextRequest) => {
+  const permissionCheck = await checkEditorPermissions(request);
+
+  if (!permissionCheck.success) {
+    if (permissionCheck.response) {
+      return permissionCheck.response;
+    } else {
+      throw new Error("Permission check failed unexpectedly");
+    }
+  }
+
+  if (!permissionCheck.user || !permissionCheck.user.email) {
+    throw new AuthorizationError("User not found");
+  }
+
+  const body = await request.json();
+  const validation = validateRequest(createArchiveProjectSchema, body);
+
+  if (!validation.success) {
+    throw validation.errors;
+  }
+
+  const { title, year, isNew, projectView, viewCode, build, portfolioId } =
+    validation.data;
+
+  // Check if user has access to the portfolio
+  const { hasAccess } = await checkPortfolioAccess(
+    permissionCheck.user.email,
+    portfolioId
+  );
+
+  if (!hasAccess) {
+    throw new AuthorizationError(
+      "Access denied. You don't have permission to add archive projects to this portfolio."
     );
   }
-}
+
+  const newArchiveProject = await prisma.archiveProject.create({
+    data: {
+      title: title.trim(),
+      year: year,
+      isNew: isNew || false,
+      projectView: projectView.trim(),
+      viewCode: viewCode?.trim() || "",
+      build: build || [],
+      portfolioId: portfolioId,
+    },
+    include: {
+      portfolio: true,
+      tagRelations: {
+        include: {
+          tag: true,
+        },
+      },
+    },
+  });
+
+  return createSuccessResponse(
+    newArchiveProject,
+    "Archive project created successfully",
+    201
+  );
+});
