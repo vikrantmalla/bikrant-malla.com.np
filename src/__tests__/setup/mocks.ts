@@ -143,6 +143,7 @@ export function setupMocks() {
   jest.mock("@/lib/roleUtils", () => ({
     checkEditorPermissions: jest.fn() as jest.MockedFunction<any>,
     checkPortfolioAccess: jest.fn() as jest.MockedFunction<any>,
+    checkProjectAccess: jest.fn() as jest.MockedFunction<any>,
     checkEditorRole: jest.fn() as jest.MockedFunction<any>,
     checkOwnerRole: jest.fn() as jest.MockedFunction<any>,
   }));

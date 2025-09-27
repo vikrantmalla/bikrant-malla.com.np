@@ -1,14 +1,32 @@
-import { NextResponse } from "next/server";
-import { checkEditorPermissions } from "@/lib/roleUtils";
+import { NextRequest } from "next/server";
+import { checkEditorPermissions, checkProjectAccess } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
+import { withPublicRateLimit, withAdminRateLimit } from "@/lib/api-utils";
+import {
+  createSuccessResponse,
+  NotFoundError,
+  AuthorizationError,
+} from "@/lib/api-errors";
+import {
+  updateProjectSchema,
+  validateRequest,
+  objectIdSchema,
+} from "@/lib/validation";
 
-// GET - Retrieve project data
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
-  try {
+// GET project by ID
+export const GET = withPublicRateLimit(
+  async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) => {
     const { id } = await params;
+
+    // Validate ObjectId
+    const idValidation = objectIdSchema.safeParse(id);
+    if (!idValidation.success) {
+      throw new NotFoundError("Invalid project ID format");
+    }
+
     const project = await prisma.project.findUnique({
       where: { id: id },
       include: {
@@ -22,69 +40,71 @@ export async function GET(
     });
 
     if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+      throw new NotFoundError("Project not found");
     }
 
-    return NextResponse.json({
-      project,
-    });
-  } catch (error) {
-    console.error("Error fetching project:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return createSuccessResponse(project, "Project retrieved successfully");
   }
-}
+);
 
-// PUT - Update project data (only editors and owners)
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions(request);
+// PUT update project
+export const PUT = withAdminRateLimit(
+  async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) => {
+    const permissionCheck = await checkEditorPermissions(request);
 
-  if (!permissionCheck.success) {
-    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
-    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
-    // We must ensure a valid NextResponse is returned.
-    if (permissionCheck.response) {
-      return permissionCheck.response;
-    } else {
-      // This case implies the permission check failed but did not provide a specific error response.
-      // Return a generic internal server error to ensure a valid Response is always returned.
-      return NextResponse.json(
-        { error: "Permission check failed unexpectedly." },
-        { status: 500 }
-      );
-    }
-  }
-
-  try {
-    const { id } = await params;
-    const body = await request.json();
-
-    // Validate required fields
-    const requiredFields = ["title", "projectView", "tools"];
-    for (const field of requiredFields) {
-      if (!body[field]) {
-        return NextResponse.json(
-          { error: `${field} is required` },
-          { status: 400 }
-        );
+    if (!permissionCheck.success) {
+      if (permissionCheck.response) {
+        return permissionCheck.response;
+      } else {
+        throw new Error("Permission check failed unexpectedly");
       }
+    }
+
+    if (!permissionCheck.user || !permissionCheck.user.email) {
+      throw new AuthorizationError("User not found");
+    }
+
+    const { id } = await params;
+
+    // Validate ObjectId
+    const idValidation = objectIdSchema.safeParse(id);
+    if (!idValidation.success) {
+      throw new NotFoundError("Invalid project ID format");
+    }
+
+    const body = await request.json();
+    const validation = validateRequest(updateProjectSchema, body);
+
+    if (!validation.success) {
+      throw validation.errors;
+    }
+
+    const { title, subTitle, images, alt, projectView, tools, platform } =
+      validation.data;
+
+    // Check if project exists and user has access
+    const { isEditor, isOwner, hasAccess } = await checkProjectAccess(
+      permissionCheck.user.email,
+      id
+    );
+
+    if (!hasAccess) {
+      throw new AuthorizationError("Access denied");
     }
 
     const updatedProject = await prisma.project.update({
       where: { id: id },
       data: {
-        title: body.title,
-        subTitle: body.subTitle,
-        images: body.images,
-        alt: body.alt,
-        projectView: body.projectView,
-        tools: body.tools,
-        platform: body.platform,
+        title: title.trim(),
+        subTitle: subTitle?.trim() || "",
+        images: images || "",
+        alt: alt?.trim() || "",
+        projectView: projectView.trim(),
+        tools: tools || [],
+        platform: platform,
       },
       include: {
         portfolio: true,
@@ -96,43 +116,51 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json({
-      message: "Project updated successfully",
-      project: updatedProject,
-    });
-  } catch (error) {
-    console.error("Error updating project:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+    return createSuccessResponse(
+      updatedProject,
+      "Project updated successfully"
     );
   }
-}
+);
 
-// DELETE - Delete project (only editors and owners)
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions(request);
+// DELETE project
+export const DELETE = withAdminRateLimit(
+  async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) => {
+    const permissionCheck = await checkEditorPermissions(request);
 
-  if (!permissionCheck.success) {
-    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
-    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
-    // We must ensure a valid NextResponse is returned.
-    if (permissionCheck.response) {
-      return permissionCheck.response;
-    } else {
-      // This case implies the permission check failed but did not provide a specific error response.
-      // Return a generic internal server error to ensure a valid Response is always returned.
-      return NextResponse.json(
-        { error: "Permission check failed unexpectedly." },
-        { status: 500 }
-      );
+    if (!permissionCheck.success) {
+      if (permissionCheck.response) {
+        return permissionCheck.response;
+      } else {
+        throw new Error("Permission check failed unexpectedly");
+      }
     }
-  }
-  try {
+
+    if (!permissionCheck.user || !permissionCheck.user.email) {
+      throw new AuthorizationError("User not found");
+    }
+
     const { id } = await params;
+
+    // Validate ObjectId
+    const idValidation = objectIdSchema.safeParse(id);
+    if (!idValidation.success) {
+      throw new NotFoundError("Invalid project ID format");
+    }
+
+    // Check if project exists and user has access
+    const { isEditor, isOwner, hasAccess } = await checkProjectAccess(
+      permissionCheck.user.email,
+      id
+    );
+
+    if (!hasAccess) {
+      throw new AuthorizationError("Access denied");
+    }
+
     // Delete related data first (due to foreign key constraints)
     await prisma.projectTag.deleteMany({
       where: { projectId: id },
@@ -142,14 +170,6 @@ export async function DELETE(
       where: { id: id },
     });
 
-    return NextResponse.json({
-      message: "Project deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting project:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return createSuccessResponse(null, "Project deleted successfully");
   }
-}
+);
