@@ -1,14 +1,32 @@
-import { NextResponse } from "next/server";
-import { checkEditorPermissions } from "@/lib/roleUtils";
+import { NextRequest } from "next/server";
+import { checkEditorPermissions, checkProjectAccess } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
+import { withPublicRateLimit, withAdminRateLimit } from "@/lib/api-utils";
+import {
+  createSuccessResponse,
+  NotFoundError,
+  AuthorizationError,
+} from "@/lib/api-errors";
+import {
+  updateArchiveProjectSchema,
+  validateRequest,
+  objectIdSchema,
+} from "@/lib/validation";
 
-// GET - Retrieve archive project data
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
-  try {
+// GET archive project by ID
+export const GET = withPublicRateLimit(
+  async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) => {
     const { id } = await params;
+
+    // Validate ObjectId
+    const idValidation = objectIdSchema.safeParse(id);
+    if (!idValidation.success) {
+      throw new NotFoundError("Invalid archive project ID format");
+    }
+
     const archiveProject = await prisma.archiveProject.findUnique({
       where: { id: id },
       include: {
@@ -22,71 +40,73 @@ export async function GET(
     });
 
     if (!archiveProject) {
-      return NextResponse.json(
-        { error: "Archive project not found" },
-        { status: 404 }
-      );
+      throw new NotFoundError("Archive project not found");
     }
 
-    return NextResponse.json({
+    return createSuccessResponse(
       archiveProject,
-    });
-  } catch (error) {
-    console.error("Error fetching archive project:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      "Archive project retrieved successfully"
     );
   }
-}
+);
 
-// PUT - Update archive project data (only editors and owners)
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions(request);
+// PUT update archive project
+export const PUT = withAdminRateLimit(
+  async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) => {
+    const permissionCheck = await checkEditorPermissions(request);
 
-  if (!permissionCheck.success) {
-    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
-    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
-    // We must ensure a valid NextResponse is returned.
-    if (permissionCheck.response) {
-      return permissionCheck.response;
-    } else {
-      // This case implies the permission check failed but did not provide a specific error response.
-      // Return a generic internal server error to ensure a valid Response is always returned.
-      return NextResponse.json(
-        { error: "Permission check failed unexpectedly." },
-        { status: 500 }
-      );
-    }
-  }
-
-  try {
-    const { id } = await params;
-    const body = await request.json();
-
-    // Validate required fields
-    const requiredFields = ["title", "year", "projectView", "build"];
-    for (const field of requiredFields) {
-      if (!body[field]) {
-        return NextResponse.json(
-          { error: `${field} is required` },
-          { status: 400 }
-        );
+    if (!permissionCheck.success) {
+      if (permissionCheck.response) {
+        return permissionCheck.response;
+      } else {
+        throw new Error("Permission check failed unexpectedly");
       }
+    }
+
+    if (!permissionCheck.user || !permissionCheck.user.email) {
+      throw new AuthorizationError("User not found");
+    }
+
+    const { id } = await params;
+
+    // Validate ObjectId
+    const idValidation = objectIdSchema.safeParse(id);
+    if (!idValidation.success) {
+      throw new NotFoundError("Invalid archive project ID format");
+    }
+
+    const body = await request.json();
+    const validation = validateRequest(updateArchiveProjectSchema, body);
+
+    if (!validation.success) {
+      throw validation.errors;
+    }
+
+    const { title, year, isNew, projectView, viewCode, build } =
+      validation.data;
+
+    // Check if archive project exists and user has access
+    const { isEditor, isOwner, hasAccess } = await checkProjectAccess(
+      permissionCheck.user.email,
+      id
+    );
+
+    if (!hasAccess) {
+      throw new AuthorizationError("Access denied");
     }
 
     const updatedArchiveProject = await prisma.archiveProject.update({
       where: { id: id },
       data: {
-        title: body.title,
-        year: body.year,
-        isNew: body.isNew || false,
-        projectView: body.projectView,
-        viewCode: body.viewCode,
-        build: body.build,
+        title: title?.trim() || undefined,
+        year: year || undefined,
+        isNew: isNew !== undefined ? isNew : undefined,
+        projectView: projectView?.trim() || undefined,
+        viewCode: viewCode?.trim() || undefined,
+        build: build || undefined,
       },
       include: {
         portfolio: true,
@@ -98,44 +118,50 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json({
-      message: "Archive project updated successfully",
-      archiveProject: updatedArchiveProject,
-    });
-  } catch (error) {
-    console.error("Error updating archive project:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+    return createSuccessResponse(
+      updatedArchiveProject,
+      "Archive project updated successfully"
     );
   }
-}
+);
 
-// DELETE - Delete archive project (only editors and owners)
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions(request);
+// DELETE archive project
+export const DELETE = withAdminRateLimit(
+  async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) => {
+    const permissionCheck = await checkEditorPermissions(request);
 
-  if (!permissionCheck.success) {
-    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
-    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
-    // We must ensure a valid NextResponse is returned.
-    if (permissionCheck.response) {
-      return permissionCheck.response;
-    } else {
-      // This case implies the permission check failed but did not provide a specific error response.
-      // Return a generic internal server error to ensure a valid Response is always returned.
-      return NextResponse.json(
-        { error: "Permission check failed unexpectedly." },
-        { status: 500 }
-      );
+    if (!permissionCheck.success) {
+      if (permissionCheck.response) {
+        return permissionCheck.response;
+      } else {
+        throw new Error("Permission check failed unexpectedly");
+      }
     }
-  }
 
-  try {
+    if (!permissionCheck.user || !permissionCheck.user.email) {
+      throw new AuthorizationError("User not found");
+    }
+
     const { id } = await params;
+
+    // Validate ObjectId
+    const idValidation = objectIdSchema.safeParse(id);
+    if (!idValidation.success) {
+      throw new NotFoundError("Invalid archive project ID format");
+    }
+
+    // Check if archive project exists and user has access
+    const { isEditor, isOwner, hasAccess } = await checkProjectAccess(
+      permissionCheck.user.email,
+      id
+    );
+
+    if (!hasAccess) {
+      throw new AuthorizationError("Access denied");
+    }
 
     // Delete related data first (due to foreign key constraints)
     await prisma.archiveProjectTag.deleteMany({
@@ -146,14 +172,6 @@ export async function DELETE(
       where: { id: id },
     });
 
-    return NextResponse.json({
-      message: "Archive project deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting archive project:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return createSuccessResponse(null, "Archive project deleted successfully");
   }
-}
+);
