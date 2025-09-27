@@ -2,6 +2,7 @@
 import { faker } from '@faker-js/faker';
 import { Platform, Role } from '@/types/enum';
 import { User, Portfolio, Project, ArchiveProject, Config, TechTag, TechOption } from '@/types/data';
+import { NextRequest } from 'next/server';
 
 // Helper function to generate ObjectId format
 const generateObjectId = (): string => {
@@ -137,8 +138,9 @@ export const mockPortfolioAccess = (hasAccess: boolean, isOwner = false): void =
 };
 
 // Request helpers
-export const createMockRequest = (url: string, options: RequestInit = {}): Request => {
-  return new Request(url, options);
+export const createMockRequest = (url: string, options: any = {}): NextRequest => {
+  const request = new Request(url, options);
+  return new NextRequest(request);
 };
 
 export const createMockResponse = (data: any, status = 200) => {
