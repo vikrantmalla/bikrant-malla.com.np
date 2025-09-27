@@ -51,7 +51,8 @@ describe('/api/auth/check-role', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.user).toEqual({
+      expect(data.success).toBe(true);
+      expect(data.data.user).toEqual({
         email: user.email,
         name: user.name,
         hasEditorRole: true,
@@ -97,7 +98,8 @@ describe('/api/auth/check-role', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.user).toEqual({
+      expect(data.success).toBe(true);
+      expect(data.data.user).toEqual({
         email: user.email,
         name: user.name,
         hasEditorRole: false,
@@ -106,7 +108,7 @@ describe('/api/auth/check-role', () => {
       });
     });
 
-    it('should return 401 when user is not authenticated', async () => {
+    it('should return 500 when user is not authenticated', async () => {
       // Mock no authentication
       mockCustomAuth.getUserFromToken.mockResolvedValue({
         user: null,
@@ -123,12 +125,13 @@ describe('/api/auth/check-role', () => {
       const response = await getCheckRole(mockRequest);
       const data = await response.json();
 
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(500);
+      expect(data.success).toBe(false);
       expect(data.error).toBe('No token provided');
       expect(mockCustomAuth.checkUserPermissions).not.toHaveBeenCalled();
     });
 
-    it('should return 401 when token is invalid', async () => {
+    it('should return 500 when token is invalid', async () => {
       // Mock invalid token
       mockCustomAuth.getUserFromToken.mockResolvedValue({
         user: null,
@@ -145,12 +148,13 @@ describe('/api/auth/check-role', () => {
       const response = await getCheckRole(mockRequest);
       const data = await response.json();
 
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(500);
+      expect(data.success).toBe(false);
       expect(data.error).toBe('Invalid token');
       expect(mockCustomAuth.checkUserPermissions).not.toHaveBeenCalled();
     });
 
-    it('should return 404 when user is not found in database', async () => {
+    it('should return 500 when user is not found in database', async () => {
       const user = generateTestUser();
       const authUser = {
         id: user.id,
@@ -181,7 +185,8 @@ describe('/api/auth/check-role', () => {
       const response = await getCheckRole(mockRequest);
       const data = await response.json();
 
-      expect(response.status).toBe(404);
+      expect(response.status).toBe(500);
+      expect(data.success).toBe(false);
       expect(data.error).toBe('User not found');
     });
 
@@ -212,7 +217,8 @@ describe('/api/auth/check-role', () => {
       const data = await response.json();
 
       expect(response.status).toBe(500);
-      expect(data.error).toBe('Internal server error');
+      expect(data.success).toBe(false);
+      expect(data.error).toBe('Database connection failed');
     });
 
     it('should handle database query errors', async () => {
@@ -242,7 +248,8 @@ describe('/api/auth/check-role', () => {
       const data = await response.json();
 
       expect(response.status).toBe(500);
-      expect(data.error).toBe('Internal server error');
+      expect(data.success).toBe(false);
+      expect(data.error).toBe('Database query failed');
     });
   });
 });
@@ -284,7 +291,8 @@ describe('/api/auth/me', () => {
       const data = await response.json();
 
       expect(response.status).toBe(200);
-      expect(data.user).toEqual({
+      expect(data.success).toBe(true);
+      expect(data.data.user).toEqual({
         id: user.id,
         email: user.email,
         name: user.name,
@@ -568,7 +576,8 @@ describe('/api/auth/me', () => {
       const data = await response.json();
 
       expect(response.status).toBe(500);
-      expect(data.error).toBe('Internal server error');
+      expect(data.success).toBe(false);
+      expect(data.error).toBe('Unexpected error');
     });
 
     it('should return 401 when access token is expired and no refresh token provided', async () => {

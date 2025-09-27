@@ -1,221 +1,185 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
+import { withPublicRateLimit, withAdminRateLimit } from "@/lib/api-utils";
+import { createSuccessResponse, NotFoundError, ConflictError } from "@/lib/api-errors";
+import { createTechTagSchema, validateRequest, objectIdSchema } from "@/lib/validation";
 
 // GET tech tag by ID
-export async function GET(
-  request: Request,
+export const GET = withPublicRateLimit(async (
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
-  try {
-    const { id } = await params;
-    const techTag = await prisma.techTag.findUnique({
-      where: {
-        id: id,
-      },
-      include: {
-        projectRelations: {
-          include: {
-            project: true,
-          },
-        },
-        archiveProjectRelations: {
-          include: {
-            archiveProject: true,
-          },
-        },
-      },
-    });
-
-    if (!techTag) {
-      return NextResponse.json(
-        { error: "Tech tag not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      message: "Tech tag retrieved successfully",
-      techTag,
-    });
-  } catch (error) {
-    console.error("Error fetching tech tag:", error);
+) => {
+  const { id } = await params;
+  
+  // Validate ObjectId format
+  const idValidation = objectIdSchema.safeParse(id);
+  if (!idValidation.success) {
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      { 
+        success: false, 
+        error: "Invalid ObjectId format",
+        code: "VALIDATION_ERROR"
+      }, 
+      { status: 400 }
     );
   }
-}
+
+  const techTag = await prisma.techTag.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      projectRelations: {
+        include: {
+          project: true,
+        },
+      },
+      archiveProjectRelations: {
+        include: {
+          archiveProject: true,
+        },
+      },
+    },
+  });
+
+  if (!techTag) {
+    throw new NotFoundError("Tech tag not found");
+  }
+
+  return createSuccessResponse(techTag, "Tech tag retrieved successfully");
+});
 
 // PUT update tech tag
-export async function PUT(
-  request: Request,
+export const PUT = withAdminRateLimit(async (
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
+) => {
   const permissionCheck = await checkEditorPermissions(request);
 
   if (!permissionCheck.success) {
-    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
-    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
-    // We must ensure a valid NextResponse is returned.
     if (permissionCheck.response) {
       return permissionCheck.response;
     } else {
-      // This case implies the permission check failed but did not provide a specific error response.
-      // Return a generic internal server error to ensure a valid Response is always returned.
-      return NextResponse.json(
-        { error: "Permission check failed unexpectedly." },
-        { status: 500 }
-      );
+      throw new Error("Permission check failed unexpectedly");
     }
   }
 
-  try {
-    const { id } = await params;
-    const body = await request.json();
-
-    // Validate required fields
-    if (!body.tag || typeof body.tag !== "string") {
-      return NextResponse.json(
-        { error: "Tag name is required and must be a string" },
-        { status: 400 }
-      );
-    }
-
-    // Check if tag already exists with the new name (case-insensitive, excluding current tag)
-    const existingTag = await prisma.techTag.findFirst({
-      where: {
-        AND: [
-          {
-            tag: {
-              equals: body.tag,
-              mode: "insensitive",
-            },
-          },
-          {
-            id: {
-              not: id,
-            },
-          },
-        ],
-      },
-    });
-
-    if (existingTag) {
-      return NextResponse.json(
-        { error: "Tech tag with this name already exists" },
-        { status: 409 }
-      );
-    }
-
-    // Update tech tag
-    const updatedTechTag = await prisma.techTag.update({
-      where: {
-        id: id,
-      },
-      data: {
-        tag: body.tag.trim(),
-      },
-    });
-
-    return NextResponse.json({
-      message: "Tech tag updated successfully",
-      techTag: updatedTechTag,
-    });
-  } catch (error) {
-    console.error("Error updating tech tag:", error);
-    // Safely check if the error is an object with a 'code' property of type string
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      typeof (error as { code: unknown }).code === "string" &&
-      (error as { code: string }).code === "P2025"
-    ) {
-      return NextResponse.json(
-        { error: "Tech tag not found" },
-        { status: 404 }
-      );
-    }
+  const { id } = await params;
+  
+  // Validate ObjectId format
+  const idValidation = objectIdSchema.safeParse(id);
+  if (!idValidation.success) {
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      { 
+        success: false, 
+        error: "Invalid ObjectId format",
+        code: "VALIDATION_ERROR"
+      }, 
+      { status: 400 }
     );
   }
-}
+
+  const body = await request.json();
+  const validation = validateRequest(createTechTagSchema, body);
+
+  if (!validation.success) {
+    throw validation.errors;
+  }
+
+  const { tag } = validation.data;
+
+  // Check if tag already exists with the new name (case-insensitive, excluding current tag)
+  const existingTag = await prisma.techTag.findFirst({
+    where: {
+      AND: [
+        {
+          tag: {
+            equals: tag,
+            mode: "insensitive",
+          },
+        },
+        {
+          id: {
+            not: id,
+          },
+        },
+      ],
+    },
+  });
+
+  if (existingTag) {
+    throw new ConflictError("Tech tag with this name already exists");
+  }
+
+  // Update tech tag
+  const updatedTechTag = await prisma.techTag.update({
+    where: {
+      id: id,
+    },
+    data: {
+      tag: tag.trim(),
+    },
+  });
+
+  return createSuccessResponse(updatedTechTag, "Tech tag updated successfully");
+});
 
 // DELETE tech tag
-export async function DELETE(
-  request: Request,
+export const DELETE = withAdminRateLimit(async (
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
+) => {
   const permissionCheck = await checkEditorPermissions(request);
 
   if (!permissionCheck.success) {
-    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
-    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
-    // We must ensure a valid NextResponse is returned.
     if (permissionCheck.response) {
       return permissionCheck.response;
     } else {
-      // This case implies the permission check failed but did not provide a specific error response.
-      // Return a generic internal server error to ensure a valid Response is always returned.
-      return NextResponse.json(
-        { error: "Permission check failed unexpectedly." },
-        { status: 500 }
-      );
+      throw new Error("Permission check failed unexpectedly");
     }
   }
 
-  try {
-    const { id } = await params;
-    // Check if tech tag is being used by any projects
-    const projectUsage = await prisma.projectTag.findFirst({
-      where: {
-        tagId: id,
-      },
-    });
-
-    const archiveProjectUsage = await prisma.archiveProjectTag.findFirst({
-      where: {
-        tagId: id,
-      },
-    });
-
-    if (projectUsage || archiveProjectUsage) {
-      return NextResponse.json(
-        {
-          error:
-            "Cannot delete tech tag. It is currently being used by projects or archive projects.",
-        },
-        { status: 400 }
-      );
-    }
-
-    // Delete tech tag
-    await prisma.techTag.delete({
-      where: {
-        id: id,
-      },
-    });
-
-    return NextResponse.json({
-      message: "Tech tag deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting tech tag:", error);
-    if (
-      error instanceof Error &&
-      (error as unknown as { code: string }).code === "P2025"
-    ) {
-      return NextResponse.json(
-        { error: "Tech tag not found" },
-        { status: 404 }
-      );
-    }
+  const { id } = await params;
+  
+  // Validate ObjectId format
+  const idValidation = objectIdSchema.safeParse(id);
+  if (!idValidation.success) {
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      { 
+        success: false, 
+        error: "Invalid ObjectId format",
+        code: "VALIDATION_ERROR"
+      }, 
+      { status: 400 }
     );
   }
-}
+
+  // Check if tech tag is being used by any projects
+  const projectUsage = await prisma.projectTag.findFirst({
+    where: {
+      tagId: id,
+    },
+  });
+
+  const archiveProjectUsage = await prisma.archiveProjectTag.findFirst({
+    where: {
+      tagId: id,
+    },
+  });
+
+  if (projectUsage || archiveProjectUsage) {
+    throw new ConflictError(
+      "Cannot delete tech tag. It is currently being used by projects or archive projects."
+    );
+  }
+
+  // Delete tech tag
+  await prisma.techTag.delete({
+    where: {
+      id: id,
+    },
+  });
+
+  return createSuccessResponse(null, "Tech tag deleted successfully");
+});

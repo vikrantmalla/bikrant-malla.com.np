@@ -413,7 +413,7 @@ export async function createTechOption(formData: FormData) {
     const techOptionData = {
       name: formData.get("name") as string,
       category: formData.get("category") as string,
-      description: formData.get("description") as string || null,
+      description: (formData.get("description") as string) || null,
       isActive: formData.get("isActive") === "true",
     };
 
@@ -441,7 +441,7 @@ export async function updateTechOption(id: string, formData: FormData) {
     const techOptionData = {
       name: formData.get("name") as string,
       category: formData.get("category") as string,
-      description: formData.get("description") as string || null,
+      description: (formData.get("description") as string) || null,
       isActive: formData.get("isActive") === "true",
     };
 
@@ -498,7 +498,7 @@ export async function getTechTags() {
     }
 
     const result = await response.json();
-    return { success: true, data: result.techTags };
+    return { success: true, data: result.data };
   } catch (error) {
     console.error("Error getting tech tags:", error);
     return { success: false, error: error instanceof Error ? error.message : "Failed to get tech tags" };
@@ -523,7 +523,7 @@ export async function createTechTag(formData: FormData) {
 
     const result = await response.json();
     revalidatePath("/dashboard");
-    return { success: true, data: result.techTag };
+    return { success: true, data: result.data };
   } catch (error) {
     console.error("Error creating tech tag:", error);
     return { success: false, error: error instanceof Error ? error.message : "Failed to create tech tag" };
@@ -548,7 +548,7 @@ export async function updateTechTag(id: string, formData: FormData) {
 
     const result = await response.json();
     revalidatePath("/dashboard");
-    return { success: true, data: result.techTag };
+    return { success: true, data: result.data };
   } catch (error) {
     console.error("Error updating tech tag:", error);
     return { success: false, error: error instanceof Error ? error.message : "Failed to update tech tag" };

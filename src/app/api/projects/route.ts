@@ -1,132 +1,228 @@
-import { NextResponse } from "next/server";
-import { checkEditorPermissions } from "@/lib/roleUtils";
+import { NextRequest, NextResponse } from "next/server";
+import { checkEditorPermissions, checkPortfolioAccess } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/password";
+import {
+  withApiErrorHandler,
+  withPublicRateLimit,
+  withAdminRateLimit,
+} from "@/lib/api-utils";
+import {
+  createSuccessResponse,
+  NotFoundError,
+  ConflictError,
+  AuthorizationError,
+} from "@/lib/api-errors";
+import {
+  createProjectSchema,
+  validateRequest,
+  objectIdSchema,
+} from "@/lib/validation";
+import { Platform } from "@/types/enum";
 
-export async function GET(request: Request): Promise<Response> {
+// GET all projects for user's portfolio
+export const GET = withPublicRateLimit(async (request: NextRequest) => {
   const permissionCheck = await checkEditorPermissions(request);
 
   if (!permissionCheck.success) {
-    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
-    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
-    // We must ensure a valid NextResponse is returned.
     if (permissionCheck.response) {
       return permissionCheck.response;
     } else {
-      // This case implies the permission check failed but did not provide a specific error response.
-      // Return a generic internal server error to ensure a valid Response is always returned.
-      return NextResponse.json(
-        { error: "Permission check failed unexpectedly." },
-        { status: 500 }
-      );
+      throw new Error("Permission check failed unexpectedly");
     }
   }
 
   const user = permissionCheck.user;
 
   if (!user || !user.email) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    throw new NotFoundError("User not found");
   }
 
-  try {
-    // Check if user exists in our database
-    let dbUser = await prisma.user.findUnique({
-      where: { email: user.email },
+  // Check if user exists in our database
+  let dbUser = await prisma.user.findUnique({
+    where: { email: user.email },
+    include: { roles: true },
+  });
+
+  // If user doesn't exist, create them
+  if (!dbUser) {
+    const tempPassword = crypto.randomUUID();
+    const hashedPassword = await hashPassword(tempPassword);
+
+    dbUser = await prisma.user.create({
+      data: {
+        email: user.email,
+        password: hashedPassword,
+        name: user.name || user.email.split("@")[0],
+        isActive: true,
+        emailVerified: false,
+      },
       include: { roles: true },
     });
+  }
 
-    // If user doesn't exist, create them
-    if (!dbUser) {
-      // This should not happen with the new auth system as users are created during registration
-      // But keeping this as a fallback for migration purposes
-      const tempPassword = crypto.randomUUID();
-      const hashedPassword = await hashPassword(tempPassword);
-      
-      dbUser = await prisma.user.create({
-        data: {
-          email: user.email,
-          password: hashedPassword,
-          name: user.name || user.email.split("@")[0],
-          isActive: true,
-          emailVerified: false,
-        },
-        include: { roles: true },
-      });
-    }
+  // First, try to find a portfolio owned by this user
+  let portfolio = await prisma.portfolio.findFirst({
+    where: {
+      ownerEmail: user.email,
+    },
+  });
 
-    // Check all portfolios
-    const allPortfolios = await prisma.portfolio.findMany({
-      select: { id: true, name: true, ownerEmail: true },
-    });
-
-    // First, try to find a portfolio owned by this user
-    let portfolio = await prisma.portfolio.findFirst({
+  // If no portfolio found, try to find one where user has a role
+  if (!portfolio) {
+    const userRole = await prisma.userPortfolioRole.findFirst({
       where: {
-        ownerEmail: user.email,
+        userId: dbUser.id,
       },
+      include: { portfolio: true },
     });
 
-    // If no portfolio found, try to find one where user has a role
-    if (!portfolio) {
-      const userRole = await prisma.userPortfolioRole.findFirst({
-        where: {
-          userId: dbUser.id,
-        },
-        include: { portfolio: true },
-      });
-
-      if (userRole) {
-        portfolio = userRole.portfolio;
-      }
+    if (userRole) {
+      portfolio = userRole.portfolio;
     }
+  }
 
-    // If still no portfolio found, user doesn't have access to any portfolio
-    // This should not automatically assign ownership to any portfolio
+  if (!portfolio) {
+    throw new NotFoundError("No portfolio found for user");
+  }
 
-    if (!portfolio) {
-      return NextResponse.json(
-        {
-          error: "No portfolio found for user",
-          message: "User doesn't have access to any portfolio",
-          debug: {
-            userEmail: user.email,
-            dbUserExists: !!dbUser,
-            totalPortfolios: allPortfolios.length,
-            portfolios: allPortfolios,
-          },
-        },
-        { status: 404 }
-      );
-    }
-
-    const projects = await prisma.project.findMany({
-      where: { portfolioId: portfolio.id },
-      include: {
-        portfolio: true,
-        tagRelations: {
-          include: {
-            tag: true,
-          },
+  const projects = await prisma.project.findMany({
+    where: { portfolioId: portfolio.id },
+    include: {
+      portfolio: true,
+      tagRelations: {
+        include: {
+          tag: true,
         },
       },
-    });
+    },
+  });
 
-    return NextResponse.json({
-      message: "Projects retrieved successfully",
+  return createSuccessResponse(
+    {
       projects,
       portfolio: {
         id: portfolio.id,
         name: portfolio.name,
       },
-    });
-  } catch (error) {
-    console.error("Error fetching projects:", error);
-    return NextResponse.json(
-      {
-        error: "Internal server error",
-        message: "Failed to fetch projects",
-      },
-      { status: 500 }
+    },
+    "Projects retrieved successfully"
+  );
+});
+
+// POST create new project
+export const POST = withAdminRateLimit(async (request: NextRequest) => {
+  const permissionCheck = await checkEditorPermissions(request);
+
+  if (!permissionCheck.success) {
+    if (permissionCheck.response) {
+      return permissionCheck.response;
+    } else {
+      throw new Error("Permission check failed unexpectedly");
+    }
+  }
+
+  if (!permissionCheck.user || !permissionCheck.user.email) {
+    throw new AuthorizationError("User not found");
+  }
+
+  const body = await request.json();
+  const validation = validateRequest(createProjectSchema, body);
+
+  if (!validation.success) {
+    throw validation.errors;
+  }
+
+  const {
+    title,
+    subTitle,
+    images,
+    alt,
+    projectView,
+    tools,
+    platform,
+    portfolioId,
+  } = validation.data;
+
+  // Check if user has access to the portfolio
+  const { hasAccess } = await checkPortfolioAccess(
+    permissionCheck.user.email,
+    portfolioId
+  );
+
+  if (!hasAccess) {
+    throw new AuthorizationError(
+      "Access denied. You don't have permission to add projects to this portfolio."
     );
   }
-}
+
+  // Get config for project limits
+  let config = await prisma.config.findFirst();
+  if (!config) {
+    config = await prisma.config.create({
+      data: {
+        maxWebProjects: 6,
+        maxDesignProjects: 6,
+        maxTotalProjects: 12,
+      },
+    });
+  }
+
+  // Count existing projects for this portfolio
+  const existingProjects = await prisma.project.findMany({
+    where: { portfolioId: portfolioId },
+  });
+
+  const totalProjects = existingProjects.length;
+  const webProjects = existingProjects.filter(
+    (p) => p.platform === Platform.Web
+  ).length;
+  const designProjects = existingProjects.filter(
+    (p) => p.platform === Platform.Design
+  ).length;
+
+  // Validate project limits
+  if (totalProjects >= config.maxTotalProjects) {
+    throw new ConflictError(
+      `Maximum total projects limit reached (${config.maxTotalProjects}). Cannot create more projects.`
+    );
+  }
+
+  if (platform === Platform.Web && webProjects >= config.maxWebProjects) {
+    throw new ConflictError(
+      `Maximum Web projects limit reached (${config.maxWebProjects}). Cannot create more Web projects.`
+    );
+  }
+
+  if (
+    platform === Platform.Design &&
+    designProjects >= config.maxDesignProjects
+  ) {
+    throw new ConflictError(
+      `Maximum Design projects limit reached (${config.maxDesignProjects}). Cannot create more Design projects.`
+    );
+  }
+
+  const newProject = await prisma.project.create({
+    data: {
+      title: title.trim(),
+      subTitle: subTitle?.trim() || "",
+      images: images || "",
+      alt: alt?.trim() || "",
+      projectView: projectView.trim(),
+      tools: tools || [],
+      platform: platform,
+      portfolioId: portfolioId,
+    },
+    include: {
+      portfolio: true,
+      tagRelations: {
+        include: {
+          tag: true,
+        },
+      },
+    },
+  });
+
+  return createSuccessResponse(newProject, "Project created successfully", 201);
+});

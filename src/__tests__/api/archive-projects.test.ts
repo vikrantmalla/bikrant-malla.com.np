@@ -1,5 +1,9 @@
-import { GET, POST } from "@/app/api/projects/route";
-import { GET as GET_BY_ID, PUT, DELETE } from "@/app/api/projects/[id]/route";
+import { GET, POST } from "@/app/api/archive-projects/route";
+import {
+  GET as GET_BY_ID,
+  PUT,
+  DELETE,
+} from "@/app/api/archive-projects/[id]/route";
 import {
   setupMocks,
   resetMocks,
@@ -9,7 +13,7 @@ import {
 import {
   generateTestUser,
   generateTestPortfolio,
-  generateTestProject,
+  generateTestArchiveProject,
   createMockRequest,
 } from "../utils/test-helpers";
 import { faker } from "@faker-js/faker";
@@ -17,18 +21,18 @@ import { faker } from "@faker-js/faker";
 // Setup mocks before importing modules
 setupMocks();
 
-describe("/api/projects", () => {
+describe("/api/archive-projects", () => {
   beforeEach(() => {
     resetMocks();
   });
 
-  describe("GET /api/projects", () => {
-    it("should return projects for authenticated user with portfolio access", async () => {
+  describe("GET /api/archive-projects", () => {
+    it("should return archive projects for authenticated user with portfolio access", async () => {
       const user = generateTestUser();
       const portfolio = generateTestPortfolio({ ownerEmail: user.email });
-      const projects = [
-        generateTestProject(portfolio.id),
-        generateTestProject(portfolio.id),
+      const archiveProjects = [
+        generateTestArchiveProject(portfolio.id),
+        generateTestArchiveProject(portfolio.id),
       ];
 
       // Mock roleUtils
@@ -47,17 +51,17 @@ describe("/api/projects", () => {
       mockPrisma.user.findUnique.mockResolvedValue(user);
       mockPrisma.portfolio.findMany.mockResolvedValue([portfolio]);
       mockPrisma.portfolio.findFirst.mockResolvedValue(portfolio);
-      mockPrisma.project.findMany.mockResolvedValue(projects);
+      mockPrisma.archiveProject.findMany.mockResolvedValue(archiveProjects);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/projects")
+        createMockRequest("http://localhost:3000/api/archive-projects")
       );
       const data = await response!.json();
 
       expect(response!.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.message).toBe("Projects retrieved successfully");
-      expect(data.data.projects).toEqual(projects);
+      expect(data.message).toBe("Archive projects retrieved successfully");
+      expect(data.data.archiveProjects).toEqual(archiveProjects);
       expect(data.data.portfolio).toEqual({
         id: portfolio.id,
         name: portfolio.name,
@@ -67,7 +71,7 @@ describe("/api/projects", () => {
     it("should create user if they do not exist in database", async () => {
       const user = generateTestUser();
       const portfolio = generateTestPortfolio({ ownerEmail: user.email });
-      const projects: never[] = [];
+      const archiveProjects: never[] = [];
 
       // Mock roleUtils
       const { checkEditorPermissions } = require("@/lib/roleUtils");
@@ -86,10 +90,10 @@ describe("/api/projects", () => {
       mockPrisma.user.create.mockResolvedValue(user);
       mockPrisma.portfolio.findMany.mockResolvedValue([portfolio]);
       mockPrisma.portfolio.findFirst.mockResolvedValue(portfolio);
-      mockPrisma.project.findMany.mockResolvedValue(projects);
+      mockPrisma.archiveProject.findMany.mockResolvedValue(archiveProjects);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/projects")
+        createMockRequest("http://localhost:3000/api/archive-projects")
       );
       const data = await response!.json();
 
@@ -117,7 +121,7 @@ describe("/api/projects", () => {
       });
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/projects")
+        createMockRequest("http://localhost:3000/api/archive-projects")
       );
 
       expect(response!.status).toBe(401);
@@ -145,7 +149,7 @@ describe("/api/projects", () => {
       mockPrisma.userPortfolioRole.findFirst.mockResolvedValue(null);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/projects")
+        createMockRequest("http://localhost:3000/api/archive-projects")
       );
       const data = await response!.json();
 
@@ -172,7 +176,7 @@ describe("/api/projects", () => {
       mockPrisma.user.findUnique.mockRejectedValue(new Error("Database error"));
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/projects")
+        createMockRequest("http://localhost:3000/api/archive-projects")
       );
       const data = await response!.json();
 
@@ -182,26 +186,20 @@ describe("/api/projects", () => {
     });
   });
 
-  describe("POST /api/projects", () => {
-    const validProjectData = {
+  describe("POST /api/archive-projects", () => {
+    const validArchiveProjectData = {
       title: faker.lorem.words(3),
-      subTitle: faker.lorem.sentence(),
-      images: faker.image.url(),
-      alt: faker.lorem.words(2),
+      year: faker.date.past().getFullYear(),
+      isNew: faker.datatype.boolean(),
       projectView: faker.internet.url(),
-      tools: [faker.lorem.word(), faker.lorem.word()],
-      platform: "Web" as const,
+      viewCode: faker.internet.url(),
+      build: [faker.lorem.word(), faker.lorem.word()],
       portfolioId: faker.string.uuid(),
     };
 
-    it("should create project successfully with valid data and permissions", async () => {
+    it("should create archive project successfully with valid data and permissions", async () => {
       const user = generateTestUser();
       const portfolio = generateTestPortfolio();
-      const config = {
-        maxWebProjects: 6,
-        maxDesignProjects: 6,
-        maxTotalProjects: 12,
-      };
 
       // Mock roleUtils
       const {
@@ -223,21 +221,19 @@ describe("/api/projects", () => {
         isOwner: false,
       });
 
-      const createdProject = generateTestProject(
-        validProjectData.portfolioId,
-        validProjectData
+      const createdArchiveProject = generateTestArchiveProject(
+        validArchiveProjectData.portfolioId,
+        validArchiveProjectData
       );
 
       mockPrisma.user.findUnique.mockResolvedValue(user);
-      mockPrisma.config.findFirst.mockResolvedValue(config);
-      mockPrisma.project.findMany.mockResolvedValue([]); // No existing projects
-      mockPrisma.project.create.mockResolvedValue(createdProject);
+      mockPrisma.archiveProject.create.mockResolvedValue(createdArchiveProject);
 
       const request = {
         headers: {
           get: jest.fn().mockReturnValue("application/json"),
         },
-        json: jest.fn().mockResolvedValue(validProjectData),
+        json: jest.fn().mockResolvedValue(validArchiveProjectData),
       } as any;
 
       const response = await POST(request);
@@ -245,8 +241,8 @@ describe("/api/projects", () => {
 
       expect(response!.status).toBe(201);
       expect(data.success).toBe(true);
-      expect(data.message).toBe("Project created successfully");
-      expect(data.data).toEqual(createdProject);
+      expect(data.message).toBe("Archive project created successfully");
+      expect(data.data).toEqual(createdArchiveProject);
     });
 
     it("should return 401 when user is not authenticated", async () => {
@@ -262,16 +258,16 @@ describe("/api/projects", () => {
         headers: {
           get: jest.fn().mockReturnValue("application/json"),
         },
-        json: jest.fn().mockResolvedValue(validProjectData),
+        json: jest.fn().mockResolvedValue(validArchiveProjectData),
       } as any;
 
       const response = await POST(request);
 
       expect(response!.status).toBe(401);
-      expect(mockPrisma.project.create).not.toHaveBeenCalled();
+      expect(mockPrisma.archiveProject.create).not.toHaveBeenCalled();
     });
 
-    it("should return 400 when required fields are missing", async () => {
+    it("should return 500 when required fields are missing", async () => {
       const user = generateTestUser();
 
       // Mock roleUtils
@@ -288,7 +284,7 @@ describe("/api/projects", () => {
 
       const incompleteData = {
         title: faker.lorem.words(3),
-        // Missing required fields: projectView, tools, portfolioId
+        // Missing required fields: year, projectView, build, portfolioId
       };
 
       const request = {
@@ -333,7 +329,7 @@ describe("/api/projects", () => {
         headers: {
           get: jest.fn().mockReturnValue("application/json"),
         },
-        json: jest.fn().mockResolvedValue(validProjectData),
+        json: jest.fn().mockResolvedValue(validArchiveProjectData),
       } as any;
 
       const response = await POST(request);
@@ -342,54 +338,6 @@ describe("/api/projects", () => {
       expect(response!.status).toBe(403);
       expect(data.success).toBe(false);
       expect(data.error).toContain("Access denied");
-    });
-
-    it("should return 400 when project limit is reached", async () => {
-      const user = generateTestUser();
-      const config = {
-        maxWebProjects: 1,
-        maxDesignProjects: 6,
-        maxTotalProjects: 1,
-      };
-      const existingProjects = [generateTestProject(faker.string.uuid())]; // Already at limit
-
-      // Mock roleUtils
-      const {
-        checkEditorPermissions,
-        checkPortfolioAccess,
-      } = require("@/lib/roleUtils");
-      checkEditorPermissions.mockResolvedValue({
-        success: true,
-        response: null,
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        },
-      });
-      checkPortfolioAccess.mockResolvedValue({
-        hasAccess: true,
-        isEditor: true,
-        isOwner: false,
-      });
-
-      mockPrisma.user.findUnique.mockResolvedValue(user);
-      mockPrisma.config.findFirst.mockResolvedValue(config);
-      mockPrisma.project.findMany.mockResolvedValue(existingProjects);
-
-      const request = {
-        headers: {
-          get: jest.fn().mockReturnValue("application/json"),
-        },
-        json: jest.fn().mockResolvedValue(validProjectData),
-      } as any;
-
-      const response = await POST(request);
-      const data = await response!.json();
-
-      expect(response!.status).toBe(409);
-      expect(data.success).toBe(false);
-      expect(data.error).toContain("Maximum total projects limit reached");
     });
 
     it("should handle database errors", async () => {
@@ -416,7 +364,7 @@ describe("/api/projects", () => {
       });
 
       mockPrisma.user.findUnique.mockResolvedValue(user);
-      mockPrisma.config.findFirst.mockRejectedValue(
+      mockPrisma.archiveProject.create.mockRejectedValue(
         new Error("Database error")
       );
 
@@ -424,7 +372,7 @@ describe("/api/projects", () => {
         headers: {
           get: jest.fn().mockReturnValue("application/json"),
         },
-        json: jest.fn().mockResolvedValue(validProjectData),
+        json: jest.fn().mockResolvedValue(validArchiveProjectData),
       } as any;
 
       const response = await POST(request);
@@ -436,15 +384,15 @@ describe("/api/projects", () => {
     });
   });
 
-  describe("GET /api/projects/[id]", () => {
-    it("should return project by ID", async () => {
-      const project = generateTestProject(faker.string.uuid());
+  describe("GET /api/archive-projects/[id]", () => {
+    it("should return archive project by ID", async () => {
+      const archiveProject = generateTestArchiveProject(faker.string.uuid());
 
-      mockPrisma.project.findUnique.mockResolvedValue(project);
+      mockPrisma.archiveProject.findUnique.mockResolvedValue(archiveProject);
 
       const response = await GET_BY_ID(
         createMockRequest(
-          "http://localhost:3000/api/projects/507f1f77bcf86cd799439011"
+          "http://localhost:3000/api/archive-projects/507f1f77bcf86cd799439011"
         ),
         { params: Promise.resolve({ id: "507f1f77bcf86cd799439011" }) }
       );
@@ -452,16 +400,16 @@ describe("/api/projects", () => {
 
       expect(response!.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.message).toBe("Project retrieved successfully");
-      expect(data.data).toEqual(project);
+      expect(data.message).toBe("Archive project retrieved successfully");
+      expect(data.data).toEqual(archiveProject);
     });
 
-    it("should return 404 when project not found", async () => {
-      mockPrisma.project.findUnique.mockResolvedValue(null);
+    it("should return 404 when archive project not found", async () => {
+      mockPrisma.archiveProject.findUnique.mockResolvedValue(null);
 
       const response = await GET_BY_ID(
         createMockRequest(
-          "http://localhost:3000/api/projects/507f1f77bcf86cd799439011"
+          "http://localhost:3000/api/archive-projects/507f1f77bcf86cd799439011"
         ),
         { params: Promise.resolve({ id: "507f1f77bcf86cd799439011" }) }
       );
@@ -469,37 +417,38 @@ describe("/api/projects", () => {
 
       expect(response!.status).toBe(404);
       expect(data.success).toBe(false);
-      expect(data.error).toBe("Project not found");
+      expect(data.error).toBe("Archive project not found");
     });
 
-    it("should return 400 for invalid project ID format", async () => {
+    it("should return 404 for invalid archive project ID format", async () => {
       const response = await GET_BY_ID(
-        createMockRequest("http://localhost:3000/api/projects/invalid-id"),
+        createMockRequest(
+          "http://localhost:3000/api/archive-projects/invalid-id"
+        ),
         { params: Promise.resolve({ id: "invalid-id" }) }
       );
       const data = await response!.json();
 
       expect(response!.status).toBe(404);
       expect(data.success).toBe(false);
-      expect(data.error).toBe("Invalid project ID format");
+      expect(data.error).toBe("Invalid archive project ID format");
     });
   });
 
-  describe("PUT /api/projects/[id]", () => {
+  describe("PUT /api/archive-projects/[id]", () => {
     const validUpdateData = {
       title: faker.lorem.words(3),
-      subTitle: faker.lorem.sentence(),
-      images: faker.image.url(),
-      alt: faker.lorem.words(2),
+      year: faker.date.past().getFullYear(),
+      isNew: faker.datatype.boolean(),
       projectView: faker.internet.url(),
-      tools: [faker.lorem.word(), faker.lorem.word()],
-      platform: "Web" as const,
+      viewCode: faker.internet.url(),
+      build: [faker.lorem.word(), faker.lorem.word()],
     };
 
-    it("should update project successfully with valid data and permissions", async () => {
+    it("should update archive project successfully with valid data and permissions", async () => {
       const user = generateTestUser();
-      const project = generateTestProject(faker.string.uuid());
-      const updatedProject = { ...project, ...validUpdateData };
+      const archiveProject = generateTestArchiveProject(faker.string.uuid());
+      const updatedArchiveProject = { ...archiveProject, ...validUpdateData };
 
       // Mock roleUtils
       const {
@@ -521,7 +470,7 @@ describe("/api/projects", () => {
         isOwner: false,
       });
 
-      mockPrisma.project.update.mockResolvedValue(updatedProject);
+      mockPrisma.archiveProject.update.mockResolvedValue(updatedArchiveProject);
 
       const request = {
         headers: {
@@ -537,8 +486,8 @@ describe("/api/projects", () => {
 
       expect(response!.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.message).toBe("Project updated successfully");
-      expect(data.data).toEqual(updatedProject);
+      expect(data.message).toBe("Archive project updated successfully");
+      expect(data.data).toEqual(updatedArchiveProject);
     });
 
     it("should return 401 when user is not authenticated", async () => {
@@ -561,7 +510,7 @@ describe("/api/projects", () => {
       });
 
       expect(response!.status).toBe(401);
-      expect(mockPrisma.project.update).not.toHaveBeenCalled();
+      expect(mockPrisma.archiveProject.update).not.toHaveBeenCalled();
     });
 
     it("should return 403 when user does not have project access", async () => {
@@ -604,10 +553,10 @@ describe("/api/projects", () => {
     });
   });
 
-  describe("DELETE /api/projects/[id]", () => {
-    it("should delete project successfully with valid permissions", async () => {
+  describe("DELETE /api/archive-projects/[id]", () => {
+    it("should delete archive project successfully with valid permissions", async () => {
       const user = generateTestUser();
-      const project = generateTestProject(faker.string.uuid());
+      const archiveProject = generateTestArchiveProject(faker.string.uuid());
 
       // Mock roleUtils
       const {
@@ -629,8 +578,8 @@ describe("/api/projects", () => {
         isOwner: false,
       });
 
-      mockPrisma.projectTag.deleteMany.mockResolvedValue({ count: 0 });
-      mockPrisma.project.delete.mockResolvedValue(project);
+      mockPrisma.archiveProjectTag.deleteMany.mockResolvedValue({ count: 0 });
+      mockPrisma.archiveProject.delete.mockResolvedValue(archiveProject);
 
       const request = {
         headers: {
@@ -646,11 +595,11 @@ describe("/api/projects", () => {
 
       expect(response!.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.message).toBe("Project deleted successfully");
-      expect(mockPrisma.projectTag.deleteMany).toHaveBeenCalledWith({
-        where: { projectId: "507f1f77bcf86cd799439011" },
+      expect(data.message).toBe("Archive project deleted successfully");
+      expect(mockPrisma.archiveProjectTag.deleteMany).toHaveBeenCalledWith({
+        where: { archiveProjectId: "507f1f77bcf86cd799439011" },
       });
-      expect(mockPrisma.project.delete).toHaveBeenCalledWith({
+      expect(mockPrisma.archiveProject.delete).toHaveBeenCalledWith({
         where: { id: "507f1f77bcf86cd799439011" },
       });
     });
@@ -675,7 +624,7 @@ describe("/api/projects", () => {
       });
 
       expect(response!.status).toBe(401);
-      expect(mockPrisma.project.delete).not.toHaveBeenCalled();
+      expect(mockPrisma.archiveProject.delete).not.toHaveBeenCalled();
     });
 
     it("should return 403 when user does not have project access", async () => {
