@@ -100,8 +100,22 @@ export const bulkDeleteTechTagsSchema = z.object({
 export const createTechOptionSchema = z.object({
   name: z.string().min(1, "Name is required").max(100).trim(),
   category: z.string().min(1, "Category is required").max(50).trim(),
-  description: z.string().max(500).trim().optional(),
+  description: z.string().max(500).trim().nullable().optional(),
   isActive: z.boolean().default(true),
+});
+
+export const bulkCreateTechOptionsSchema = z.object({
+  techOptions: z
+    .array(createTechOptionSchema)
+    .min(1, "At least one tech option is required")
+    .max(50, "Cannot create more than 50 tech options at once"),
+});
+
+export const bulkDeleteTechOptionsSchema = z.object({
+  techOptionIds: z
+    .array(objectIdSchema)
+    .min(1, "At least one tech option ID is required")
+    .max(50, "Cannot delete more than 50 tech options at once"),
 });
 
 // Invite schema

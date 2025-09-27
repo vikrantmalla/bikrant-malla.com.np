@@ -413,7 +413,7 @@ export async function createTechOption(formData: FormData) {
     const techOptionData = {
       name: formData.get("name") as string,
       category: formData.get("category") as string,
-      description: formData.get("description") as string || null,
+      description: (formData.get("description") as string) || null,
       isActive: formData.get("isActive") === "true",
     };
 
@@ -441,7 +441,7 @@ export async function updateTechOption(id: string, formData: FormData) {
     const techOptionData = {
       name: formData.get("name") as string,
       category: formData.get("category") as string,
-      description: formData.get("description") as string || null,
+      description: (formData.get("description") as string) || null,
       isActive: formData.get("isActive") === "true",
     };
 

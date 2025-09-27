@@ -1,169 +1,178 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
+import { withPublicRateLimit, withAdminRateLimit } from "@/lib/api-utils";
+import { createSuccessResponse, NotFoundError, ConflictError } from "@/lib/api-errors";
+import { createTechOptionSchema, validateRequest, objectIdSchema } from "@/lib/validation";
 
-// GET - Retrieve specific tech option
-export async function GET(
-  request: Request,
+// GET tech option by ID
+export const GET = withPublicRateLimit(async (
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
-  try {
-    const { id } = await params;
-    const techOption = await prisma.techOption.findUnique({
-      where: { id: id },
-    });
-
-    if (!techOption) {
-      return NextResponse.json(
-        { error: "Tech option not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: techOption,
-    });
-  } catch (error) {
-    console.error("Error fetching tech option:", error);
+) => {
+  const { id } = await params;
+  
+  // Validate ObjectId format
+  const idValidation = objectIdSchema.safeParse(id);
+  if (!idValidation.success) {
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      { 
+        success: false, 
+        error: "Invalid ObjectId format",
+        code: "VALIDATION_ERROR"
+      }, 
+      { status: 400 }
     );
   }
-}
 
-// PUT - Update tech option
-export async function PUT(
-  request: Request,
+  const techOption = await prisma.techOption.findUnique({
+    where: {
+      id: id,
+    },
+  });
+
+  if (!techOption) {
+    throw new NotFoundError("Tech option not found");
+  }
+
+  return createSuccessResponse(techOption, "Tech option retrieved successfully");
+});
+
+// PUT update tech option
+export const PUT = withAdminRateLimit(async (
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
+) => {
   const permissionCheck = await checkEditorPermissions(request);
 
   if (!permissionCheck.success) {
-    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
-    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
-    // We must ensure a valid NextResponse is returned.
     if (permissionCheck.response) {
       return permissionCheck.response;
     } else {
-      // This case implies the permission check failed but did not provide a specific error response.
-      // Return a generic internal server error to ensure a valid Response is always returned.
-      return NextResponse.json(
-        { error: "Permission check failed unexpectedly." },
-        { status: 500 }
-      );
+      throw new Error("Permission check failed unexpectedly");
     }
   }
 
-  try {
-    const { id } = await params;
-    const body = await request.json();
-
-    // Validate required fields
-    if (!body.name || !body.category) {
-      return NextResponse.json(
-        { error: "Name and category are required" },
-        { status: 400 }
-      );
-    }
-
-    // Check if name already exists in the same category (excluding current option)
-    const existingOption = await prisma.techOption.findFirst({
-      where: {
-        name: body.name,
-        category: body.category,
-        id: { not: id },
-      },
-    });
-
-    if (existingOption) {
-      return NextResponse.json(
-        { error: "Tech option already exists in this category" },
-        { status: 400 }
-      );
-    }
-
-    const updatedTechOption = await prisma.techOption.update({
-      where: { id: id },
-      data: {
-        name: body.name,
-        category: body.category,
-        description: body.description || null,
-        isActive: body.isActive,
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      data: updatedTechOption,
-    });
-  } catch (error) {
-    console.error("Error updating tech option:", error);
+  const { id } = await params;
+  
+  // Validate ObjectId format
+  const idValidation = objectIdSchema.safeParse(id);
+  if (!idValidation.success) {
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      { 
+        success: false, 
+        error: "Invalid ObjectId format",
+        code: "VALIDATION_ERROR"
+      }, 
+      { status: 400 }
     );
   }
-}
 
-// DELETE - Delete tech option
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
-  const permissionCheck = await checkEditorPermissions(request);
+  const body = await request.json();
+  const validation = validateRequest(createTechOptionSchema, body);
 
-  if (!permissionCheck.success) {
-    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
-    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
-    // We must ensure a valid NextResponse is returned.
-    if (permissionCheck.response) {
-      return permissionCheck.response;
-    } else {
-      // This case implies the permission check failed but did not provide a specific error response.
-      // Return a generic internal server error to ensure a valid Response is always returned.
-      return NextResponse.json(
-        { error: "Permission check failed unexpectedly." },
-        { status: 500 }
-      );
-    }
+  if (!validation.success) {
+    throw validation.errors;
   }
 
-  try {
-    const { id } = await params;
-    // Check if tech option is being used in any projects
-    const projectsUsingTech = await prisma.project.findMany({
-      where: {
-        tools: {
-          has: id,
-        },
-      },
-    });
+  const { name, category, description, isActive } = validation.data;
 
-    if (projectsUsingTech.length > 0) {
-      return NextResponse.json(
+  // Check if tech option already exists in the same category (excluding current option)
+  const existingOption = await prisma.techOption.findFirst({
+    where: {
+      AND: [
         {
-          error: "Cannot delete tech option. It is being used in projects.",
-          projectsCount: projectsUsingTech.length,
+          name: {
+            equals: name,
+            mode: "insensitive",
+          },
         },
-        { status: 400 }
-      );
+        {
+          category: {
+            equals: category,
+            mode: "insensitive",
+          },
+        },
+        {
+          id: {
+            not: id,
+          },
+        },
+      ],
+    },
+  });
+
+  if (existingOption) {
+    throw new ConflictError("Tech option already exists in this category");
+  }
+
+  // Update tech option
+  const updatedTechOption = await prisma.techOption.update({
+    where: {
+      id: id,
+    },
+    data: {
+      name: name.trim(),
+      category: category.trim(),
+      description: description?.trim() || null,
+      isActive: isActive,
+    },
+  });
+
+  return createSuccessResponse(updatedTechOption, "Tech option updated successfully");
+});
+
+// DELETE tech option
+export const DELETE = withAdminRateLimit(async (
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) => {
+  const permissionCheck = await checkEditorPermissions(request);
+
+  if (!permissionCheck.success) {
+    if (permissionCheck.response) {
+      return permissionCheck.response;
+    } else {
+      throw new Error("Permission check failed unexpectedly");
     }
+  }
 
-    await prisma.techOption.delete({
-      where: { id: id },
-    });
-
-    return NextResponse.json({
-      success: true,
-      message: "Tech option deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting tech option:", error);
+  const { id } = await params;
+  
+  // Validate ObjectId format
+  const idValidation = objectIdSchema.safeParse(id);
+  if (!idValidation.success) {
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      { 
+        success: false, 
+        error: "Invalid ObjectId format",
+        code: "VALIDATION_ERROR"
+      }, 
+      { status: 400 }
     );
   }
-}
+
+  // Check if tech option is being used in any projects
+  const projectsUsingTech = await prisma.project.findMany({
+    where: {
+      tools: {
+        has: id,
+      },
+    },
+  });
+
+  if (projectsUsingTech.length > 0) {
+    throw new ConflictError(
+      `Cannot delete tech option. It is currently being used by ${projectsUsingTech.length} project(s).`
+    );
+  }
+
+  // Delete tech option
+  await prisma.techOption.delete({
+    where: {
+      id: id,
+    },
+  });
+
+  return createSuccessResponse(null, "Tech option deleted successfully");
+});

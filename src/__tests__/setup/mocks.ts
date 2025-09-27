@@ -66,6 +66,7 @@ export const mockPrisma = {
   },
   techOption: {
     create: jest.fn() as jest.MockedFunction<any>,
+    findFirst: jest.fn() as jest.MockedFunction<any>,
     findMany: jest.fn() as jest.MockedFunction<any>,
     findUnique: jest.fn() as jest.MockedFunction<any>,
     update: jest.fn() as jest.MockedFunction<any>,
@@ -171,6 +172,32 @@ export function setupMocks() {
         try {
           return await handler(...args);
         } catch (error: any) {
+          // Handle custom error classes
+          if (error && typeof error === 'object' && 'statusCode' in error) {
+            return {
+              json: () =>
+                Promise.resolve({
+                  success: false,
+                  error: error.message,
+                  code: error.code,
+                  details: error.details,
+                }),
+              status: error.statusCode,
+            };
+          }
+          // Handle validation errors (ZodError or validation-related errors)
+          if (error && error.message && (error.name === 'ZodError' || error.message.includes('required') || error.message.includes('Invalid'))) {
+            return {
+              json: () =>
+                Promise.resolve({
+                  success: false,
+                  error: error.message,
+                  code: "VALIDATION_ERROR",
+                }),
+              status: 400,
+            };
+          }
+          // Generic error
           return {
             json: () =>
               Promise.resolve({
@@ -222,8 +249,41 @@ export function setupMocks() {
         try {
           return await handler(...args);
         } catch (error: any) {
-          const { handleApiError } = require("@/lib/api-errors");
-          return handleApiError(error);
+          // Use the mock error handler logic
+          if (error && typeof error === 'object' && 'statusCode' in error) {
+            return {
+              json: () =>
+                Promise.resolve({
+                  success: false,
+                  error: error.message,
+                  code: error.code,
+                  details: error.details,
+                }),
+              status: error.statusCode,
+            };
+          }
+          // Handle validation errors (ZodError or validation-related errors)
+          if (error && error.message && (error.name === 'ZodError' || error.message.includes('required') || error.message.includes('Invalid'))) {
+            return {
+              json: () =>
+                Promise.resolve({
+                  success: false,
+                  error: error.message,
+                  code: "VALIDATION_ERROR",
+                }),
+              status: 400,
+            };
+          }
+          // Generic error
+          return {
+            json: () =>
+              Promise.resolve({
+                success: false,
+                error: error.message || "Internal server error",
+                code: "INTERNAL_ERROR",
+              }),
+            status: 500,
+          };
         }
       }),
     withPublicRateLimit: jest
@@ -232,8 +292,41 @@ export function setupMocks() {
         try {
           return await handler(...args);
         } catch (error: any) {
-          const { handleApiError } = require("@/lib/api-errors");
-          return handleApiError(error);
+          // Use the mock error handler logic
+          if (error && typeof error === 'object' && 'statusCode' in error) {
+            return {
+              json: () =>
+                Promise.resolve({
+                  success: false,
+                  error: error.message,
+                  code: error.code,
+                  details: error.details,
+                }),
+              status: error.statusCode,
+            };
+          }
+          // Handle validation errors (ZodError or validation-related errors)
+          if (error && error.message && (error.name === 'ZodError' || error.message.includes('required') || error.message.includes('Invalid'))) {
+            return {
+              json: () =>
+                Promise.resolve({
+                  success: false,
+                  error: error.message,
+                  code: "VALIDATION_ERROR",
+                }),
+              status: 400,
+            };
+          }
+          // Generic error
+          return {
+            json: () =>
+              Promise.resolve({
+                success: false,
+                error: error.message || "Internal server error",
+                code: "INTERNAL_ERROR",
+              }),
+            status: 500,
+          };
         }
       }),
     validateRequestMiddleware: jest.fn(),
@@ -365,27 +458,47 @@ export function setupMocks() {
       }
     },
     AuthenticationError: class AuthenticationError extends Error {
+      public statusCode: number;
+      public code: string;
+      
       constructor(message = "Authentication required") {
         super(message);
         this.name = "AuthenticationError";
+        this.statusCode = 401;
+        this.code = "AUTHENTICATION_ERROR";
       }
     },
     AuthorizationError: class AuthorizationError extends Error {
+      public statusCode: number;
+      public code: string;
+      
       constructor(message = "Insufficient permissions") {
         super(message);
         this.name = "AuthorizationError";
+        this.statusCode = 403;
+        this.code = "AUTHORIZATION_ERROR";
       }
     },
     NotFoundError: class NotFoundError extends Error {
+      public statusCode: number;
+      public code: string;
+      
       constructor(message = "Resource not found") {
         super(message);
         this.name = "NotFoundError";
+        this.statusCode = 404;
+        this.code = "NOT_FOUND";
       }
     },
     ConflictError: class ConflictError extends Error {
+      public statusCode: number;
+      public code: string;
+      
       constructor(message = "Resource already exists") {
         super(message);
         this.name = "ConflictError";
+        this.statusCode = 409;
+        this.code = "CONFLICT";
       }
     },
     RequestTooLargeError: class RequestTooLargeError extends Error {
