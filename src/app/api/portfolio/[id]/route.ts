@@ -1,14 +1,33 @@
-import { NextResponse, NextRequest } from "next/server";
-import { checkSecureEditorPermissions } from "@/lib/secure-auth";
+import { NextRequest } from "next/server";
+import { checkEditorPermissions } from "@/lib/roleUtils";
 import { prisma } from "@/lib/prisma";
+import { withPublicRateLimit, withAdminRateLimit } from "@/lib/api-utils";
+import {
+  createSuccessResponse,
+  NotFoundError,
+  ConflictError,
+  AuthorizationError,
+} from "@/lib/api-errors";
+import {
+  createPortfolioSchema,
+  validateRequest,
+  objectIdSchema,
+} from "@/lib/validation";
 
-// GET - Retrieve portfolio data
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
-  try {
+// GET portfolio by ID
+export const GET = withPublicRateLimit(
+  async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) => {
     const { id } = await params;
+
+    // Validate ObjectId
+    const idValidation = objectIdSchema.safeParse(id);
+    if (!idValidation.success) {
+      throw new NotFoundError("Invalid portfolio ID format");
+    }
+
     const portfolio = await prisma.portfolio.findUnique({
       where: { id: id },
       include: {
@@ -34,84 +53,103 @@ export async function GET(
     });
 
     if (!portfolio) {
-      return NextResponse.json(
-        { error: "Portfolio not found" },
-        { status: 404 }
-      );
+      throw new NotFoundError("Portfolio not found");
     }
 
-    return NextResponse.json({
-      portfolio,
-    });
-  } catch (error) {
-    console.error("Error fetching portfolio:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return createSuccessResponse(portfolio, "Portfolio retrieved successfully");
   }
-}
+);
 
-// PUT - Update portfolio data (only editors and owners)
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
-  const permissionCheck = await checkSecureEditorPermissions(request);
+// PUT update portfolio
+export const PUT = withAdminRateLimit(
+  async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) => {
+    const permissionCheck = await checkEditorPermissions(request);
 
-  if (!permissionCheck.success) {
-    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
-    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
-    // We must ensure a valid NextResponse is returned.
-    if (permissionCheck.response) {
-      return permissionCheck.response;
-    } else {
-      // This case implies the permission check failed but did not provide a specific error response.
-      // Return a generic internal server error to ensure a valid Response is always returned.
-      return NextResponse.json(
-        { error: "Permission check failed unexpectedly." },
-        { status: 500 }
-      );
+    if (!permissionCheck.success) {
+      if (permissionCheck.response) {
+        return permissionCheck.response;
+      } else {
+        throw new Error("Permission check failed unexpectedly");
+      }
     }
-  }
 
-  if (!permissionCheck.user || !permissionCheck.user.email) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
+    if (!permissionCheck.user || !permissionCheck.user.email) {
+      throw new AuthorizationError("User not found");
+    }
 
-  try {
     const { id } = await params;
-    const body = await request.json();
 
-    // Validate required fields
-    const requiredFields = [
-      "name",
-      "jobTitle",
-      "aboutDescription1",
-      "ownerEmail",
-    ];
-    for (const field of requiredFields) {
-      if (!body[field]) {
-        return NextResponse.json(
-          { error: `${field} is required` },
-          { status: 400 }
-        );
+    // Validate ObjectId
+    const idValidation = objectIdSchema.safeParse(id);
+    if (!idValidation.success) {
+      throw new NotFoundError("Invalid portfolio ID format");
+    }
+
+    const body = await request.json();
+    const validation = validateRequest(createPortfolioSchema, body);
+
+    if (!validation.success) {
+      throw validation.errors;
+    }
+
+    const {
+      name,
+      jobTitle,
+      aboutDescription1,
+      aboutDescription2,
+      skills,
+      ownerEmail,
+      linkedIn,
+      gitHub,
+      behance,
+      twitter,
+    } = validation.data;
+
+    // Check if portfolio exists
+    const existingPortfolio = await prisma.portfolio.findUnique({
+      where: { id: id },
+    });
+
+    if (!existingPortfolio) {
+      throw new NotFoundError("Portfolio not found");
+    }
+
+    // Check if user is the portfolio owner
+    if (existingPortfolio.ownerEmail !== permissionCheck.user.email) {
+      throw new AuthorizationError("You can only update your own portfolio");
+    }
+
+    // Check if ownerEmail is being changed to a different user
+    if (ownerEmail !== existingPortfolio.ownerEmail) {
+      // Check if another portfolio exists for the new owner
+      const conflictingPortfolio = await prisma.portfolio.findFirst({
+        where: {
+          ownerEmail: ownerEmail,
+          id: { not: id },
+        },
+      });
+
+      if (conflictingPortfolio) {
+        throw new ConflictError("Portfolio already exists for this user");
       }
     }
 
     const updatedPortfolio = await prisma.portfolio.update({
       where: { id: id },
       data: {
-        name: body.name,
-        jobTitle: body.jobTitle,
-        aboutDescription1: body.aboutDescription1,
-        aboutDescription2: body.aboutDescription2,
-        skills: body.skills || [],
-        ownerEmail: body.ownerEmail,
-        linkedIn: body.linkedIn,
-        gitHub: body.gitHub,
-        behance: body.behance,
-        twitter: body.twitter,
+        name: name.trim(),
+        jobTitle: jobTitle.trim(),
+        aboutDescription1: aboutDescription1.trim(),
+        aboutDescription2: aboutDescription2?.trim() || "",
+        skills: skills || [],
+        ownerEmail: ownerEmail.trim(),
+        linkedIn: linkedIn?.trim() || "",
+        gitHub: gitHub?.trim() || "",
+        behance: behance?.trim() || "",
+        twitter: twitter?.trim() || "",
       },
       include: {
         projects: true,
@@ -119,62 +157,53 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json({
-      message: "Portfolio updated successfully",
-      portfolio: updatedPortfolio,
-    });
-  } catch (error) {
-    console.error("Error updating portfolio:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+    return createSuccessResponse(
+      updatedPortfolio,
+      "Portfolio updated successfully"
     );
   }
-}
+);
 
-// DELETE - Delete portfolio (only owners can delete)
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-): Promise<Response> {
-  const permissionCheck = await checkSecureEditorPermissions(request);
+// DELETE portfolio
+export const DELETE = withAdminRateLimit(
+  async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+  ) => {
+    const permissionCheck = await checkEditorPermissions(request);
 
-  if (!permissionCheck.success) {
-    // If permissionCheck.success is false, permissionCheck.response should contain an error response.
-    // The lint error indicates that permissionCheck.response might be null, which is not a valid Response.
-    // We must ensure a valid NextResponse is returned.
-    if (permissionCheck.response) {
-      return permissionCheck.response;
-    } else {
-      // This case implies the permission check failed but did not provide a specific error response.
-      // Return a generic internal server error to ensure a valid Response is always returned.
-      return NextResponse.json(
-        { error: "Permission check failed unexpectedly." },
-        { status: 500 }
-      );
+    if (!permissionCheck.success) {
+      if (permissionCheck.response) {
+        return permissionCheck.response;
+      } else {
+        throw new Error("Permission check failed unexpectedly");
+      }
     }
-  }
 
-  if (!permissionCheck.user || !permissionCheck.user.email) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
+    if (!permissionCheck.user || !permissionCheck.user.email) {
+      throw new AuthorizationError("User not found");
+    }
 
-  try {
     const { id } = await params;
-    // Check if user is the portfolio owner
+
+    // Validate ObjectId
+    const idValidation = objectIdSchema.safeParse(id);
+    if (!idValidation.success) {
+      throw new NotFoundError("Invalid portfolio ID format");
+    }
+
+    // Check if portfolio exists and user is the owner
     const portfolio = await prisma.portfolio.findUnique({
       where: { id: id },
     });
 
-    if (
-      !portfolio ||
-      portfolio.ownerEmail !== permissionCheck.user?.email
-    ) {
-      return NextResponse.json(
-        {
-          error: "Access denied. Only portfolio owners can delete portfolios.",
-        },
-        { status: 403 }
+    if (!portfolio) {
+      throw new NotFoundError("Portfolio not found");
+    }
+
+    if (portfolio.ownerEmail !== permissionCheck.user.email) {
+      throw new AuthorizationError(
+        "Only portfolio owners can delete portfolios"
       );
     }
 
@@ -187,14 +216,6 @@ export async function DELETE(
       where: { id: id },
     });
 
-    return NextResponse.json({
-      message: "Portfolio deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error deleting portfolio:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return createSuccessResponse(null, "Portfolio deleted successfully");
   }
-}
+);

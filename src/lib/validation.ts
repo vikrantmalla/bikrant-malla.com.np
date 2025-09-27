@@ -10,7 +10,9 @@ export const passwordSchema = z
   .string()
   .min(8, "Password must be at least 8 characters");
 export const uuidSchema = z.string().uuid("Invalid UUID format");
-export const objectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format");
+export const objectIdSchema = z
+  .string()
+  .regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format");
 
 // Auth schemas
 export const loginSchema = z.object({
@@ -26,7 +28,10 @@ export const registerSchema = z.object({
 
 export const resetPasswordSchema = z.object({
   email: emailSchema,
-  password: z.string().min(8, "Password must be at least 8 characters").max(100),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(100),
 });
 
 // Project schemas
@@ -76,6 +81,21 @@ export const createPortfolioSchema = z.object({
 });
 
 export const updatePortfolioSchema = createPortfolioSchema.partial();
+
+// Bulk portfolio schemas
+export const bulkCreatePortfoliosSchema = z.object({
+  portfolios: z
+    .array(createPortfolioSchema)
+    .min(1, "At least one portfolio is required")
+    .max(10, "Cannot create more than 10 portfolios at once"),
+});
+
+export const bulkDeletePortfoliosSchema = z.object({
+  portfolioIds: z
+    .array(objectIdSchema)
+    .min(1, "At least one portfolio ID is required")
+    .max(10, "Cannot delete more than 10 portfolios at once"),
+});
 
 // Tech tag schemas
 export const createTechTagSchema = z.object({
