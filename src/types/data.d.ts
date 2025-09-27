@@ -308,6 +308,8 @@ export interface TechOption {
   id: string;
   name: string;
   category: string;
+  description?: string | null;
+  isActive?: boolean;
 }
 
 export interface ThemeProperties {
