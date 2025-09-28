@@ -8,6 +8,7 @@ import {
   generateTestUser,
   generateTestPortfolio,
   createMockRequest,
+  TEST_BASE_URL,
 } from "../utils/test-helpers";
 import { faker } from "@faker-js/faker";
 import { Role } from "@/types/enum";
@@ -25,7 +26,7 @@ describe("/api/setup", () => {
       mockPrisma.user.count.mockResolvedValue(0);
       mockPrisma.portfolio.count.mockResolvedValue(0);
 
-      const response = await GET(createMockRequest("http://localhost:3000/api/setup"));
+      const response = await GET(createMockRequest(`${TEST_BASE_URL}/api/setup`));
       const data = await response!.json();
 
       expect(response!.status).toBe(200);
@@ -42,7 +43,7 @@ describe("/api/setup", () => {
       mockPrisma.user.count.mockResolvedValue(1);
       mockPrisma.portfolio.count.mockResolvedValue(1);
 
-      const response = await GET(createMockRequest("http://localhost:3000/api/setup"));
+      const response = await GET(createMockRequest(`${TEST_BASE_URL}/api/setup`));
       const data = await response!.json();
 
       expect(response!.status).toBe(200);
@@ -58,7 +59,7 @@ describe("/api/setup", () => {
     it("should handle database errors", async () => {
       mockPrisma.user.count.mockRejectedValue(new Error("Database error"));
 
-      const response = await GET(createMockRequest("http://localhost:3000/api/setup"));
+      const response = await GET(createMockRequest(`${TEST_BASE_URL}/api/setup`));
       const data = await response!.json();
 
       expect(response!.status).toBe(500);

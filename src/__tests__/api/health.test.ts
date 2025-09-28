@@ -1,6 +1,6 @@
 import { GET } from "@/app/api/health/database/route";
 import { setupMocks, resetMocks, mockPrisma } from "../setup/mocks";
-import { createMockRequest } from "../utils/test-helpers";
+import { createMockRequest, TEST_BASE_URL } from "../utils/test-helpers";
 
 // Setup mocks before importing modules
 setupMocks();
@@ -16,7 +16,7 @@ describe("/api/health/database", () => {
       mockPrisma.$runCommandRaw.mockResolvedValue({ ok: 1 });
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/health/database")
+        createMockRequest(`${TEST_BASE_URL}/api/health/database`)
       );
       const data = await response!.json();
 
@@ -38,7 +38,7 @@ describe("/api/health/database", () => {
       mockPrisma.$runCommandRaw.mockRejectedValue(dbError);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/health/database")
+        createMockRequest(`${TEST_BASE_URL}/api/health/database`)
       );
       const data = await response!.json();
 
@@ -56,7 +56,7 @@ describe("/api/health/database", () => {
       mockPrisma.$runCommandRaw.mockRejectedValue(authError);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/health/database")
+        createMockRequest(`${TEST_BASE_URL}/api/health/database`)
       );
       const data = await response!.json();
 
@@ -73,7 +73,7 @@ describe("/api/health/database", () => {
       mockPrisma.$runCommandRaw.mockRejectedValue(timeoutError);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/health/database")
+        createMockRequest(`${TEST_BASE_URL}/api/health/database`)
       );
       const data = await response!.json();
 
@@ -88,7 +88,7 @@ describe("/api/health/database", () => {
       mockPrisma.$runCommandRaw.mockRejectedValue(unknownError);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/health/database")
+        createMockRequest(`${TEST_BASE_URL}/api/health/database`)
       );
       const data = await response!.json();
 
@@ -102,7 +102,7 @@ describe("/api/health/database", () => {
       mockPrisma.$runCommandRaw.mockResolvedValue({ ok: 1 });
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/health/database")
+        createMockRequest(`${TEST_BASE_URL}/api/health/database`)
       );
       const data = await response!.json();
       const afterRequest = new Date();
@@ -123,7 +123,7 @@ describe("/api/health/database", () => {
       mockPrisma.$runCommandRaw.mockRejectedValue(dbNameError);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/health/database")
+        createMockRequest(`${TEST_BASE_URL}/api/health/database`)
       );
       const data = await response!.json();
 
@@ -138,7 +138,7 @@ describe("/api/health/database", () => {
       mockPrisma.$runCommandRaw.mockRejectedValue(atlasError);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/health/database")
+        createMockRequest(`${TEST_BASE_URL}/api/health/database`)
       );
       const data = await response!.json();
 

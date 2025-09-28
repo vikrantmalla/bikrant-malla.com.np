@@ -4,6 +4,7 @@ import {
   generateTestConfig,
   generateTestUser,
   createMockRequest,
+  TEST_BASE_URL,
 } from "../utils/test-helpers";
 import { faker } from "@faker-js/faker";
 
@@ -21,7 +22,7 @@ describe("/api/config", () => {
       mockPrisma.config.findFirst.mockResolvedValue(existingConfig);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/config")
+        createMockRequest(`${TEST_BASE_URL}/api/config`)
       );
       const data = await response!.json();
 
@@ -39,7 +40,7 @@ describe("/api/config", () => {
       mockPrisma.config.create.mockResolvedValue(defaultConfig);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/config")
+        createMockRequest(`${TEST_BASE_URL}/api/config`)
       );
       const data = await response!.json();
 
@@ -63,7 +64,7 @@ describe("/api/config", () => {
       );
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/config")
+        createMockRequest(`${TEST_BASE_URL}/api/config`)
       );
       const data = await response!.json();
 

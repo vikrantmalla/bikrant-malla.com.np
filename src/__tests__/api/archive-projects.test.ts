@@ -15,6 +15,7 @@ import {
   generateTestPortfolio,
   generateTestArchiveProject,
   createMockRequest,
+  TEST_BASE_URL,
 } from "../utils/test-helpers";
 import { faker } from "@faker-js/faker";
 
@@ -54,7 +55,7 @@ describe("/api/archive-projects", () => {
       mockPrisma.archiveProject.findMany.mockResolvedValue(archiveProjects);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/archive-projects")
+        createMockRequest(`${TEST_BASE_URL}/api/archive-projects`)
       );
       const data = await response!.json();
 
@@ -93,7 +94,7 @@ describe("/api/archive-projects", () => {
       mockPrisma.archiveProject.findMany.mockResolvedValue(archiveProjects);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/archive-projects")
+        createMockRequest(`${TEST_BASE_URL}/api/archive-projects`)
       );
       const data = await response!.json();
 
@@ -121,7 +122,7 @@ describe("/api/archive-projects", () => {
       });
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/archive-projects")
+        createMockRequest(`${TEST_BASE_URL}/api/archive-projects`)
       );
 
       expect(response!.status).toBe(401);
@@ -149,7 +150,7 @@ describe("/api/archive-projects", () => {
       mockPrisma.userPortfolioRole.findFirst.mockResolvedValue(null);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/archive-projects")
+        createMockRequest(`${TEST_BASE_URL}/api/archive-projects`)
       );
       const data = await response!.json();
 
@@ -176,7 +177,7 @@ describe("/api/archive-projects", () => {
       mockPrisma.user.findUnique.mockRejectedValue(new Error("Database error"));
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/archive-projects")
+        createMockRequest(`${TEST_BASE_URL}/api/archive-projects`)
       );
       const data = await response!.json();
 
@@ -392,7 +393,7 @@ describe("/api/archive-projects", () => {
 
       const response = await GET_BY_ID(
         createMockRequest(
-          "http://localhost:3000/api/archive-projects/507f1f77bcf86cd799439011"
+          `${TEST_BASE_URL}/api/archive-projects/507f1f77bcf86cd799439011`
         ),
         { params: Promise.resolve({ id: "507f1f77bcf86cd799439011" }) }
       );
@@ -409,7 +410,7 @@ describe("/api/archive-projects", () => {
 
       const response = await GET_BY_ID(
         createMockRequest(
-          "http://localhost:3000/api/archive-projects/507f1f77bcf86cd799439011"
+          `${TEST_BASE_URL}/api/archive-projects/507f1f77bcf86cd799439011`
         ),
         { params: Promise.resolve({ id: "507f1f77bcf86cd799439011" }) }
       );
@@ -423,7 +424,7 @@ describe("/api/archive-projects", () => {
     it("should return 404 for invalid archive project ID format", async () => {
       const response = await GET_BY_ID(
         createMockRequest(
-          "http://localhost:3000/api/archive-projects/invalid-id"
+          `${TEST_BASE_URL}/api/archive-projects/invalid-id`
         ),
         { params: Promise.resolve({ id: "invalid-id" }) }
       );
