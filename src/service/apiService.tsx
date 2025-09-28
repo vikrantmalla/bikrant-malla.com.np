@@ -20,45 +20,6 @@ interface TechTagsResponse {
   techTags: TechTag[];
 }
 
-// Type for portfolio create/update data
-interface PortfolioCreateData {
-  name: string;
-  jobTitle: string;
-  aboutDescription1: string;
-  aboutDescription2: string;
-  skills: string[];
-  email: string;
-  ownerEmail: string;
-  linkedIn: string;
-  gitHub: string;
-  behance: string;
-  twitter: string;
-}
-
-// Type for project create/update data
-interface ProjectCreateData {
-  title: string;
-  subTitle: string;
-  images: string;
-  imageUrl: string;
-  alt: string;
-  projectView: string;
-  tools: string[];
-  platform: string;
-  portfolioId?: string;
-}
-
-// Type for archive project create/update data
-interface ArchiveProjectCreateData {
-  title: string;
-  year: number;
-  isNew: boolean;
-  projectView: string;
-  viewCode: string;
-  build: string[];
-  portfolioId?: string;
-}
-
 async function fetchData<T>(endpoint: string): Promise<T> {
   try {
     const res = await fetch(`${baseUrl}/${endpoint}`, {
@@ -70,9 +31,11 @@ async function fetchData<T>(endpoint: string): Promise<T> {
       console.error(`API Error for ${endpoint}:`, {
         status: res.status,
         statusText: res.statusText,
-        body: errorText
+        body: errorText,
       });
-      throw new Error(`Failed to fetch ${endpoint}: ${res.status} ${res.statusText}`);
+      throw new Error(
+        `Failed to fetch ${endpoint}: ${res.status} ${res.statusText}`
+      );
     }
 
     const data: T = await res.json();
@@ -86,10 +49,15 @@ async function fetchData<T>(endpoint: string): Promise<T> {
 // GET METHOD
 export async function fetchPortfolioDetailsData(): Promise<PortfolioDetails> {
   try {
-    return await fetchData<PortfolioDetails>(PORTFOLIO_DETAILS_ENDPOINT);
+    const response = await fetchData<{
+      success: boolean;
+      data: PortfolioDetails;
+      message: string;
+    }>(PORTFOLIO_DETAILS_ENDPOINT);
+    return response.data;
   } catch (error) {
     console.error("Error fetching portfolio data:", error);
-    
+
     // Return empty portfolio structure to prevent infinite loops
     const emptyPortfolio: PortfolioDetails = {
       id: null,
@@ -106,9 +74,9 @@ export async function fetchPortfolioDetailsData(): Promise<PortfolioDetails> {
       twitter: "",
       projects: [],
       archiveProjects: [],
-      userRoles: []
+      userRoles: [],
     };
-    
+
     return emptyPortfolio;
   }
 }

@@ -43,12 +43,12 @@ const Home = async () => {
     behance: portfolioDetail.behance,
     twitter: portfolioDetail.twitter,
   };
-  const behance = portfolioDetail.projects.filter(
+  const behance = portfolioDetail.projects?.filter(
     (project: Project) => project.platform === Platform.Design
-  );
-  const projecthighlight = portfolioDetail.projects.filter(
+  ) || [];
+  const projecthighlight = portfolioDetail.projects?.filter(
     (project: Project) => project.platform === Platform.Web
-  );
+  ) || [];
   return (
     <main>
       <article className="container">
