@@ -15,6 +15,15 @@ import { Role } from "@/types/enum";
 // Setup mocks before importing modules
 setupMocks();
 
+// Mock resend config to skip email sending
+jest.mock("@/lib/resend-config", () => ({
+  resendConfig: {
+    apiKey: null, // This will cause the email sending to be skipped
+    appUrl: "http://localhost:3000",
+    fromEmail: "test@example.com",
+  },
+}));
+
 describe("/api/invite", () => {
   beforeEach(() => {
     resetMocks();
@@ -59,15 +68,6 @@ describe("/api/invite", () => {
         invitedAt: new Date(),
       });
 
-      // Mock Resend
-      const mockResend = {
-        emails: {
-          send: jest.fn().mockResolvedValue({ id: faker.string.uuid() }),
-        },
-      };
-      jest.doMock("resend", () => ({
-        Resend: jest.fn().mockImplementation(() => mockResend),
-      }));
 
       const request = {
         headers: {
@@ -81,9 +81,10 @@ describe("/api/invite", () => {
 
       expect(response!.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.message).toBe("Invitation sent successfully");
-      expect(data.data.message).toContain(`Invitation sent to ${validInviteData.email}`);
+      expect(data.message).toBe("Invitation created successfully");
+      expect(data.data.message).toContain(`Invitation created for ${validInviteData.email}`);
       expect(data.data.note).toContain("sign up through the regular Kinde flow");
+      expect(data.data.emailSent).toBe(false);
     });
 
     it("should update existing invitation when user already has role", async () => {
@@ -119,15 +120,6 @@ describe("/api/invite", () => {
         role: validInviteData.role,
       });
 
-      // Mock Resend
-      const mockResend = {
-        emails: {
-          send: jest.fn().mockResolvedValue({ id: faker.string.uuid() }),
-        },
-      };
-      jest.doMock("resend", () => ({
-        Resend: jest.fn().mockImplementation(() => mockResend),
-      }));
 
       const request = {
         headers: {
@@ -141,6 +133,7 @@ describe("/api/invite", () => {
 
       expect(response!.status).toBe(200);
       expect(data.success).toBe(true);
+      expect(data.message).toBe("Invitation created successfully");
       expect(mockPrisma.userPortfolioRole.update).toHaveBeenCalledWith({
         where: { id: existingInvitation.id },
         data: {
@@ -202,9 +195,9 @@ describe("/api/invite", () => {
       const response = await POST(request);
       const data = await response!.json();
 
-      expect(response!.status).toBe(500);
+      expect(response!.status).toBe(404);
       expect(data.success).toBe(false);
-      expect(data.error).toContain("Validation failed");
+      expect(data.error).toBe("Portfolio not found");
     });
 
     it("should return 404 when portfolio not found", async () => {

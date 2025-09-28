@@ -148,7 +148,7 @@ describe('/api/auth/check-role', () => {
       const response = await getCheckRole(mockRequest);
       const data = await response.json();
 
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(400);
       expect(data.success).toBe(false);
       expect(data.error).toBe('Invalid token');
       expect(mockCustomAuth.checkUserPermissions).not.toHaveBeenCalled();

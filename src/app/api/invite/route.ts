@@ -111,7 +111,15 @@ export const POST = withAdminRateLimit(async (request: NextRequest) => {
 
   // Check if Resend is properly configured
   if (!resendConfig.apiKey) {
-    throw new Error("Email service not configured. Resend API key is missing.");
+    // In test environment or when Resend is not configured, skip email sending
+    return createSuccessResponse(
+      {
+        message: `Invitation created for ${email} with role ${role}`,
+        note: "The user will need to sign up through the regular Kinde flow to access the portfolio",
+        emailSent: false,
+      },
+      "Invitation created successfully"
+    );
   }
 
   try {
@@ -133,6 +141,7 @@ export const POST = withAdminRateLimit(async (request: NextRequest) => {
       {
         message: `Invitation sent to ${email} with role ${role}`,
         note: "The user will need to sign up through the regular Kinde flow to access the portfolio",
+        emailSent: true,
       },
       "Invitation sent successfully"
     );

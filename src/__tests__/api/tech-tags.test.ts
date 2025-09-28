@@ -456,20 +456,3 @@ describe("/api/tech-tags/[id]", () => {
   });
 });
 
-describe("/api/tech-tags/bulk", () => {
-  const user = generateTestUser();
-
-  beforeEach(() => {
-    // Mock successful permission check
-    const { checkEditorPermissions } = require("@/lib/roleUtils");
-    checkEditorPermissions.mockResolvedValue({
-      success: true,
-      response: null,
-      user,
-      kindeUser: {
-        id: user.id,
-        email: user.email,
-      },
-    });
-  });
-});
