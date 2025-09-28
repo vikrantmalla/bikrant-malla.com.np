@@ -1,27 +1,21 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { withPublicRateLimit } from "@/lib/api-utils";
+import { createSuccessResponse } from "@/lib/api-errors";
 
-export async function GET() {
-  try {
-    // Simple database health check for MongoDB
-    await prisma.$runCommandRaw({ ping: 1 });
-    
-    return NextResponse.json({ 
-      status: "healthy", 
-      database: "connected",
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error("Database health check failed:", error);
-    
-    return NextResponse.json(
-      { 
-        status: "unhealthy", 
-        database: "disconnected",
-        error: error instanceof Error ? error.message : "Unknown error",
-        timestamp: new Date().toISOString()
-      },
-      { status: 503 }
-    );
-  }
-}
+// GET database health status
+export const GET = withPublicRateLimit(async (request: NextRequest) => {
+  // Simple database health check for MongoDB
+  await prisma.$runCommandRaw({ ping: 1 });
+  
+  const healthData = {
+    status: "healthy",
+    database: "connected",
+    timestamp: new Date().toISOString(),
+  };
+
+  return createSuccessResponse(
+    healthData,
+    "Database health check successful"
+  );
+});

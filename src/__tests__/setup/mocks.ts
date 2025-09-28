@@ -10,9 +10,11 @@ export const mockPrisma = {
     create: jest.fn() as jest.MockedFunction<any>,
     findUnique: jest.fn() as jest.MockedFunction<any>,
     findMany: jest.fn() as jest.MockedFunction<any>,
+    findFirst: jest.fn() as jest.MockedFunction<any>,
     update: jest.fn() as jest.MockedFunction<any>,
     delete: jest.fn() as jest.MockedFunction<any>,
     deleteMany: jest.fn() as jest.MockedFunction<any>,
+    count: jest.fn() as jest.MockedFunction<any>,
   },
   portfolio: {
     create: jest.fn() as jest.MockedFunction<any>,
@@ -22,6 +24,7 @@ export const mockPrisma = {
     update: jest.fn() as jest.MockedFunction<any>,
     delete: jest.fn() as jest.MockedFunction<any>,
     deleteMany: jest.fn() as jest.MockedFunction<any>,
+    count: jest.fn() as jest.MockedFunction<any>,
   },
   project: {
     create: jest.fn() as jest.MockedFunction<any>,
@@ -52,6 +55,7 @@ export const mockPrisma = {
     create: jest.fn() as jest.MockedFunction<any>,
     findMany: jest.fn() as jest.MockedFunction<any>,
     findFirst: jest.fn() as jest.MockedFunction<any>,
+    update: jest.fn() as jest.MockedFunction<any>,
     delete: jest.fn() as jest.MockedFunction<any>,
     deleteMany: jest.fn() as jest.MockedFunction<any>,
   },
