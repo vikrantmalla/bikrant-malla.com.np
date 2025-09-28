@@ -6,6 +6,7 @@ import { baseUrl } from "../lib/baseUrl";
 
 const CustomScript = () => {
   const isProduction = process.env.NODE_ENV === Environment.PRODUCTION;
+  const clarityId = process.env.NEXT_PUBLIC_MICROSOFT_CLARITY;
   const jsonLd = {
     "@context": "https://schema.org/",
     "@type": "BreadcrumbList",
@@ -25,13 +26,13 @@ const CustomScript = () => {
     ],
   };
 
-  if (typeof window !== 'undefined' && isProduction) {
+  if (typeof window !== "undefined" && isProduction) {
     window.console.log = () => {};
   }
 
   return (
     <>
-      {isProduction && (
+      {isProduction && clarityId && (
         <>
           <Script strategy="lazyOnload" id="clarity-script">
             {`
@@ -39,7 +40,7 @@ const CustomScript = () => {
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
             t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-          })(window, document, "clarity", "script", "l6dex549t7");
+          })(window, document, "clarity", "script", "${clarityId}");
         `}
           </Script>
           <Script
