@@ -11,6 +11,7 @@ import {
   generateTestPortfolio,
   generateTestProject,
   createMockRequest,
+  TEST_BASE_URL,
 } from "../utils/test-helpers";
 import { faker } from "@faker-js/faker";
 
@@ -50,7 +51,7 @@ describe("/api/projects", () => {
       mockPrisma.project.findMany.mockResolvedValue(projects);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/projects")
+        createMockRequest(`${TEST_BASE_URL}/api/projects`)
       );
       const data = await response!.json();
 
@@ -89,7 +90,7 @@ describe("/api/projects", () => {
       mockPrisma.project.findMany.mockResolvedValue(projects);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/projects")
+        createMockRequest(`${TEST_BASE_URL}/api/projects`)
       );
       const data = await response!.json();
 
@@ -117,7 +118,7 @@ describe("/api/projects", () => {
       });
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/projects")
+        createMockRequest(`${TEST_BASE_URL}/api/projects`)
       );
 
       expect(response!.status).toBe(401);
@@ -145,7 +146,7 @@ describe("/api/projects", () => {
       mockPrisma.userPortfolioRole.findFirst.mockResolvedValue(null);
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/projects")
+        createMockRequest(`${TEST_BASE_URL}/api/projects`)
       );
       const data = await response!.json();
 
@@ -172,7 +173,7 @@ describe("/api/projects", () => {
       mockPrisma.user.findUnique.mockRejectedValue(new Error("Database error"));
 
       const response = await GET(
-        createMockRequest("http://localhost:3000/api/projects")
+        createMockRequest(`${TEST_BASE_URL}/api/projects`)
       );
       const data = await response!.json();
 
@@ -444,7 +445,7 @@ describe("/api/projects", () => {
 
       const response = await GET_BY_ID(
         createMockRequest(
-          "http://localhost:3000/api/projects/507f1f77bcf86cd799439011"
+          `${TEST_BASE_URL}/api/projects/507f1f77bcf86cd799439011`
         ),
         { params: Promise.resolve({ id: "507f1f77bcf86cd799439011" }) }
       );
@@ -461,7 +462,7 @@ describe("/api/projects", () => {
 
       const response = await GET_BY_ID(
         createMockRequest(
-          "http://localhost:3000/api/projects/507f1f77bcf86cd799439011"
+          `${TEST_BASE_URL}/api/projects/507f1f77bcf86cd799439011`
         ),
         { params: Promise.resolve({ id: "507f1f77bcf86cd799439011" }) }
       );
@@ -474,7 +475,7 @@ describe("/api/projects", () => {
 
     it("should return 400 for invalid project ID format", async () => {
       const response = await GET_BY_ID(
-        createMockRequest("http://localhost:3000/api/projects/invalid-id"),
+        createMockRequest(`${TEST_BASE_URL}/api/projects/invalid-id`),
         { params: Promise.resolve({ id: "invalid-id" }) }
       );
       const data = await response!.json();

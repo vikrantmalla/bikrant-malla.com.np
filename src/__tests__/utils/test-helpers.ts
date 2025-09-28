@@ -4,6 +4,9 @@ import { Platform, Role } from '@/types/enum';
 import { User, Portfolio, Project, ArchiveProject, Config, TechTag, TechOption } from '@/types/data';
 import { NextRequest } from 'next/server';
 
+// Test configuration constants
+export const TEST_BASE_URL = 'http://localhost:3000';
+
 // Helper function to generate ObjectId format
 const generateObjectId = (): string => {
   return faker.string.alphanumeric(24).toLowerCase();

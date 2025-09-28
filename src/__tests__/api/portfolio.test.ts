@@ -11,6 +11,7 @@ import {
   generateTestProject,
   generateTestArchiveProject,
   createMockRequest,
+  TEST_BASE_URL,
 } from "../utils/test-helpers";
 import { faker } from "@faker-js/faker";
 import { NextRequest } from "next/server";
@@ -48,7 +49,7 @@ describe("/api/portfolio", () => {
       mockPrisma.portfolio.findFirst.mockResolvedValue(portfolioWithRelations);
 
       const response = await GET(
-        new NextRequest("http://localhost:3000/api/portfolio")
+        createMockRequest(`${TEST_BASE_URL}/api/portfolio`)
       );
       const data = await response.json();
 
@@ -84,7 +85,7 @@ describe("/api/portfolio", () => {
       mockPrisma.portfolio.findFirst.mockResolvedValue(null);
 
       const response = await GET(
-        new NextRequest("http://localhost:3000/api/portfolio")
+        createMockRequest(`${TEST_BASE_URL}/api/portfolio`)
       );
       const data = await response.json();
 
@@ -116,7 +117,7 @@ describe("/api/portfolio", () => {
       );
 
       const response = await GET(
-        new NextRequest("http://localhost:3000/api/portfolio")
+        createMockRequest(`${TEST_BASE_URL}/api/portfolio`)
       );
       const data = await response.json();
 
