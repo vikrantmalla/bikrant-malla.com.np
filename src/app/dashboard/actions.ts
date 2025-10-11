@@ -271,7 +271,7 @@ export async function createArchiveProject(formData: FormData) {
 
     const fetchOptions = await getAuthenticatedFetchOptions("POST", archiveData);
     
-    const response = await fetch(`${getBaseUrl()}/api/archive-projects/create`, fetchOptions);
+    const response = await fetch(`${getBaseUrl()}/api/archive-projects`, fetchOptions);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -351,7 +351,7 @@ export async function getProjectLimits() {
     }
 
     const result = await response.json();
-    return { success: true, data: result };
+    return { success: true, data: result.data };
   } catch (error) {
     console.error("Error getting project limits:", error);
     return { success: false, error: error instanceof Error ? error.message : "Failed to get project limits" };
@@ -373,12 +373,35 @@ export async function updateProjectLimits(formData: FormData) {
 
     if (!response.ok) {
       const errorText = await response.text();
+      // Handle rate limiting specifically
+      if (response.status === 429) {
+        try {
+          const errorData = JSON.parse(errorText);
+          const retryAfter = errorData.retryAfter || 60;
+          throw new Error(`Rate limit exceeded. Please wait ${retryAfter} seconds before trying again.`);
+        } catch {
+          throw new Error(`Rate limit exceeded. Please wait a few minutes before trying again.`);
+        }
+      }
+      
+      // Handle validation errors
+      if (response.status === 400) {
+        try {
+          const errorData = JSON.parse(errorText);
+          if (errorData.errors) {
+            throw new Error(`Validation error: ${JSON.stringify(errorData.errors)}`);
+          }
+        } catch {
+          // If we can't parse the error, use the raw text
+        }
+      }
+      
       throw new Error(`Failed to update project limits: ${response.status} ${response.statusText} - ${errorText}`);
     }
 
     const result = await response.json();
     revalidatePath("/dashboard");
-    return { success: true, data: result };
+    return { success: true, data: result.data };
   } catch (error) {
     console.error("Error updating project limits:", error);
     return { success: false, error: error instanceof Error ? error.message : "Failed to update project limits" };

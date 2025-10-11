@@ -52,7 +52,7 @@ const CustomScript = () => {
   if (typeof window !== "undefined") {
     const debugInfo = {
       isProduction,
-      clarityId: clarityId ? "Set" : "Not set",
+      clarityId: clarityId ? `Set (${clarityId})` : "Not set",
       gaTrackingId: gaTrackingId ? "Set" : "Not set",
       baseUrl,
       userAgent: navigator.userAgent,
@@ -93,7 +93,6 @@ const CustomScript = () => {
               strategy="lazyOnload"
               id="clarity-script"
               onLoad={() => {
-                console.log("Clarity script loaded");
                 trackScriptPerformance("Microsoft Clarity", clarityStartTime);
                 Sentry.addBreadcrumb({
                   message: "Microsoft Clarity script loaded successfully",
@@ -124,7 +123,7 @@ const CustomScript = () => {
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
             t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-          })(window, document, "clarity", "script", "${clarityId}");
+          })(window, document, "clarity", "script", "l6dex549t7");
         `}
             </Script>
           );

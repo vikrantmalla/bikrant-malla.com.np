@@ -59,14 +59,25 @@ function ItemsList<T extends { id: string }>({
     );
   }
 
+  // Debug: Check for duplicate IDs
+  const ids = items.map((item) => item.id);
+  const uniqueIds = new Set(ids);
+  if (ids.length !== uniqueIds.size) {
+    console.warn(
+      `ItemsList: Duplicate IDs detected in ${title}. Total items: ${ids.length}, Unique IDs: ${uniqueIds.size}`
+    );
+  }
+
   return (
     <div className="projects-list">
       <h3>{title}</h3>
       <div className="projects-grid">
-        {items.map((item) => {
+        {items.map((item, index) => {
+          // Ensure unique key by using index as fallback if id is not unique
+          const uniqueKey = item.id || `item-${index}`;
           return (
             <div
-              key={item.id}
+              key={uniqueKey}
               className={`project-card ${
                 selectedItemId === item.id ? "project-card--selected" : ""
               }`}

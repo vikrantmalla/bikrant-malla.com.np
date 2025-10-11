@@ -34,7 +34,7 @@ export const RATE_LIMITS = {
   // Admin endpoints (very strict)
   ADMIN: {
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 20, // 20 requests per window
+    max: process.env.NODE_ENV === 'development' ? 100 : 20, // More lenient in development
     message: "Too many admin requests, please try again later",
   },
   
